@@ -1,10 +1,10 @@
 "use client";
 
 import "./App.css";
-import { useRouter } from "next/navigation";
+import { BrowserRouter } from "react-router-dom";
 
 export default function App() {
-  const router = useRouter();
+  const router = BrowserRouter();
   const nextHandle = () => {
     router.push("/actionChoice");
   };
