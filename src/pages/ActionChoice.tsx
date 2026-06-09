@@ -4,6 +4,7 @@ export default function ActionChoice() {
   return (
     <div>
       <h1>今、何をやりたい？</h1>
+      <h2>行動を選択してください</h2>
 
       <div>勉強する</div>
       <div>運動する</div>

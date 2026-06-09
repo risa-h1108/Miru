@@ -1,6 +1,7 @@
 "use client";
 
 import "./App.css";
+import ActionChoice from "./pages/ActionChoice";
 // import { BrowserRouter } from "react-router-dom";
 
 export default function App() {
@@ -12,7 +13,7 @@ export default function App() {
   return (
     <div>
       {/* <button onClick={nextHandle}>ダッシュボードへ移動</button> */}
-      Miru
+      <ActionChoice />
     </div>
   );
 }
