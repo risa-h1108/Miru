@@ -2,42 +2,45 @@ import { Icon } from "@iconify/react";
 import { useState } from "react";
 
 export default function ActionChoice() {
-  const [action, setAction] = useState([]);
+  const [selectedAction, setSelectedAction] = useState<string | null>(null);
 
-  const Choice = () => {};
+  //1.labelでカードのどれかを受け取る、という関数
+  const handleCardClick = (label: string) => {
+    setSelectedAction(label); //2.stateに保存する
+  };
+
+  // 行動カードのデータ一覧(オブジェクトの配列にすることで、カードの追加・削除が配列の編集だけで済む)
+  const actionList = [
+    { id: "study", label: "勉強する", icon: "lucide:book" },
+    { id: "workout", label: "運動する", icon: "lucide:dumbbell" },
+    { id: "clean", label: "掃除する", icon: "lucide-lab:broom" },
+    { id: "bath", label: "風呂入る", icon: "lucide-lab:bath-bubble" },
+  ];
 
   return (
     <div>
       <div className=" max-w-sm mx-auto mt-3 ">
-        <h1 className="text-[24px] flex items-center justify-center">
-          今、何をやりたい？
-        </h1>
-        <h2 className="text-[16px] flex items-center justify-center">
-          行動を選択してください
-        </h2>
+        <h1 className="text-[24px] text-center">今、何をやりたい？</h1>
+        <h2 className="text-[16px] text-center">行動を選択してください</h2>
       </div>
 
-      {/*4つ全てを縦横2列ずつ・中央寄せ */}
+      {/*4カード全てを縦横2列ずつ・中央寄せ */}
       <div className="grid grid-cols-2 gap-x-4 gap-y-4 px-6 mb-4 mt-3 max-w-sm mx-auto">
-        {/* 各カードやテキストの位置、サイズ */}
-        <div className="border border-gray-500 rounded-lg w-40 h-31.5 flex flex-col items-center justify-center text-lg  bg-gray-100 hover:bg-gray-200">
-          <Icon icon="lucide:book" width={70} height={70}></Icon>
-          勉強する
-        </div>
+        {/* actionListの配列をmapで回して4枚のカードを生成。
+    onClickでクリックされたカードのラベルをuseStateに保存。カードのCSSを表示。 */}
+        {actionList.map((item) => (
+          <div
+            key={item.id}
+            onClick={() => handleCardClick(item.label)} //3.カードと関数を繋げる
+            className="border border-gray-500 rounded-lg w-40 h-31.5 flex flex-col items-center justify-center text-lg  bg-gray-100 hover:bg-gray-200"
+          >
+            {/* アイコンの表示 */}
+            <Icon icon={item.icon} width={70} height={70} />
 
-        <div className="border border-gray-500 rounded-lg w-40 h-31.5 flex flex-col items-center justify-center bg-gray-100 hover:bg-gray-200">
-          <Icon icon="lucide:dumbbell" width={70} height={70}></Icon>
-          運動する
-        </div>
-
-        <div className="border border-gray-500 rounded-lg w-40 h-31.5 flex flex-col items-center justify-center  bg-gray-100 hover:bg-gray-200">
-          <Icon icon="lucide-lab:broom" width={70} height={70}></Icon>
-          掃除する
-        </div>
-        <div className="border border-gray-500 rounded-lg w-40 h-31.5 flex flex-col items-center justify-center bg-gray-100 hover:bg-gray-200">
-          <Icon icon="lucide-lab:bath-bubble" width={70} height={70}></Icon>
-          風呂入る
-        </div>
+            {/* ラベル（「勉強する」など）の表示 */}
+            <span>{item.label}</span>
+          </div>
+        ))}
       </div>
 
       <div className="border border-gray-500 rounded-lg w-40 h-31.5 mb-3 flex flex-col items-center justify-center mx-auto  bg-gray-100 hover:bg-gray-200">
