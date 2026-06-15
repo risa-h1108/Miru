@@ -7,7 +7,10 @@ export default function ActionChoice() {
   //1.labelでカードのどれかを受け取る、という関数
   const handleCardClick = (label: string) => {
     setSelectedAction(label); //2.stateに保存する
+    console.log("clicked", label);
   };
+
+  //const Button = ({ isActive }) => {};
 
   // 行動カードのデータ一覧(オブジェクトの配列にすることで、カードの追加・削除が配列の編集だけで済む)
   const actionList = [
@@ -32,7 +35,9 @@ export default function ActionChoice() {
           <div
             key={item.id}
             onClick={() => handleCardClick(item.label)} //3.カードと関数を繋げる
-            className="border border-gray-500 rounded-lg w-40 h-31.5 flex flex-col items-center justify-center text-lg  bg-gray-100 hover:bg-gray-200"
+            className={`border border-gray-500 rounded-lg w-40 h-31.5 flex flex-col items-center justify-center text-lg ${
+        //      isActive ? " bg-gray-100 hover:bg-gray-200" : "bg-gray-200"
+            }`}
           >
             {/* アイコンの表示 */}
             <Icon icon={item.icon} width={70} height={70} />
@@ -43,8 +48,12 @@ export default function ActionChoice() {
         ))}
       </div>
 
-      <div className="border border-gray-500 rounded-lg w-40 h-31.5 mb-3 flex flex-col items-center justify-center mx-auto  bg-gray-100 hover:bg-gray-200">
-        <Icon icon="lucide:ellipsis" width={70} height={70}></Icon>
+      {/* その他　の表示 */}
+      <div
+        onClick={() => handleCardClick("その他")}
+        className="border border-gray-500 rounded-lg w-40 h-31.5 mb-3 flex flex-col items-center justify-center mx-auto  bg-gray-100 hover:bg-gray-200"
+      >
+        <Icon icon="lucide:ellipsis" width={70} height={70} />
         その他
       </div>
 
