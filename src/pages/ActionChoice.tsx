@@ -10,8 +10,6 @@ export default function ActionChoice() {
     console.log("clicked", label);
   };
 
-  //const Button = ({ isActive }) => {};
-
   // 行動カードのデータ一覧(オブジェクトの配列にすることで、カードの追加・削除が配列の編集だけで済む)
   const actionList = [
     { id: "study", label: "勉強する", icon: "lucide:book" },
@@ -36,7 +34,10 @@ export default function ActionChoice() {
             key={item.id}
             onClick={() => handleCardClick(item.label)} //3.カードと関数を繋げる
             className={`border border-gray-500 rounded-lg w-40 h-31.5 flex flex-col items-center justify-center text-lg ${
-        //      isActive ? " bg-gray-100 hover:bg-gray-200" : "bg-gray-200"
+              //「このカードが選ばれているか」の判定式：「selectedActionに保存された値」と、「今mapが処理しているカードのラベル」が同じか確認。
+              selectedAction === item.label
+                ? "bg-gray-300" //一致の場合
+                : "bg-gray-100 hover:bg-gray-200" //不一致の場合
             }`}
           >
             {/* アイコンの表示 */}
