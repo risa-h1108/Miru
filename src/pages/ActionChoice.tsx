@@ -52,7 +52,11 @@ export default function ActionChoice() {
       {/* その他　の表示 */}
       <div
         onClick={() => handleCardClick("その他")}
-        className="border border-gray-500 rounded-lg w-40 h-31.5 mb-3 flex flex-col items-center justify-center mx-auto  bg-gray-100 hover:bg-gray-200"
+        className={`border border-gray-500 rounded-lg w-40 h-31.5 mb-3 flex flex-col items-center justify-center mx-auto  bg-gray-100 hover:bg-gray-200 ${
+          selectedAction === "その他"
+            ? "bg-gray-300" //一致の場合
+            : "bg-gray-100 hover:bg-gray-200" //不一致の場合
+        }`}
       >
         <Icon icon="lucide:ellipsis" width={70} height={70} />
         その他
@@ -67,12 +71,22 @@ export default function ActionChoice() {
       {/*横2列・中央寄せ */}
       <div className="grid grid-cols-2 gap-x-4 gap-y-4 px-6 mb-4 mt-3 max-w-sm mx-auto">
         {/* 選択可能なカード表示 */}
-        <div className="border border-gray-500 rounded-lg w-40 h-31.5 flex flex-col items-center justify-center bg-[#CBFFA9] hover:bg-[#b1ff7e]">
+        <div
+          onClick={() => {
+            console.log({ action: selectedAction, decision: true });
+          }}
+          className="border border-gray-500 rounded-lg w-40 h-31.5 flex flex-col items-center justify-center bg-[#CBFFA9] hover:bg-[#b1ff7e]"
+        >
           <Icon icon="lucide:check" width={70} height={70}></Icon>
           やる
         </div>
 
-        <div className="border border-gray-500 rounded-lg w-40 h-31.5 flex flex-col items-center justify-center bg-[#FF9B9B] hover:bg-[#fe7575]">
+        <div
+          onClick={() => {
+            console.log({ action: selectedAction, decision: false });
+          }}
+          className="border border-gray-500 rounded-lg w-40 h-31.5 flex flex-col items-center justify-center bg-[#FF9B9B] hover:bg-[#fe7575]"
+        >
           <Icon icon="lucide:x" width={70} height={70}></Icon>
           やらない
         </div>
