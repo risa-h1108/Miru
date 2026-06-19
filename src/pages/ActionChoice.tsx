@@ -1,3 +1,4 @@
+//行動選択画面
 import { Icon } from "@iconify/react";
 import { useState } from "react";
 
