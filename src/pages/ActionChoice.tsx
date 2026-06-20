@@ -1,5 +1,7 @@
+//行動選択画面
 import { Icon } from "@iconify/react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 //共通のCSS（カードの形やサイズ、カード内の位置）
 const cardBase =
@@ -89,7 +91,8 @@ export default function ActionChoice() {
       {/*やる・やらないボタン:横2列・中央寄せ */}
       <div className={gridBase}>
         {/* 「やる」ボタンの表示 */}
-        <div
+        <Link
+          to="/reason"
           onClick={() => handleDecision(true)}
           className={`${cardBase} ${
             selectedDecision === true
@@ -99,10 +102,11 @@ export default function ActionChoice() {
         >
           <Icon icon="lucide:check" width={70} height={70}></Icon>
           やる
-        </div>
+        </Link>
 
         {/* 「やらない」ボタンの表示 */}
-        <div
+        <Link
+          to="/reason"
           onClick={() => handleDecision(false)}
           className={`${cardBase} ${
             selectedDecision === false
@@ -112,7 +116,7 @@ export default function ActionChoice() {
         >
           <Icon icon="lucide:x" width={70} height={70}></Icon>
           やらない
-        </div>
+        </Link>
       </div>
     </div>
   );
