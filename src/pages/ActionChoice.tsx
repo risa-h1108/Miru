@@ -2,7 +2,7 @@
 import { Icon } from "@iconify/react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import type { Action } from "../types";
+import type { Cards } from "../types";
 
 //共通のCSS（カードの形やサイズ、カード内の位置）
 const cardBase =
@@ -14,7 +14,7 @@ const gridBase =
 
 // 行動カードのデータ一覧(オブジェクトの配列にすることで、カードの追加・削除が配列の編集だけで済む)
 // 毎回レンダリングされても変わらないデータのため、コンポーネントの外に置く
-const actionList: Action[] = [
+const actionList: Cards[] = [
   { id: "study", label: "勉強する", icon: "lucide:book" },
   { id: "workout", label: "運動する", icon: "lucide:dumbbell" },
   { id: "clean", label: "掃除する", icon: "lucide-lab:broom" },

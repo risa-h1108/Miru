@@ -1,12 +1,12 @@
-//行動選択画面で選ぶカードの型
-export type Action = { id: string; label: string; icon: string };
+//行動選択、理由選択画面にある選択肢カードの型
+export type Cards = { id: string; label: string; icon: string };
 
 //1連の「行動、理由、振り返り」の記録全体の型
 export type Decision = {
   id: string; //カードを1枚ずつ区別する為の番号
   actionName: string; //どの行動についての決定か（ex「勉強する」）
   decision: boolean; //「やる（true）」か「やらない（false）」かの記録
-  reason: string[]; //「なぜその行動を選んだか」の理由。複数選択のため[]を追加
+  reason: string[]; //「なぜその行動を選んだか」の理由ID（文字列の配列）。複数選択のため[]を追加
   result: Result; //Resultで定義した3択のみ記録できる
   memo: string; //自由記述欄
   //createdAt：データをやり取りする形式がJSONのsupabaseを利用するため、文字列として定義
