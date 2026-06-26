@@ -72,7 +72,8 @@ export default function ActionChoice() {
             <Icon icon={item.icon} width={70} height={70} />
 
             {/* ラベル（「勉強する」など）の表示 */}
-            {item.label}
+            {/* 「ラベルの部分」と明確にしておくため、spanタグを記載 */}
+            <span>{item.label}</span>
           </div>
         ))}
       </div>
