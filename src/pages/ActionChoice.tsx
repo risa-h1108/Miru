@@ -1,16 +1,18 @@
 //行動選択画面
+"use client";
+
 import { Icon } from "@iconify/react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import type { Cards } from "../types";
 
-//共通のCSS（カードの形やサイズ、カード内の位置）
-const cardBase =
-  "border border-gray-500 rounded-lg w-40 h-31.5 flex flex-col items-center justify-center text-lg";
-
 //画面上のカードの位置調整CSS
 const gridBase =
   "grid grid-cols-2 gap-x-4 gap-y-4 px-6 mb-4 mt-3 max-w-sm mx-auto";
+
+//共通のCSS（カードの形やサイズ、カード内の位置）
+const cardBase =
+  "border border-gray-500 rounded-lg w-40 h-31.5 flex flex-col items-center justify-center text-lg";
 
 // 行動カードのデータ一覧(オブジェクトの配列にすることで、カードの追加・削除が配列の編集だけで済む)
 // 毎回レンダリングされても変わらないデータのため、コンポーネントの外に置く

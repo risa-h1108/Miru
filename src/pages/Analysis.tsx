@@ -1,4 +1,5 @@
 //分析画面
+"use client";
 
 import { Link } from "react-router-dom";
 
