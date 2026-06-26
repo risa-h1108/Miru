@@ -13,7 +13,7 @@ const reasonGridBase = "grid gap-x-4 gap-y-4 px-6 mb-4 mt-3 max-w-sm mx-auto";
 //w-full:親要素の幅いっぱい広がる、pl:padding-leftの略（内側の余白-左、アイコンの左余白）
 //gap:子要素全部の間に隙間を作る(今回はアイコンとラベルしか子要素ないから、その間に隙間ができる)
 const reasonCardsBase =
-  "border border-gray-500 rounded-lg w-full h-12 flex items-center pl-3 gap-5 text-xl";
+  "border border-gray-500 rounded-lg w-full h-12 flex items-center pl-5 gap-6 text-xl";
 
 // 理由カードの選択肢一覧
 const reasonList: Cards[] = [
@@ -68,9 +68,9 @@ export default function ReasonChoice() {
             {/* アイコンの表示 */}
             <Icon icon={item.icon} width={40} height={40} />
 
-            {/* ラベル（「疲れている」など）の表示 残りのスペースを全部もらい、その中で中央寄せにする */}
-
-            <span className="flex items-center">{item.label}</span>
+            {/* ラベル（「疲れている」など）の表示*/}
+            {/* 「ラベルの部分」と明確にしておくため、spanタグを記載 */}
+            <span>{item.label}</span>
           </div>
         ))}
       </div>
