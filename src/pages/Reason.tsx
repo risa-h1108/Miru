@@ -2,7 +2,7 @@
 "use client";
 
 import { Link } from "react-router-dom";
-import type { Cards } from "../types";
+import type { Cards, Decision } from "../types";
 import { Icon } from "@iconify/react";
 import { useState } from "react";
 
@@ -16,7 +16,7 @@ const reasonCardsBase =
   "border border-gray-500 rounded-lg w-full h-12 flex items-center pl-5 gap-6 text-xl";
 
 // 理由カードの選択肢一覧
-const reasonList: Cards[] = [
+const reasonsList: Cards[] = [
   { id: "tired", label: "疲れている", icon: "lucide:bed" },
   { id: "hassle", label: "面倒くさい", icon: "lucide:annoyed" },
   { id: "worried", label: "不安がある", icon: "fluent:thinking-20-regular" },
@@ -30,20 +30,20 @@ const reasonList: Cards[] = [
   { id: "other", label: "その他", icon: "lucide:circle-ellipsis" },
 ];
 
-export default function ReasonChoice() {
+export default function ReasonsChoice() {
   // 選択中の理由を管理するstate
-  const [selectedReason, setSelectedReason] = useState<string | null>(null);
+  const [selectedReasons, setSelectedReasons] = useState<string[]>();
 
   // 理由選択カードをクリックした時の処理
   const handleCardClick = (label: string) => {
-    setSelectedReason(label); //stateに保存する
+    setSelectedReasons(label); //stateに保存する
     console.log("clicked", label);
   };
 
-  //「このカードが選ばれているか」の判定式：「selectedReasonに保存された”選択中のラベル”」と、「今mapが処理しているカードのラベル」が同じか確認。
+  //「このカードが選ばれているか」の判定式：「selectedReasonsに保存された”選択中のラベル”」と、「今mapが処理しているカードのラベル」が同じか確認。
   //※単一選択なので、複数選択に変える
   const getReasonCardsBg = (label: string) =>
-    selectedReason === label
+    selectedReasons === label
       ? "bg-blue-300" //一致(選択済み)の場合
       : "hover:bg-blue-200"; //不一致（未選択）の場合
 
@@ -59,7 +59,7 @@ export default function ReasonChoice() {
       {/* 理由選択カードの表示 */}
       <div className={reasonGridBase}>
         {/* map処理で7つのカードを生成 */}
-        {reasonList.map((item) => (
+        {reasonsList.map((item) => (
           <div
             key={item.id}
             onClick={() => handleCardClick(item.label)} //カードと関数を繋げる
