@@ -2,7 +2,7 @@
 "use client";
 
 import { Link } from "react-router-dom";
-import type { Cards, Decision } from "../types";
+import type { Cards } from "../types";
 import { Icon } from "@iconify/react";
 import { useState } from "react";
 
@@ -31,11 +31,12 @@ const reasonsList: Cards[] = [
 ];
 
 export default function ReasonsChoice() {
-  // 選択中の理由を管理するstate
-  const [selectedReasons, setSelectedReasons] = useState<string[]>();
+  // 選択中の理由ラベルを管理するstate
+  //useState<string[]>()：<型：string型が複数>（初期値：空の配列[]、配列は存在しているが中身は0個）
+  const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
 
-  // 理由選択カードをクリックした時の処理
-  const handleCardClick = (label: string) => {
+  // 理由選択カードをクリックした時の処理(複数選択OK)
+  const handleCardClick = (label: string[]) => {
     setSelectedReasons(label); //stateに保存する
     console.log("clicked", label);
   };
