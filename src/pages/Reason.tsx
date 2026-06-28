@@ -35,9 +35,22 @@ export default function ReasonsChoice() {
   //useState<string[]>()：<型：string型が複数>（初期値：空の配列[]、配列は存在しているが中身は0個）
   const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
 
-  // 理由選択カードをクリックした時の処理(複数選択OK)
-  const handleCardClick = (label: string[]) => {
-    setSelectedReasons(label); //stateに保存する
+  // 理由選択カードを「クリック＆削除」した時の処理(複数選択OK)
+  const handleCardsClick = (label: string) => {
+    setSelectedReasons(
+      (
+        prev, //prev:更新する前の「今の配列」の中身
+      ) =>
+        //[「今の配列」の中(=prev)]にlabelが[含まれているか(=includes)]を質問,true/falseのどちらかで回答
+        prev.includes(label)
+          ? //true(labelカードが既に選択されている)、既存と今クリックされたlabelが同じならそのlabelを「削除」する処理。
+            // 詳細：[今クリックされたlabel]と[既に配列に入っている選択済みのselected]を比較して、一致してない場合、[クリックされたlabel]と違うものだけ残す。
+            prev.filter((selected) => selected !== label)
+          : //false(labelカードが選択されていない)、今クリックされたlabelを「追加」して、新しい配列を作る処理。
+            //詳細： prevの中身を[全部そのまま残して(＝...)]、最後に[labelを1つ追加した(=,label)]、新しい配列を作る
+            // ex ["疲れている", "面倒くさい", label]
+            [...prev, label],
+    );
     console.log("clicked", label);
   };
 
@@ -63,7 +76,7 @@ export default function ReasonsChoice() {
         {reasonsList.map((item) => (
           <div
             key={item.id}
-            onClick={() => handleCardClick(item.label)} //カードと関数を繋げる
+            onClick={() => handleCardsClick(item.label)} //カードと関数を繋げる
             className={`${reasonCardsBase} ${getReasonCardsBg(item.label)}`}
           >
             {/* アイコンの表示 */}
