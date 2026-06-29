@@ -54,10 +54,10 @@ export default function ReasonsChoice() {
     console.log("clicked", label);
   };
 
-  //「このカードが選ばれているか」の判定式：「selectedReasonsに保存された”選択中のラベル”」と、「今mapが処理しているカードのラベル」が同じか確認。
-  //※単一選択なので、複数選択に変える
+  //「どのカードが選ばれているか」の判定式
   const getReasonCardsBg = (label: string) =>
-    selectedReasons === label
+    //selectedReasonsの配列内に今選択したlabelが入っているか(複数OK)判定。
+    selectedReasons.includes(label)
       ? "bg-blue-300" //一致(選択済み)の場合
       : "hover:bg-blue-200"; //不一致（未選択）の場合
 
