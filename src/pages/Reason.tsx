@@ -89,6 +89,23 @@ export default function ReasonsChoice() {
         ))}
       </div>
 
+      <div className=" max-w-sm mx-auto h-36 mt-8 rounded-lg border border-amber-300  bg-amber-100">
+        {/* px: padding-left + padding-right の略
+        justify-center:Flexboxの「主軸（基本は横方向）」に沿って中央寄せ
+        items-center:Flexboxの「交差軸（基本は縦方向）」に沿って中央寄せ */}
+        <h1 className="text-[20px]  mt-3 mb-3 px-4 flex items-center justify-center">
+          <Icon icon={"lucide:lightbulb"} width={25} height={25} />
+          ちょっとした気づき
+        </h1>
+        <h2 className="text-[16px] text-center px-5 ">
+          「疲れている」を理由にやらなかったときは、
+          <br />
+          後悔しやすい傾向があります。
+          <br />
+          5分だけやる、など小さく始めて見ませんか？
+        </h2>
+      </div>
+
       <Link to="/reflection" />
     </div>
   );
