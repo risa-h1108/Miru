@@ -50,7 +50,7 @@ export default function ReasonsChoice() {
             // ex ["疲れている", "面倒くさい", label]
             [...prev, label],
     );
-    console.log("clicked", label);
+    //  console.log("clicked", label);
   };
 
   //「どのカードが選ばれているか」の判定式
@@ -92,17 +92,17 @@ export default function ReasonsChoice() {
         {/* px: padding-left + padding-right の略
         justify-center:Flexboxの「主軸（基本は横方向）」に沿って中央寄せ
         items-center:Flexboxの「交差軸（基本は縦方向）」に沿って中央寄せ */}
-        <h1 className="text-[20px]  mt-3 mb-3 px-4 flex items-center justify-center">
+        <h2 className="text-[20px]  mt-3 mb-3 px-4 flex items-center justify-center">
           <Icon icon={"lucide:lightbulb"} width={25} height={25} />
           ちょっとした気づき
-        </h1>
-        <h2 className="text-[16px] text-center px-5 ">
+        </h2>
+        <p className="text-[16px] text-center px-5 ">
           「疲れている」を理由にやらなかったときは、
           <br />
           後悔しやすい傾向があります。
           <br />
           5分だけやる、など小さく始めて見ませんか？
-        </h2>
+        </p>
       </div>
 
       <Link
