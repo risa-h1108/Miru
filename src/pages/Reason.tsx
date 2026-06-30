@@ -89,7 +89,7 @@ export default function ReasonsChoice() {
         ))}
       </div>
 
-      <div className=" max-w-sm mx-auto h-36 mt-8 rounded-lg border border-amber-300  bg-amber-100">
+      <div className=" max-w-sm mx-auto h-36 mt-6 rounded-lg border border-amber-300  bg-amber-100">
         {/* px: padding-left + padding-right の略
         justify-center:Flexboxの「主軸（基本は横方向）」に沿って中央寄せ
         items-center:Flexboxの「交差軸（基本は縦方向）」に沿って中央寄せ */}
@@ -106,7 +106,14 @@ export default function ReasonsChoice() {
         </h2>
       </div>
 
-      <Link to="/reflection" />
+      <Link
+        to="/reflection"
+        className={
+          "border border-blue-400 bg-blue-400 text-white rounded-lg mt-6 max-w-sm mx-auto h-12 flex items-center justify-center text-2xl"
+        }
+      >
+        次へ
+      </Link>
     </div>
   );
 }
