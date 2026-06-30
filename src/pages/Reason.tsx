@@ -14,6 +14,14 @@ const reasonGridBase = "grid gap-x-4 gap-y-4 px-6 mb-4 mt-3 max-w-sm mx-auto";
 const reasonCardsBase =
   "border border-gray-500 rounded-lg w-full h-12 flex items-center pl-5 gap-6 text-xl";
 
+// 気づきボックスのCSS
+const tipBoxBase =
+  "max-w-sm mx-auto h-36 mt-6 rounded-lg border border-amber-300 bg-amber-100";
+
+// 次へ(確定)ボタンのCSS
+const submitButtonBase =
+  "border bg-blue-400 text-white rounded-lg mt-6 max-w-sm mx-auto h-12 flex items-center justify-center text-2xl";
+
 // 理由カードの選択肢一覧
 const reasonsList: Cards[] = [
   { id: "tired", label: "疲れている", icon: "lucide:bed" },
@@ -88,14 +96,15 @@ export default function ReasonsChoice() {
         ))}
       </div>
 
-      <div className=" max-w-sm mx-auto h-36 mt-6 rounded-lg border border-amber-300  bg-amber-100">
+      {/* 気づきボックス */}
+      <div className={tipBoxBase}>
         {/* px: padding-left + padding-right の略
         justify-center:Flexboxの「主軸（基本は横方向）」に沿って中央寄せ
         items-center:Flexboxの「交差軸（基本は縦方向）」に沿って中央寄せ */}
-        <h2 className="text-[20px]  mt-3 mb-3 px-4 flex items-center justify-center">
+        <h3 className="text-[20px]  mt-3 mb-3 px-4 flex items-center justify-center">
           <Icon icon={"lucide:lightbulb"} width={25} height={25} />
           ちょっとした気づき
-        </h2>
+        </h3>
         <p className="text-[16px] text-center px-5 ">
           「疲れている」を理由にやらなかったときは、
           <br />
@@ -105,12 +114,8 @@ export default function ReasonsChoice() {
         </p>
       </div>
 
-      <Link
-        to="/reflection"
-        className={
-          "border  bg-blue-400 text-white rounded-lg mt-6 max-w-sm mx-auto h-12 flex items-center justify-center text-2xl"
-        }
-      >
+      {/* 次へ行くボタン */}
+      <Link to="/reflection" className={submitButtonBase}>
         次へ
       </Link>
     </div>
