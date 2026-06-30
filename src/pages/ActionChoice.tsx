@@ -1,5 +1,4 @@
 //行動選択画面
-"use client";
 
 import { Icon } from "@iconify/react";
 import { useState } from "react";
@@ -25,6 +24,7 @@ const actionList: Cards[] = [
 
 export default function ActionChoice() {
   // 選択中の行動を管理するstate
+  //null：「ない」と、明確に記載した状態（意図的に「空」と指定）
   const [selectedAction, setSelectedAction] = useState<string | null>(null);
   // やる・やらないの選択を管理するstate
   const [selectedDecision, setSelectedDecision] = useState<boolean | null>(

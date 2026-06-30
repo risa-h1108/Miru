@@ -1,5 +1,4 @@
 //理由選択画面
-"use client";
 
 import { Link } from "react-router-dom";
 import type { Cards } from "../types";
@@ -109,7 +108,7 @@ export default function ReasonsChoice() {
       <Link
         to="/reflection"
         className={
-          "border border-blue-400 bg-blue-400 text-white rounded-lg mt-6 max-w-sm mx-auto h-12 flex items-center justify-center text-2xl"
+          "border  bg-blue-400 text-white rounded-lg mt-6 max-w-sm mx-auto h-12 flex items-center justify-center text-2xl"
         }
       >
         次へ

@@ -1,7 +1,5 @@
 //画面構成（どのURLでどの画面を出すか）を記載
 
-"use client";
-
 import "./App.css";
 import ActionChoice from "./pages/ActionChoice";
 import { Route, Routes } from "react-router-dom";

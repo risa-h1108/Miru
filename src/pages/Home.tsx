@@ -1,5 +1,4 @@
 //トップページ画面（アプリ紹介やログイン・ゲストログイン機能）
-"use client";
 
 import { Link } from "react-router-dom";
 
