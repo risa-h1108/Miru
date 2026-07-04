@@ -6,12 +6,12 @@ import { Icon } from "@iconify/react";
 import { useState } from "react";
 
 //画面上のカードの位置調整CSS
-const reasonGridBase = "grid gap-x-4 gap-y-4 px-6 mb-4 mt-3 max-w-sm mx-auto";
+const reasonsGridBase = "grid gap-x-4 gap-y-4 px-6 mb-4 mt-3 max-w-sm mx-auto";
 
 //共通のCSS（カードの形やサイズ、カード内の位置）
 //w-full:親要素の幅いっぱい広がる、pl:padding-leftの略（内側の余白-左、アイコンの左余白）
 //gap:子要素全部の間に隙間を作る(今回はアイコンとラベルしか子要素ないから、その間に隙間ができる)
-const reasonCardsBase =
+const reasonsCardsBase =
   "border border-gray-500 rounded-lg w-full h-12 flex items-center pl-5 gap-6 text-xl";
 
 // 気づきボックスのCSS
@@ -63,7 +63,7 @@ export default function ReasonsChoice() {
   };
 
   //「どのカードが選ばれているか」の判定式
-  const getReasonCardsBg = (label: string) =>
+  const getReasonsCardsBg = (label: string) =>
     //selectedReasonsの配列内に今選択したlabelが入っているか(複数OK)判定。
     selectedReasons.includes(label)
       ? "bg-blue-300" //一致(選択済み)の場合
@@ -79,13 +79,13 @@ export default function ReasonsChoice() {
       </div>
 
       {/* 理由選択カードの表示 */}
-      <div className={reasonGridBase}>
+      <div className={reasonsGridBase}>
         {/* map処理で7つのカードを生成 */}
         {reasonsList.map((item) => (
           <div
             key={item.id}
             onClick={() => handleCardsClick(item.label)} //カードと関数を繋げる
-            className={`${reasonCardsBase} ${getReasonCardsBg(item.label)}`}
+            className={`${reasonsCardsBase} ${getReasonsCardsBg(item.label)}`}
           >
             {/* アイコンの表示 */}
             <Icon icon={item.icon} width={40} height={40} />

@@ -13,7 +13,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/action" element={<ActionChoice />} />
-      <Route path="reason" element={<ReasonsChoice />} />
+      <Route path="reasons" element={<ReasonsChoice />} />
       <Route path="reflection" element={<Reflection />} />
       <Route path="analysis" element={<Analysis />} />
     </Routes>
