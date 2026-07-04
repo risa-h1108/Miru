@@ -96,7 +96,9 @@ export default function ActionChoice() {
       <div className={gridBase}>
         {/* 「やる」ボタンの表示 */}
         <Link
-          to="/reason"
+          to="/reasons"
+          //次のページに[行動選択カードとやる/やらない]の選択データを引き継ぐ
+          state={{ selectedAction, selectedDecision }}
           onClick={() => handleDecision(true)}
           className={`${cardBase} ${
             selectedDecision === true
@@ -110,7 +112,9 @@ export default function ActionChoice() {
 
         {/* 「やらない」ボタンの表示 */}
         <Link
-          to="/reason"
+          to="/reasons"
+          //次のページに[行動選択カードとやる/やらない]の選択データを引き継ぐ
+          state={{ selectedAction, selectedDecision }}
           onClick={() => handleDecision(false)}
           className={`${cardBase} ${
             selectedDecision === false
