@@ -97,8 +97,9 @@ export default function ActionChoice() {
         {/* 「やる」ボタンの表示 */}
         <Link
           to="/reasons"
-          //次のページに[行動選択カードとやる/やらない]の選択データを引き継ぐ
-          state={{ selectedAction, selectedDecision }}
+          //次のページに[行動選択カードとやる]のデータを引き継ぐ
+          //クリックの瞬間はまだ古い値の為、直接trueを記載。
+          state={{ selectedAction, selectedDecision: true }}
           onClick={() => handleDecision(true)}
           className={`${cardBase} ${
             selectedDecision === true
@@ -113,8 +114,9 @@ export default function ActionChoice() {
         {/* 「やらない」ボタンの表示 */}
         <Link
           to="/reasons"
-          //次のページに[行動選択カードとやる/やらない]の選択データを引き継ぐ
-          state={{ selectedAction, selectedDecision }}
+          //次のページに[行動選択カードとやらない]のデータを引き継ぐ
+          //クリックの瞬間はまだ古い値の為、直接falseを記載。
+          state={{ selectedAction, selectedDecision: false }}
           onClick={() => handleDecision(false)}
           className={`${cardBase} ${
             selectedDecision === false
