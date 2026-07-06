@@ -1,6 +1,6 @@
 //理由選択画面
 
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import type { Cards } from "../types";
 import { Icon } from "@iconify/react";
 import { useState } from "react";
@@ -38,6 +38,18 @@ const reasonsList: Cards[] = [
 ];
 
 export default function ReasonsChoice() {
+  //useLocation:「今の画面の情報を取得する」ための関数
+  //ActionChoice画面から渡ってきたstate={{ selectedAction, selectedDecision: true }}のデータが入っている
+  const location = useLocation();
+
+  //location.stateがundefinedの場合、エラーにならず、undefinedを返す書き方(?.)
+  //左側(location.state)が null or undefinedだったら、右側の値(""、空文字)を代わりに使う
+  const selectedAction = location.state?.selectedAction ?? "";
+
+  //左側(selectedDecision)が null or undefinedだったら、右側(nul)を代わりに使う
+  //selectedDecisionが[true/false/null]のどれかを取得する型のため、null(右側)を指定。
+  const selectedDecision = location.state?.selectedDecision ?? null;
+
   // 選択中の理由ラベルを管理するstate
   //useState<string[]>()：<型：string型が複数>（初期値：空の配列[]、配列は存在しているが中身は0個）
   const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
@@ -123,7 +135,7 @@ export default function ReasonsChoice() {
         //内側{}：{ selectedReasons: selectedReasons } を省略して { selectedReasons } と書いている
         // ex){selectedReasons: ["疲れている", "時間がない"](=selectedReasons)}
         //selectedReasons：現在選択中のカードのlabelが入った配列（クリックのたびにhandleCardsClickで[追加or削除]処理が更新される）
-        state={{ selectedReasons }}
+        state={{ selectedAction, selectedDecision, selectedReasons }}
         className={submitButtonBase}
       >
         次へ
