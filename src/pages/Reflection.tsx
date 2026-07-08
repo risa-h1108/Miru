@@ -5,9 +5,13 @@ export default function Reflection() {
   const location = useLocation();
   const selectedAction = location.state?.selectedAction ?? "";
   const selectedDecision = location.state?.selectedDecision ?? null;
+
   //:string[]：[location.state]の型をTSが推測できないため明示。
   //　?? []（空配列）とすることで、値がない場合も型がstring[]のまま保たれる
   const selectedReasons: string[] = location.state?.selectedReasons ?? [];
+
+  //[全ての選択が確定した瞬間(in ReasonsChoice画面)の時間]をReasonsChoice画面から取得
+  const recordedAt = location.state?.recordedAt ?? "";
 
   return (
     <div>
@@ -22,6 +26,7 @@ export default function Reflection() {
         <p>選択：{selectedDecision ? "やる" : "やらない"}</p>
         {/*.join(区切り文字)：配列の中身(selectedReasons)を指定した区切り文字(、)で繋げて、1本の文字列に変更する */}
         <p>理由：{selectedReasons.join("、")}</p>
+        <p>日時：{recordedAt}</p>
       </div>
 
       <Link to="/analysis" />
