@@ -1,6 +1,6 @@
 //理由選択画面
 
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import type { Cards } from "../types";
 import { Icon } from "@iconify/react";
 import { useState } from "react";
@@ -88,6 +88,7 @@ export default function ReasonsChoice() {
     //クリックされた瞬間の日本での日時(.toLocaleString("ja-JP"))を作成
     const recordedAt = new Date().toLocaleString("ja-JP");
     //navigate(遷移先, {state:{次のページに渡すデータ}})
+    //selectedReasons：現在選択中のカードのlabelが入った配列（クリックのたびにhandleCardsClickで[追加or削除]処理が更新される）
     navigate("/reflection", {
       state: { selectedAction, selectedDecision, selectedReasons, recordedAt },
     });
@@ -140,18 +141,9 @@ export default function ReasonsChoice() {
       </div>
 
       {/* 次へ行くボタン */}
-      <Link
-        to="/reflection"
-        //state:次のページに渡したいデータを入れる(,React Router側で定義された)名称
-        //外側{}：JSXの中でJSとして認識させるために必要（変数selectedReasonsを都度参照するため）
-        //内側{}：{ selectedReasons: selectedReasons } を省略して { selectedReasons } と書いている
-        // ex){selectedReasons: ["疲れている", "時間がない"](=selectedReasons)}
-        //selectedReasons：現在選択中のカードのlabelが入った配列（クリックのたびにhandleCardsClickで[追加or削除]処理が更新される）
-        state={{ selectedAction, selectedDecision, selectedReasons }}
-        className={submitButtonBase}
-      >
+      <button onClick={handleSubmit} className={submitButtonBase}>
         次へ
-      </Link>
+      </button>
     </div>
   );
 }
