@@ -1,6 +1,6 @@
 //理由選択画面
 
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import type { Cards } from "../types";
 import { Icon } from "@iconify/react";
 import { useState } from "react";
@@ -54,6 +54,8 @@ export default function ReasonsChoice() {
   //useState<string[]>()：<型：string型が複数>（初期値：空の配列[]、配列は存在しているが中身は0個）
   const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
 
+  const navigate = useNavigate();
+
   // 理由選択カードを「クリック＆削除」した時の処理(複数選択OK)
   const handleCardsClick = (label: string) => {
     //handleCardsClickが呼ばれるたびにsetSelectedReasonsで中の配列が更新される
@@ -80,6 +82,16 @@ export default function ReasonsChoice() {
     selectedReasons.includes(label)
       ? "bg-blue-300" //一致(選択済み)の場合
       : "hover:bg-blue-200"; //不一致（未選択）の場合
+
+  //「次へ」ボタンが押された時に実行する関数処理
+  const handleSubmit = () => {
+    //クリックされた瞬間の日本での日時(.toLocaleString("ja-JP"))を作成
+    const recordedAt = new Date().toLocaleString("ja-JP");
+    //navigate(遷移先, {state:{次のページに渡すデータ}})
+    navigate("/reflection", {
+      state: { selectedAction, selectedDecision, selectedReasons, recordedAt },
+    });
+  };
 
   return (
     <div>
