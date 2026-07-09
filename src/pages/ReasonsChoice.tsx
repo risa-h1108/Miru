@@ -86,7 +86,14 @@ export default function ReasonsChoice() {
   //「次へ」ボタンが押された時に実行する関数処理
   const handleSubmit = () => {
     //クリックされた瞬間の日本での日時(.toLocaleString("ja-JP"))を作成
-    const recordedAt = new Date().toLocaleString("ja-JP");
+    const recordedAt = new Date().toLocaleString("ja-JP", {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      weekday: "short", //日本語ロケール(ja-JP)の仕様として、ブラウザが自動的に曜日にカッコが付く
+      hour: "numeric",
+      minute: "2-digit",
+    });
     //navigate(遷移先, {state:{次のページに渡すデータ}})
     //selectedReasons：現在選択中のカードのlabelが入った配列（クリックのたびにhandleCardsClickで[追加or削除]処理が更新される）
     navigate("/reflection", {
