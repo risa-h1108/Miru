@@ -73,7 +73,6 @@ export default function ReasonsChoice() {
             // ex ["疲れている", "面倒くさい", label]
             [...prev, label],
     );
-    //  console.log("clicked", label);
   };
 
   //「どのカードが選ばれているか」の判定式

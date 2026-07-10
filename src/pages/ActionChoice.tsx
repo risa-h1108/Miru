@@ -37,7 +37,6 @@ export default function ActionChoice() {
   //1.labelでカードのどれかを受け取る、という関数
   const handleCardClick = (label: string) => {
     setSelectedAction(label); //2.stateに保存する
-    //   console.log("clicked", label);
   };
 
   //「やる・やらない」のどちらかをクリックした時の処理
@@ -49,7 +48,6 @@ export default function ActionChoice() {
       //state変数の代わりに確実に最新の値を持っている、引数decision(decision: boolean)を直接使う
       state: { selectedAction, selectedDecision: decision },
     });
-    console.log({ action: selectedAction, decision });
   };
 
   //「このカードが選ばれているか」の判定式：「selectedActionに保存された”選択中のラベル”」と、「今mapが処理しているカードのラベル」が同じか確認。
