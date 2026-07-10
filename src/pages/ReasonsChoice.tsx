@@ -9,18 +9,18 @@ import { useState } from "react";
 const reasonsGridBase = "grid gap-x-4 gap-y-4 px-6 mb-4 mt-3 max-w-sm mx-auto";
 
 //共通のCSS（カードの形やサイズ、カード内の位置）
-//w-full:親要素の幅いっぱい広がる、pl:padding-leftの略（内側の余白-左、アイコンの左余白）
+//pl:padding-leftの略（内側の余白-左、アイコンの左余白）
 //gap:子要素全部の間に隙間を作る(今回はアイコンとラベルしか子要素ないから、その間に隙間ができる)
 const reasonsCardsBase =
   "border border-gray-500 rounded-lg w-full h-12 flex items-center pl-5 gap-6 text-xl";
 
 // 気づきボックスのCSS
 const tipBoxBase =
-  "max-w-sm mx-auto h-36 mt-6 rounded-lg border border-amber-300 bg-amber-100";
+  "w-full max-w-sm mx-auto h-36 mt-6 rounded-lg border border-amber-300 bg-amber-100";
 
 // 次へ(確定)ボタンのCSS
 const submitButtonBase =
-  "border bg-blue-400 text-white rounded-lg mt-6 max-w-sm mx-auto h-12 flex items-center justify-center text-2xl";
+  "border bg-blue-400 text-white rounded-lg mt-6 w-full max-w-sm mx-auto h-12 flex items-center justify-center text-2xl";
 
 // 理由カードの選択肢一覧
 const reasonsList: Cards[] = [
