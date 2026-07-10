@@ -2,7 +2,7 @@
 
 import { Icon } from "@iconify/react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import type { Cards } from "../types";
 
 //画面上のカードの位置調整CSS
@@ -31,6 +31,8 @@ export default function ActionChoice() {
     null,
   );
 
+  const navigate = useNavigate();
+
   // 行動カードをクリックした時の処理
   //1.labelでカードのどれかを受け取る、という関数
   const handleCardClick = (label: string) => {
@@ -38,10 +40,15 @@ export default function ActionChoice() {
     //   console.log("clicked", label);
   };
 
-  //やる・やらないのどちらかをクリックした時の処理
+  //「やる・やらない」のどちらかをクリックした時の処理
   //選択したActionカードと真偽（やる・やらない）をlogで出力
   const handleDecision = (decision: boolean) => {
-    setSelectedDecision(decision);
+    setSelectedDecision(decision); //ボタンの色を変えるためだけにstate更新
+    navigate("/reasons", {
+      //state更新は次のレンダリング時の為、現状反映されていない。
+      //state変数の代わりに確実に最新の値を持っている、引数decision(decision: boolean)を直接使う
+      state: { selectedAction, selectedDecision: decision },
+    });
     console.log({ action: selectedAction, decision });
   };
 
@@ -95,11 +102,7 @@ export default function ActionChoice() {
       {/*やる・やらないボタン:横2列・中央寄せ */}
       <div className={gridBase}>
         {/* 「やる」ボタンの表示 */}
-        <Link
-          to="/reasons"
-          //次のページに[行動選択カードとやる]のデータを引き継ぐ
-          //クリックの瞬間はまだ古い値の為、直接trueを記載。
-          state={{ selectedAction, selectedDecision: true }}
+        <button
           onClick={() => handleDecision(true)}
           className={`${cardBase} ${
             selectedDecision === true
@@ -109,14 +112,10 @@ export default function ActionChoice() {
         >
           <Icon icon="lucide:check" width={70} height={70}></Icon>
           やる
-        </Link>
+        </button>
 
         {/* 「やらない」ボタンの表示 */}
-        <Link
-          to="/reasons"
-          //次のページに[行動選択カードとやらない]のデータを引き継ぐ
-          //クリックの瞬間はまだ古い値の為、直接falseを記載。
-          state={{ selectedAction, selectedDecision: false }}
+        <button
           onClick={() => handleDecision(false)}
           className={`${cardBase} ${
             selectedDecision === false
@@ -126,7 +125,7 @@ export default function ActionChoice() {
         >
           <Icon icon="lucide:x" width={70} height={70}></Icon>
           やらない
-        </Link>
+        </button>
       </div>
     </div>
   );
