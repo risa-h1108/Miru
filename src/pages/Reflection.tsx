@@ -24,6 +24,7 @@ export default function Reflection() {
         <h2 className="text-[16px] text-center">結果を記録しましょう</h2>
       </div>
 
+      {/* 前のページで記録した内容を表示する部分 */}
       <div className={recordBase}>
         <p>行動：{selectedAction}</p>
         {/*[true/false]で表示されるのを日本語の文字列に変換してから表示する */}
@@ -36,6 +37,13 @@ export default function Reflection() {
           <span>{selectedReasons.join("、")}</span>
         </div>
         <p>日時：{recordedAt}</p>
+      </div>
+
+      {/* 記録した内容を評価する部分 */}
+      <div>
+        <div className=" max-w-sm mx-auto mt-8">
+          <p className="text-[20px] pl-3">結果はどうでしたか？</p>
+        </div>
       </div>
 
       <Link to="/analysis" />
