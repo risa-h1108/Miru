@@ -6,7 +6,7 @@ import { Icon } from "@iconify/react";
 import { useState } from "react";
 
 //画面上のカードの位置調整CSS
-const reasonsGridBase = "grid gap-x-4 gap-y-4 px-6 mb-4 mt-3 max-w-sm mx-auto";
+const reasonsGridBase = "grid gap-4 px-6 mb-4 mt-3 max-w-sm mx-auto";
 
 //共通のCSS（カードの形やサイズ、カード内の位置）
 //pl:padding-leftの略（内側の余白-左、アイコンの左余白）
