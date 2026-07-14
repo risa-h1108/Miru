@@ -14,10 +14,10 @@ export type Decision = {
 };
 
 //result専用の型定義、「良かった/普通/後悔」の3択から選択できるリスト
-type Result = "good" | "neutral" | "regret";
+export type Result = "good" | "neutral" | "regret";
 
 //「良かった/普通/後悔」の3択ボタンを表示させるために必要なデータの型
-type ResultButton = {
+export type ResultButton = {
   id: Result; //既存のResult型を利用
   label: string;
   icon: string;

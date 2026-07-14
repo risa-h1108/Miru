@@ -1,9 +1,42 @@
 //振り返り画面
+import { Icon } from "@iconify/react";
 import { Link, useLocation } from "react-router-dom";
+import type { ResultButton } from "../types";
 
 //記録内容ボックスのCSS
 const recordBase =
   "w-full max-w-sm mx-auto border border-gray-400 rounded-lg mt-6 p-5 text-xl space-y-1";
+
+//画面上の3ボタンの位置調整CSS
+const gridBase = "max-w-sm mx-auto grid grid-cols-3 gap-4 px-6 mb-4 mt-3 ";
+
+//共通のCSS（カードの形やサイズ、カード内の位置）
+const cardBase =
+  "border rounded-lg w-25 h-31.5 flex flex-col items-center justify-center text-lg";
+
+const resultList: ResultButton[] = [
+  {
+    id: "good",
+    label: "やってよかった",
+    icon: "lucide:smile",
+    bgBase: "bg-green-100 hover:bg-green-200",
+    bgSelected: "bg-green-300",
+  },
+  {
+    id: "neutral",
+    label: "どちらでもない",
+    icon: "lucide:annoyed",
+    bgBase: "bg-amber-100 hover:bg-amber-200",
+    bgSelected: "bg-amber-300",
+  },
+  {
+    id: "regret",
+    label: "やらなくて後悔",
+    icon: "lucide:frown",
+    bgBase: "bg-red-100 hover:bg-red-200",
+    bgSelected: "bg-red-300",
+  },
+];
 
 export default function Reflection() {
   const location = useLocation();
@@ -43,6 +76,24 @@ export default function Reflection() {
       <div>
         <div className=" max-w-sm mx-auto mt-8">
           <p className="text-[20px] pl-3">結果はどうでしたか？</p>
+        </div>
+
+        {/*4カード全てを縦横2列ずつ・中央寄せ */}
+        <div className={gridBase}>
+          {/* actionListの配列をmapで回して4枚のカードを生成。
+    onClickでクリックされたカードのラベルをuseStateに保存。カードのCSSを表示。 */}
+          <button
+            key={item.id}
+            onClick={() => handleCardClick(item.label)} //3.カードと関数を繋げる
+            className={`${cardBase} ${item.label}`}
+          >
+            {/* アイコンの表示 */}
+            <Icon icon={item.icon} width={70} height={70} />
+
+            {/* ラベル（「勉強する」など）の表示 */}
+            {/* 「ラベルの部分」と明確にしておくため、spanタグを記載 */}
+            <span>{item.label}</span>
+          </button>
         </div>
       </div>
 
