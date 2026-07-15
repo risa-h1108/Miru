@@ -1,7 +1,8 @@
 //振り返り画面
 import { Icon } from "@iconify/react";
 import { Link, useLocation } from "react-router-dom";
-import type { ResultButton } from "../types";
+import type { Result, ResultButton } from "../types";
+import { useState } from "react";
 
 //記録内容ボックスのCSS
 const recordBase =
@@ -14,6 +15,7 @@ const gridBase = "max-w-sm mx-auto grid grid-cols-3 gap-4 px-6 mb-4 mt-3 ";
 const cardBase =
   "border rounded-lg w-25 h-31.5 flex flex-col items-center justify-center text-lg";
 
+//結果の「良かった/普通/後悔」の3択ボタンのデータ一覧
 const resultList: ResultButton[] = [
   {
     id: "good",
@@ -39,6 +41,7 @@ const resultList: ResultButton[] = [
 ];
 
 export default function Reflection() {
+  //以下のlocation.state?.~は各データを前ページから取得する機能
   const location = useLocation();
   const selectedAction = location.state?.selectedAction ?? "";
   const selectedDecision = location.state?.selectedDecision ?? null;
@@ -49,6 +52,14 @@ export default function Reflection() {
 
   //[全ての選択が確定した瞬間(in ReasonsChoice画面)の時間]をReasonsChoice画面から取得
   const recordedAt = location.state?.recordedAt ?? "";
+
+  //選択中の結果(3ボタン、[良かった,普通,後悔,null])を管理するstate
+  const [selectedResult, setSelectedResult] = useState<Result | null>(null);
+
+  //選択中のボタンならそれぞれの選択色(bgSelected指定色)、未選択時は通常色(bgBase指定色)を返す
+  const getResultBg = (item: ResultButton) => {
+    selectedResult === item.id ? item.bgSelected : item.bgBase;
+  };
 
   return (
     <div>
