@@ -56,7 +56,9 @@ export default function Reflection() {
   //選択中の結果(3ボタン、[良かった,普通,後悔,null])を管理するstate
   const [selectedResult, setSelectedResult] = useState<Result | null>(null);
 
-  //選択中のボタンならそれぞれの選択色(bgSelected指定色)、未選択時は通常色(bgBase指定色)を返す
+  //選択中の結果ボタンがボタンのid("good"など)と一致している場合、それぞれの選択色(bgSelected指定色)を表示する。
+  //一致していない場合、未選択時の通常色(bgBase指定色)を表示する。
+  //itemにはresultListがmap処理した1つ分のデータが渡される。
   const getResultBg = (item: ResultButton) => {
     selectedResult === item.id ? item.bgSelected : item.bgBase;
   };
@@ -89,22 +91,22 @@ export default function Reflection() {
           <p className="text-[20px] pl-3">結果はどうでしたか？</p>
         </div>
 
-        {/*4カード全てを縦横2列ずつ・中央寄せ */}
+        {/*カード全てを横1列に中央寄せ*/}
         <div className={gridBase}>
-          {/* actionListの配列をmapで回して4枚のカードを生成。
-    onClickでクリックされたカードのラベルをuseStateに保存。カードのCSSを表示。 */}
-          <button
-            key={item.id}
-            onClick={() => handleCardClick(item.label)} //3.カードと関数を繋げる
-            className={`${cardBase} ${item.label}`}
-          >
-            {/* アイコンの表示 */}
-            <Icon icon={item.icon} width={70} height={70} />
+          {resultList.map((item) => (
+            <div
+              key={item.id}
+              onClick={() => setSelectedResult(item.id)}
+              className={`${cardBase} ${getResultBg(item)}`}
+            >
+              {/* アイコンの表示 */}
+              <Icon icon={item.icon} width={50} height={50} />
 
-            {/* ラベル（「勉強する」など）の表示 */}
-            {/* 「ラベルの部分」と明確にしておくため、spanタグを記載 */}
-            <span>{item.label}</span>
-          </button>
+              {/* ラベル（「勉強する」など）の表示 */}
+              {/* 「ラベルの部分」と明確にしておくため、spanタグを記載 */}
+              <span>{item.label}</span>
+            </div>
+          ))}
         </div>
       </div>
 
