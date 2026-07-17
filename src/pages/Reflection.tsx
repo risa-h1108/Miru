@@ -6,14 +6,14 @@ import { useState } from "react";
 
 //記録内容ボックスのCSS
 const recordBase =
-  "w-full max-w-sm mx-auto border border-gray-400 rounded-lg mt-6 p-5 text-xl space-y-1";
+  "w-full max-w-sm mx-auto border border-gray-400 rounded-lg mt-6 p-4 text-xl space-y-1";
 
 //画面上の3ボタンの位置調整CSS
-const gridBase = "max-w-sm mx-auto grid grid-cols-3 gap-4 px-6 mb-4 mt-3 ";
+const gridBase = "max-w-sm mx-auto grid grid-cols-3 gap-4 px-3 mb-4 mt-4 ";
 
-//共通のCSS（カードの形やサイズ、カード内の位置）
-const cardBase =
-  "border rounded-lg w-25 h-31.5 flex flex-col items-center justify-center text-lg";
+//共通のCSS（カード型ボタンの形やサイズ、カード型ボタン内の配置）
+const buttonCardsBase =
+  "border rounded-lg w-28 h-36 flex flex-col items-center justify-center text-lg";
 
 //結果の「良かった/普通/後悔」の3択ボタンのデータ一覧
 const resultList: ResultButton[] = [
@@ -59,9 +59,8 @@ export default function Reflection() {
   //選択中の結果ボタンがボタンのid("good"など)と一致している場合、それぞれの選択色(bgSelected指定色)を表示する。
   //一致していない場合、未選択時の通常色(bgBase指定色)を表示する。
   //itemにはresultListがmap処理した1つ分のデータが渡される。
-  const getResultBg = (item: ResultButton) => {
+  const getResultBg = (item: ResultButton) =>
     selectedResult === item.id ? item.bgSelected : item.bgBase;
-  };
 
   return (
     <div>
@@ -97,7 +96,7 @@ export default function Reflection() {
             <div
               key={item.id}
               onClick={() => setSelectedResult(item.id)}
-              className={`${cardBase} ${getResultBg(item)}`}
+              className={`${buttonCardsBase} ${getResultBg(item)}`}
             >
               {/* アイコンの表示 */}
               <Icon icon={item.icon} width={50} height={50} />
