@@ -23,6 +23,9 @@ const resultList: ResultButton[] = [
     icon: "lucide:smile",
     bgBase: "bg-green-100 hover:bg-green-200",
     bgSelected: "bg-green-300",
+    borderColor: "border-green-400",
+    //SVGアイコンの色はSVGが「テキストカラーを継承する」設定になっていることが多いため、text-で指定する
+    iconColor: "text-green-500",
   },
   {
     id: "neutral",
@@ -30,6 +33,8 @@ const resultList: ResultButton[] = [
     icon: "lucide:annoyed",
     bgBase: "bg-amber-100 hover:bg-amber-200",
     bgSelected: "bg-amber-300",
+    borderColor: "border-amber-400",
+    iconColor: "text-amber-500",
   },
   {
     id: "regret",
@@ -37,6 +42,8 @@ const resultList: ResultButton[] = [
     icon: "lucide:frown",
     bgBase: "bg-red-100 hover:bg-red-200",
     bgSelected: "bg-red-300",
+    borderColor: "border-red-400",
+    iconColor: "text-red-500",
   },
 ];
 
@@ -96,10 +103,15 @@ export default function Reflection() {
             <div
               key={item.id}
               onClick={() => setSelectedResult(item.id)}
-              className={`${buttonCardsBase} ${getResultBg(item)}`}
+              className={`${buttonCardsBase} ${getResultBg(item)} ${item.borderColor}`}
             >
               {/* アイコンの表示 */}
-              <Icon icon={item.icon} width={50} height={50} />
+              <Icon
+                icon={item.icon}
+                width={50}
+                height={50}
+                className={`${item.iconColor} mb-2`}
+              />
 
               {/* ラベル（「勉強する」など）の表示 */}
               {/* 「ラベルの部分」と明確にしておくため、spanタグを記載 */}
