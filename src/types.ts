@@ -21,6 +21,8 @@ export type ResultButton = {
   id: Result; //既存のResult型を利用
   label: string;
   icon: string;
-  bgBase: string; // 未選択時の背景色
-  bgSelected: string; // 選択時の背景色
+  bgBase: string; //未選択時の背景色
+  bgSelected: string; //選択時の背景色
+  borderColor: string; //枠線の色
+  iconColor: string; //アイコンの色
 };
