@@ -9,7 +9,7 @@ const recordBase =
   "w-full max-w-sm mx-auto border border-gray-400 rounded-lg mt-6 p-4 text-xl space-y-1";
 
 //画面上の3ボタンの位置調整CSS
-const gridBase = "max-w-sm mx-auto grid grid-cols-3 gap-4 px-3 mb-4 mt-4 ";
+const gridBase = "max-w-sm mx-auto grid grid-cols-3 gap-5 px-2 mb-4 mt-4 ";
 
 //共通のCSS（カード型ボタンの形やサイズ、カード型ボタン内の配置）
 const buttonCardsBase =
@@ -47,6 +47,10 @@ const resultList: ResultButton[] = [
   },
 ];
 
+//メモのCSS
+const memoBase =
+  "w-full max-w-sm mx-auto h-36 rounded-lg border border-gray-300 ";
+
 export default function Reflection() {
   //以下のlocation.state?.~は各データを前ページから取得する機能
   const location = useLocation();
@@ -76,7 +80,7 @@ export default function Reflection() {
         <h2 className="text-[16px] text-center">結果を記録しましょう</h2>
       </div>
 
-      {/* 前のページで記録した内容を表示する部分 */}
+      {/*前のページで記録した内容を表示する部分*/}
       <div className={recordBase}>
         <p>行動：{selectedAction}</p>
         {/*[true/false]で表示されるのを日本語の文字列に変換してから表示する */}
@@ -91,10 +95,10 @@ export default function Reflection() {
         <p>日時：{recordedAt}</p>
       </div>
 
-      {/* 記録した内容を評価する部分 */}
+      {/*記録した内容を評価する部分*/}
       <div>
         <div className=" max-w-sm mx-auto mt-8">
-          <p className="text-[20px] pl-3">結果はどうでしたか？</p>
+          <p className="text-[20px] pl-1">結果はどうでしたか？</p>
         </div>
 
         {/*カード全てを横1列に中央寄せ*/}
@@ -105,7 +109,7 @@ export default function Reflection() {
               onClick={() => setSelectedResult(item.id)}
               className={`${buttonCardsBase} ${getResultBg(item)} ${item.borderColor}`}
             >
-              {/* アイコンの表示 */}
+              {/*アイコンの表示*/}
               <Icon
                 icon={item.icon}
                 width={50}
@@ -113,11 +117,20 @@ export default function Reflection() {
                 className={`${item.iconColor} mb-2`}
               />
 
-              {/* ラベル（「勉強する」など）の表示 */}
-              {/* 「ラベルの部分」と明確にしておくため、spanタグを記載 */}
+              {/*ラベル（「勉強する」など）の表示*/}
+              {/*「ラベルの部分」と明確にしておくため、spanタグを記載*/}
               <span>{item.label}</span>
             </div>
           ))}
+        </div>
+
+        {/*メモ欄*/}
+        <h3 className="text-[16px] mb-3 px-2  max-w-sm mx-auto">
+          メモ（任意）
+        </h3>
+
+        <div className={memoBase}>
+          <p className="text-[16px] text-center pl-3 "></p>
         </div>
       </div>
 
