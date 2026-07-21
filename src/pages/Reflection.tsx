@@ -49,7 +49,7 @@ const resultList: ResultButton[] = [
 
 //メモのCSS
 const memoBase =
-  "w-full max-w-sm mx-auto h-36 rounded-lg border border-gray-300 ";
+  "w-full max-w-sm mx-auto h-36 rounded-lg border border-gray-300 flex justify-center";
 
 export default function Reflection() {
   //以下のlocation.state?.~は各データを前ページから取得する機能
@@ -72,6 +72,9 @@ export default function Reflection() {
   //itemにはresultListがmap処理した1つ分のデータが渡される。
   const getResultBg = (item: ResultButton) =>
     selectedResult === item.id ? item.bgSelected : item.bgBase;
+
+  //入力中のメモを管理するstate
+  const [memo, setMemo] = useState("");
 
   return (
     <div>
@@ -129,9 +132,19 @@ export default function Reflection() {
           メモ（任意）
         </h3>
 
-        <div className={memoBase}>
-          <p className="text-[16px] text-center pl-3 "></p>
-        </div>
+        {/*メモ欄のテキストエリア*/}
+        <textarea
+          //value：メモ欄が今保持している文字列の値
+          value={memo}
+          //onChange：メモ欄の中身が変わったときに実行される処理
+          //｛｝の中身：ユーザーがテキストを入力する度に、その最新の文字列(e.target.value)をsetMemoでstate更新する処理
+          //e：入力内容の情報が入ったオブジェクト
+          //e.target：イベントが発生したtextareaのこと
+          //e.target.value：そのtextareaに、今実際に入力されている文字列
+          onChange={(e) => setMemo(e.target.value)}
+          placeholder="気づいたことをメモできます"
+          className={`${memoBase} p-3 text-[16px]`}
+        />
       </div>
 
       <Link to="/analysis" />
