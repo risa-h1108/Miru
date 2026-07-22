@@ -51,6 +51,10 @@ const resultList: ResultButton[] = [
 const memoBase =
   "w-full max-w-sm mx-auto h-36 rounded-lg border border-gray-300 flex justify-center";
 
+//保存ボタンのCSS
+const saveButtonBase =
+  "border bg-blue-400 text-white rounded-lg mt-6 w-full max-w-sm mx-auto h-12 flex items-center justify-center text-2xl";
+
 export default function Reflection() {
   //以下のlocation.state?.~は各データを前ページから取得する機能
   const location = useLocation();
@@ -75,6 +79,19 @@ export default function Reflection() {
 
   //入力中のメモを管理するstate
   const [memo, setMemo] = useState("");
+
+  //「保存する」ボタンが押された時の処理
+  const saveDecision = () => {
+    //1件分の記録データをまとめる
+    const record = {
+      selectedAction,
+      selectedDecision,
+      selectedReasons,
+      recordedAt,
+      selectedResult,
+      memo,
+    };
+  };
 
   return (
     <div>
@@ -146,6 +163,11 @@ export default function Reflection() {
           className={`${memoBase} p-3 text-[16px]`}
         />
       </div>
+
+      {/*保存ボタン*/}
+      <button onClick={saveDecision} className={saveButtonBase}>
+        保存する
+      </button>
 
       <Link to="/analysis" />
     </div>
