@@ -26,3 +26,13 @@ export type ResultButton = {
   borderColor: string; //枠線の色
   iconColor: string; //アイコンの色
 };
+
+//1件分の選択後の記録データの型
+export type SaveRecord = {
+  selectedAction: string;
+  selectedDecision: boolean | null;
+  selectedReasons: string[];
+  recordedAt: string; //記録が作成された日時（ISO文字列）
+  selectedResult: Result | null;
+  memo: string;
+};
