@@ -1,7 +1,7 @@
 //振り返り画面
 import { Icon } from "@iconify/react";
-import { Link, useLocation } from "react-router-dom";
-import type { Result, ResultButton } from "../types";
+import { Link, navigate, useLocation } from "react-router-dom";
+import type { Result, ResultButton, SaveRecord } from "../types";
 import { useState } from "react";
 
 //記録内容ボックスのCSS
@@ -82,8 +82,8 @@ export default function Reflection() {
 
   //「保存する」ボタンが押された時の処理
   const saveDecision = () => {
-    //1件分の記録データをまとめる
-    const record = {
+    //1件分の記録データ(前画面から受け取ったもの＋この画面で入力したselectedResultとmemo)をまとめる
+    const record: SaveRecord = {
       selectedAction,
       selectedDecision,
       selectedReasons,
@@ -91,6 +91,21 @@ export default function Reflection() {
       selectedResult,
       memo,
     };
+
+    //localStorageにすでに保存されている記録一覧(records)を取得（データがなければ空配列[]を返す）
+    //JSON.parse()：文字列になっているJSONデータを、実際のJavaScriptの配列やオブジェクトに戻す
+    //localStorage.getItem("records"):recordsという名前で保存されているデータを取り出す
+    const existingRecords: SaveRecord[] = JSON.parse(
+      localStorage.getItem("records") ?? "[]",
+    );
+
+    //今回の記録(record)を[既存の配列の中身(他の記録データ)]の末尾に追加して、再度保存する
+    const updatedRecords = [...existingRecords, record];
+    //localStorage.setItem("records", ...)：updatedRecords(配列)を、[localStorageに保存できる文字列に変換した結果]を、recordsという名前で保存する
+    //JSON.stringify()：JavaScriptの配列やオブジェクトを、localStorageに保存できる文字列に変換
+    localStorage.setItem("records", JSON.stringify(updatedRecords));
+
+    navigate("/action");
   };
 
   return (
