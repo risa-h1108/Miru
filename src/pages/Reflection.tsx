@@ -1,6 +1,6 @@
 //振り返り画面
 import { Icon } from "@iconify/react";
-import { Link, navigate, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import type { Result, ResultButton, SaveRecord } from "../types";
 import { useState } from "react";
 
@@ -79,6 +79,8 @@ export default function Reflection() {
 
   //入力中のメモを管理するstate
   const [memo, setMemo] = useState("");
+
+  const navigate = useNavigate();
 
   //「保存する」ボタンが押された時の処理
   const saveDecision = () => {
