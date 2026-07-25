@@ -1,6 +1,6 @@
 //振り返り画面
 import { Icon } from "@iconify/react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import type { Result, ResultButton, SaveRecord } from "../types";
 import { useState } from "react";
 
@@ -185,8 +185,6 @@ export default function Reflection() {
       <button onClick={saveDecision} className={saveButtonBase}>
         保存する
       </button>
-
-      <Link to="/analysis" />
     </div>
   );
 }
