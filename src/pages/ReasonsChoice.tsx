@@ -6,13 +6,13 @@ import { Icon } from "@iconify/react";
 import { useState } from "react";
 
 //画面上のカードの位置調整CSS
-const reasonsGridBase = "grid gap-4 px-6 mb-4 mt-3 max-w-sm mx-auto";
+const reasonsGridBase = "grid gap-4  mb-4 mt-3 max-w-sm mx-auto";
 
 //共通のCSS（カードの形やサイズ、カード内の位置）
 //pl:padding-leftの略（内側の余白-左、アイコンの左余白）
 //gap:子要素全部の間に隙間を作る(今回はアイコンとラベルしか子要素ないから、その間に隙間ができる)
 const reasonsCardsBase =
-  "border border-gray-500 rounded-lg w-full h-12 flex items-center pl-5 gap-6 text-xl";
+  "border border-gray-500 rounded-lg w-full h-12 flex items-center pl-18 gap-8  text-xl";
 
 //気づきボックスのCSS
 const tipBoxBase =
