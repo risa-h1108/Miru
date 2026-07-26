@@ -1,28 +1,28 @@
 //理由選択画面
 
-import { Link } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import type { Cards } from "../types";
 import { Icon } from "@iconify/react";
 import { useState } from "react";
 
 //画面上のカードの位置調整CSS
-const reasonGridBase = "grid gap-x-4 gap-y-4 px-6 mb-4 mt-3 max-w-sm mx-auto";
+const reasonsGridBase = "grid gap-4  mb-4 mt-3 max-w-sm mx-auto";
 
 //共通のCSS（カードの形やサイズ、カード内の位置）
-//w-full:親要素の幅いっぱい広がる、pl:padding-leftの略（内側の余白-左、アイコンの左余白）
+//pl:padding-leftの略（内側の余白-左、アイコンの左余白）
 //gap:子要素全部の間に隙間を作る(今回はアイコンとラベルしか子要素ないから、その間に隙間ができる)
-const reasonCardsBase =
-  "border border-gray-500 rounded-lg w-full h-12 flex items-center pl-5 gap-6 text-xl";
+const reasonsCardsBase =
+  "border border-gray-500 rounded-lg w-full h-12 flex items-center pl-18 gap-8  text-xl";
 
-// 気づきボックスのCSS
+//気づきボックスのCSS
 const tipBoxBase =
-  "max-w-sm mx-auto h-36 mt-6 rounded-lg border border-amber-300 bg-amber-100";
+  "w-full max-w-sm mx-auto h-36 mt-6 rounded-lg border border-amber-300 bg-amber-100";
 
-// 次へ(確定)ボタンのCSS
+//次へ(確定)ボタンのCSS
 const submitButtonBase =
-  "border bg-blue-400 text-white rounded-lg mt-6 max-w-sm mx-auto h-12 flex items-center justify-center text-2xl";
+  "border bg-blue-400 text-white rounded-lg mt-6 w-full max-w-sm mx-auto h-12 flex items-center justify-center text-2xl";
 
-// 理由カードの選択肢一覧
+//理由カードの選択肢一覧
 const reasonsList: Cards[] = [
   { id: "tired", label: "疲れている", icon: "lucide:bed" },
   { id: "hassle", label: "面倒くさい", icon: "lucide:annoyed" },
@@ -38,12 +38,27 @@ const reasonsList: Cards[] = [
 ];
 
 export default function ReasonsChoice() {
-  // 選択中の理由ラベルを管理するstate
+  //useLocation:「今の画面の情報を取得する」ための関数
+  //ActionChoice画面から渡ってきたstate={{ selectedAction, selectedDecision: true }}のデータが入っている
+  const location = useLocation();
+
+  //location.stateがundefinedの場合、エラーにならず、undefinedを返す書き方(?.)
+  //左側(location.state)が null or undefinedだったら、右側の値(""、空文字)を代わりに使う
+  const selectedAction = location.state?.selectedAction ?? "";
+
+  //左側(selectedDecision)が null or undefinedだったら、右側(nul)を代わりに使う
+  //selectedDecisionが[true/false/null]のどれかを取得する型のため、null(右側)を指定。
+  const selectedDecision = location.state?.selectedDecision ?? null;
+
+  //選択中の理由ラベルを管理するstate
   //useState<string[]>()：<型：string型が複数>（初期値：空の配列[]、配列は存在しているが中身は0個）
   const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
 
-  // 理由選択カードを「クリック＆削除」した時の処理(複数選択OK)
+  const navigate = useNavigate();
+
+  //理由選択カードを「クリック＆削除」した時の処理(複数選択OK)
   const handleCardsClick = (label: string) => {
+    //handleCardsClickが呼ばれるたびにsetSelectedReasonsで中の配列が更新される
     setSelectedReasons(
       (
         prev, //prev:更新する前の「今の配列」の中身
@@ -55,18 +70,35 @@ export default function ReasonsChoice() {
             prev.filter((selected) => selected !== label)
           : //false(labelカードが選択されていない)、今クリックされたlabelを「追加」して、新しい配列を作る処理。
             //詳細： prevの中身を[全部そのまま残して(＝...)]、最後に[labelを1つ追加した(=,label)]、新しい配列を作る
-            // ex ["疲れている", "面倒くさい", label]
+            //ex ["疲れている", "面倒くさい", label]
             [...prev, label],
     );
-    //  console.log("clicked", label);
   };
 
   //「どのカードが選ばれているか」の判定式
-  const getReasonCardsBg = (label: string) =>
+  const getReasonsCardsBg = (label: string) =>
     //selectedReasonsの配列内に今選択したlabelが入っているか(複数OK)判定。
     selectedReasons.includes(label)
       ? "bg-blue-300" //一致(選択済み)の場合
       : "hover:bg-blue-200"; //不一致（未選択）の場合
+
+  //「次へ」ボタンが押された時に実行する関数処理
+  const handleSubmit = () => {
+    //クリックされた瞬間の日本での日時(.toLocaleString("ja-JP"))を作成
+    const recordedAt = new Date().toLocaleString("ja-JP", {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      weekday: "short", //日本語ロケール(ja-JP)の仕様として、ブラウザが自動的に曜日にカッコが付く
+      hour: "numeric",
+      minute: "2-digit",
+    });
+    //navigate(遷移先, {state:{次のページに渡すデータ}})
+    //selectedReasons：現在選択中のカードのlabelが入った配列（クリックのたびにhandleCardsClickで[追加or削除]処理が更新される）
+    navigate("/reflection", {
+      state: { selectedAction, selectedDecision, selectedReasons, recordedAt },
+    });
+  };
 
   return (
     <div>
@@ -77,26 +109,26 @@ export default function ReasonsChoice() {
         </h2>
       </div>
 
-      {/* 理由選択カードの表示 */}
-      <div className={reasonGridBase}>
-        {/* map処理で7つのカードを生成 */}
+      {/*理由選択カードの表示*/}
+      <div className={reasonsGridBase}>
+        {/*map処理で7つのカードを生成*/}
         {reasonsList.map((item) => (
-          <div
+          <button
             key={item.id}
             onClick={() => handleCardsClick(item.label)} //カードと関数を繋げる
-            className={`${reasonCardsBase} ${getReasonCardsBg(item.label)}`}
+            className={`${reasonsCardsBase} ${getReasonsCardsBg(item.label)}`}
           >
-            {/* アイコンの表示 */}
+            {/*アイコンの表示*/}
             <Icon icon={item.icon} width={40} height={40} />
 
-            {/* ラベル（「疲れている」など）の表示*/}
-            {/* 「ラベルの部分」と明確にしておくため、spanタグを記載 */}
+            {/*ラベル（「疲れている」など）の表示*/}
+            {/*「ラベルの部分」と明確にしておくため、spanタグを記載*/}
             <span>{item.label}</span>
-          </div>
+          </button>
         ))}
       </div>
 
-      {/* 気づきボックス */}
+      {/*気づきボックス*/}
       <div className={tipBoxBase}>
         {/* px: padding-left + padding-right の略
         justify-center:Flexboxの「主軸（基本は横方向）」に沿って中央寄せ
@@ -114,10 +146,10 @@ export default function ReasonsChoice() {
         </p>
       </div>
 
-      {/* 次へ行くボタン */}
-      <Link to="/reflection" className={submitButtonBase}>
+      {/*次へ行くボタン*/}
+      <button onClick={handleSubmit} className={submitButtonBase}>
         次へ
-      </Link>
+      </button>
     </div>
   );
 }

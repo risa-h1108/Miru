@@ -6,14 +6,14 @@ import { Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Reflection from "./pages/Reflection";
 import Analysis from "./pages/Analysis";
-import ReasonsChoice from "./pages/Reason";
+import ReasonsChoice from "./pages/ReasonsChoice";
 
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/action" element={<ActionChoice />} />
-      <Route path="reason" element={<ReasonsChoice />} />
+      <Route path="reasons" element={<ReasonsChoice />} />
       <Route path="reflection" element={<Reflection />} />
       <Route path="analysis" element={<Analysis />} />
     </Routes>

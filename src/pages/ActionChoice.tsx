@@ -2,12 +2,11 @@
 
 import { Icon } from "@iconify/react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import type { Cards } from "../types";
 
 //画面上のカードの位置調整CSS
-const gridBase =
-  "grid grid-cols-2 gap-x-4 gap-y-4 px-6 mb-4 mt-3 max-w-sm mx-auto";
+const gridBase = "grid grid-cols-2 gap-4 px-6 mb-4 mt-3 max-w-sm mx-auto";
 
 //共通のCSS（カードの形やサイズ、カード内の位置）
 const cardBase =
@@ -31,18 +30,23 @@ export default function ActionChoice() {
     null,
   );
 
+  const navigate = useNavigate();
+
   // 行動カードをクリックした時の処理
   //1.labelでカードのどれかを受け取る、という関数
   const handleCardClick = (label: string) => {
     setSelectedAction(label); //2.stateに保存する
-    //   console.log("clicked", label);
   };
 
-  //やる・やらないのどちらかをクリックした時の処理
+  //「やる・やらない」のどちらかをクリックした時の処理
   //選択したActionカードと真偽（やる・やらない）をlogで出力
   const handleDecision = (decision: boolean) => {
-    setSelectedDecision(decision);
-    console.log({ action: selectedAction, decision });
+    setSelectedDecision(decision); //ボタンの色を変えるためだけにstate更新
+    navigate("/reasons", {
+      //state更新は次のレンダリング時の為、現状反映されていない。
+      //state変数の代わりに確実に最新の値を持っている、引数decision(decision: boolean)を直接使う
+      state: { selectedAction, selectedDecision: decision },
+    });
   };
 
   //「このカードが選ばれているか」の判定式：「selectedActionに保存された”選択中のラベル”」と、「今mapが処理しているカードのラベル」が同じか確認。
@@ -63,7 +67,7 @@ export default function ActionChoice() {
         {/* actionListの配列をmapで回して4枚のカードを生成。
     onClickでクリックされたカードのラベルをuseStateに保存。カードのCSSを表示。 */}
         {actionList.map((item) => (
-          <div
+          <button
             key={item.id}
             onClick={() => handleCardClick(item.label)} //3.カードと関数を繋げる
             className={`${cardBase} ${getCardBg(item.label)}`}
@@ -74,18 +78,18 @@ export default function ActionChoice() {
             {/* ラベル（「勉強する」など）の表示 */}
             {/* 「ラベルの部分」と明確にしておくため、spanタグを記載 */}
             <span>{item.label}</span>
-          </div>
+          </button>
         ))}
       </div>
 
       {/* その他カード：1枚だけ中央に表示 */}
-      <div
+      <button
         onClick={() => handleCardClick("その他")}
         className={`${cardBase} mx-auto ${getCardBg("その他")}`}
       >
         <Icon icon="lucide:ellipsis" width={70} height={70} />
         その他
-      </div>
+      </button>
 
       {/* やる？やらない？エリア */}
       <div className=" max-w-sm mx-auto mt-3">
@@ -95,8 +99,7 @@ export default function ActionChoice() {
       {/*やる・やらないボタン:横2列・中央寄せ */}
       <div className={gridBase}>
         {/* 「やる」ボタンの表示 */}
-        <Link
-          to="/reason"
+        <button
           onClick={() => handleDecision(true)}
           className={`${cardBase} ${
             selectedDecision === true
@@ -106,11 +109,10 @@ export default function ActionChoice() {
         >
           <Icon icon="lucide:check" width={70} height={70}></Icon>
           やる
-        </Link>
+        </button>
 
         {/* 「やらない」ボタンの表示 */}
-        <Link
-          to="/reason"
+        <button
           onClick={() => handleDecision(false)}
           className={`${cardBase} ${
             selectedDecision === false
@@ -120,7 +122,7 @@ export default function ActionChoice() {
         >
           <Icon icon="lucide:x" width={70} height={70}></Icon>
           やらない
-        </Link>
+        </button>
       </div>
     </div>
   );
