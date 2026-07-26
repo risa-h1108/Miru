@@ -49,7 +49,7 @@ const resultList: ResultButton[] = [
 
 //メモのCSS
 const memoBase =
-  "w-full max-w-sm mx-auto h-36 rounded-lg border border-gray-300 flex justify-center";
+  " block w-full max-w-sm mx-auto h-36 rounded-lg border border-gray-300 ";
 
 //保存ボタンのCSS
 const saveButtonBase =
