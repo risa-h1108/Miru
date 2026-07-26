@@ -141,7 +141,7 @@ export default function Reflection() {
         {/*カード全てを横1列に中央寄せ*/}
         <div className={gridBase}>
           {resultList.map((item) => (
-            <div
+            <button
               key={item.id}
               onClick={() => setSelectedResult(item.id)}
               className={`${buttonCardsBase} ${getResultBg(item)} ${item.borderColor}`}
@@ -157,7 +157,7 @@ export default function Reflection() {
               {/*ラベル（「勉強する」など）の表示*/}
               {/*「ラベルの部分」と明確にしておくため、spanタグを記載*/}
               <span>{item.label}</span>
-            </div>
+            </button>
           ))}
         </div>
 

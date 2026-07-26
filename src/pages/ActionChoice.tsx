@@ -67,7 +67,7 @@ export default function ActionChoice() {
         {/* actionListの配列をmapで回して4枚のカードを生成。
     onClickでクリックされたカードのラベルをuseStateに保存。カードのCSSを表示。 */}
         {actionList.map((item) => (
-          <div
+          <button
             key={item.id}
             onClick={() => handleCardClick(item.label)} //3.カードと関数を繋げる
             className={`${cardBase} ${getCardBg(item.label)}`}
@@ -78,18 +78,18 @@ export default function ActionChoice() {
             {/* ラベル（「勉強する」など）の表示 */}
             {/* 「ラベルの部分」と明確にしておくため、spanタグを記載 */}
             <span>{item.label}</span>
-          </div>
+          </button>
         ))}
       </div>
 
       {/* その他カード：1枚だけ中央に表示 */}
-      <div
+      <button
         onClick={() => handleCardClick("その他")}
         className={`${cardBase} mx-auto ${getCardBg("その他")}`}
       >
         <Icon icon="lucide:ellipsis" width={70} height={70} />
         その他
-      </div>
+      </button>
 
       {/* やる？やらない？エリア */}
       <div className=" max-w-sm mx-auto mt-3">

@@ -113,7 +113,7 @@ export default function ReasonsChoice() {
       <div className={reasonsGridBase}>
         {/*map処理で7つのカードを生成*/}
         {reasonsList.map((item) => (
-          <div
+          <button
             key={item.id}
             onClick={() => handleCardsClick(item.label)} //カードと関数を繋げる
             className={`${reasonsCardsBase} ${getReasonsCardsBg(item.label)}`}
@@ -124,7 +124,7 @@ export default function ReasonsChoice() {
             {/*ラベル（「疲れている」など）の表示*/}
             {/*「ラベルの部分」と明確にしておくため、spanタグを記載*/}
             <span>{item.label}</span>
-          </div>
+          </button>
         ))}
       </div>
 
