@@ -1,20 +1,21 @@
 //画面下部のタブバーの見た目
 
 import { Icon } from "@iconify/react";
-import type { Cards } from "../types";
+import type { TabCards } from "../types";
 
 //タブの枠内での位置調整CSS
 const TabGridBase = "grid grid-cols-3 gap-4 px-6 mb-4 mt-3 max-w-sm mx-auto";
 
 //タブの選択肢リスト
-const TabList: Cards[] = [
-  { id: "home", label: "ホーム", icon: "ic:sharp-home" },
+const TabList: TabCards[] = [
+  { id: "home", label: "ホーム", icon: "ic:sharp-home", url: "/" },
   {
     id: "reflection",
     label: "振り返り",
     icon: "material-symbols:history-rounded",
+    url: "/reflection",
   },
-  { id: "analysis", label: "分析", icon: "codicon:graph" },
+  { id: "analysis", label: "分析", icon: "codicon:graph", url: "/analysis" },
 ];
 
 export default function TabBar() {
@@ -22,7 +23,7 @@ export default function TabBar() {
     <div className="">
       {/*タブの中身を表示*/}
       <div className={TabGridBase}>
-        {/*map処理で3つのアイコンや文字を生成*/}
+        {/*map処理で3つのタブ選択肢を生成*/}
         {TabList.map((item) => (
           <button key={item.id}>
             {/*アイコンの表示*/}
