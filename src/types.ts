@@ -1,6 +1,9 @@
 //行動選択、理由選択画面にある選択肢カードの型
 export type Cards = { id: string; label: string; icon: string };
 
+//TabListで使用する型
+export type TabCards = { id: string; label: string; icon: string; url: string };
+
 //1連の「行動、理由、振り返り」の記録全体の型
 export type Decision = {
   id: string; //カードを1枚ずつ区別する為の番号
