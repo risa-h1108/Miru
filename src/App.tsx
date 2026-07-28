@@ -15,13 +15,13 @@ export default function App() {
       <Route path="/" element={<Home />} />
 
       {/* 下記のページにて、タブバー付きの見た目にする */}
-      <Route element={<LayoutWithTabBar />} />
-
-      {/* 各ページ */}
-      <Route path="/action" element={<ActionChoice />} />
-      <Route path="reasons" element={<ReasonsChoice />} />
-      <Route path="reflection" element={<Reflection />} />
-      <Route path="analysis" element={<Analysis />} />
+      <Route element={<LayoutWithTabBar />}>
+        {/* 各ページ */}
+        <Route path="/action" element={<ActionChoice />} />
+        <Route path="reasons" element={<ReasonsChoice />} />
+        <Route path="reflection" element={<Reflection />} />
+        <Route path="analysis" element={<Analysis />} />
+      </Route>
     </Routes>
   );
 }
