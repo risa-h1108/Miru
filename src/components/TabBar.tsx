@@ -2,6 +2,7 @@
 
 import { Icon } from "@iconify/react";
 import type { TabCards } from "../types";
+import { useNavigate } from "react-router-dom";
 
 //タブの枠内での位置調整CSS
 const TabGridBase = "grid grid-cols-3 gap-4 px-6 mb-4 mt-3 max-w-sm mx-auto";
@@ -19,18 +20,24 @@ const TabList: TabCards[] = [
 ];
 
 export default function TabBar() {
+  const navigate = useNavigate();
+
   return (
     <div className="">
       {/*タブの中身を表示*/}
       <div className={TabGridBase}>
         {/*map処理で3つのタブ選択肢を生成*/}
         {TabList.map((item) => (
-          <button key={item.id}>
+          <button
+            key={item.id}
+            //タブが表示される瞬間（レンダリング時）にnavigateが実施されてページ遷移を起こさないために、
+            // アロー関数[()=>]で包んで「まだ実行しない関数」の形にしておく
+            onClick={() => navigate(item.url)}
+          >
             {/*アイコンの表示*/}
-            <Icon icon={item.icon} width={40} height={40} />
+            <Icon icon={item.icon} width={36} height={36} />
 
-            {/*ラベル（「疲れている」など）の表示*/}
-            {/*「ラベルの部分」と明確にしておくため、spanタグを記載*/}
+            {/*ラベル（「ホーム」など）の表示*/}
             <span>{item.label}</span>
           </button>
         ))}
