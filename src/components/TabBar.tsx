@@ -5,7 +5,7 @@ import type { TabCards } from "../types";
 import { useNavigate } from "react-router-dom";
 
 //タブの枠内での位置調整CSS
-const TabGridBase = "grid grid-cols-3 gap-4 px-6 mb-4 mt-3 max-w-sm mx-auto";
+const TabGridBase = "grid grid-cols-3 gap-4 px-6 mb-4 mt-8 max-w-sm mx-auto";
 
 //タブの選択肢リスト
 const TabList: TabCards[] = [
@@ -23,7 +23,7 @@ export default function TabBar() {
   const navigate = useNavigate();
 
   return (
-    <div className="">
+    <div className=" ">
       {/*タブの中身を表示*/}
       <div className={TabGridBase}>
         {/*map処理で3つのタブ選択肢を生成*/}
@@ -31,8 +31,10 @@ export default function TabBar() {
           <button
             key={item.id}
             //タブが表示される瞬間（レンダリング時）にnavigateが実施されてページ遷移を起こさないために、
-            // アロー関数[()=>]で包んで「まだ実行しない関数」の形にしておく
+            //アロー関数[()=>]で包んで「まだ実行しない関数」の形にしておく
             onClick={() => navigate(item.url)}
+            //buttonタブ内をflexで縦方向（flex-col）に並べ、items-centerで横方向の中央も揃える
+            className="flex flex-col items-center"
           >
             {/*アイコンの表示*/}
             <Icon icon={item.icon} width={36} height={36} />
