@@ -23,7 +23,7 @@ export default function TabBar() {
   const navigate = useNavigate();
 
   return (
-    <div className=" ">
+    <div className="fixed bottom-0 w-full bg-white">
       {/*タブの中身を表示*/}
       <div className={TabGridBase}>
         {/*map処理で3つのタブ選択肢を生成*/}
