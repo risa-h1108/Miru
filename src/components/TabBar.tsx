@@ -9,7 +9,12 @@ const TabGridBase = "grid grid-cols-3 gap-4 px-6 mb-4 mt-8 max-w-sm mx-auto";
 
 //タブの選択肢リスト
 const TabList: TabCards[] = [
-  { id: "home", label: "ホーム", icon: "ic:sharp-home", url: "/" },
+  {
+    id: "action",
+    label: "行動",
+    icon: "material-symbols:directions-walk",
+    url: "/action",
+  },
   {
     id: "reflection",
     label: "振り返り",
