@@ -37,6 +37,7 @@ export default function TabBar() {
       <div className={TabGridBase}>
         {/*map処理で3つのタブ選択肢を生成*/}
         {TabList.map((item) => {
+          //表示しているタブのurl(item.url)が選択中かどうかをactiveに保存
           const active = isActive(item.url);
           return (
             <button
@@ -52,6 +53,7 @@ export default function TabBar() {
                 icon={item.icon}
                 width={36}
                 height={36}
+                //表示しているタブが選択中なら、濃いめの色。未選択中なら薄めの色。
                 className={active ? "text-gray-600" : "text-gray-400"}
               />
 
