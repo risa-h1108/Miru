@@ -52,11 +52,11 @@ export default function TabBar() {
                 icon={item.icon}
                 width={36}
                 height={36}
-                className={active ? "text-blue-500" : "text-gray-400"}
+                className={active ? "text-gray-600" : "text-gray-400"}
               />
 
               {/*ラベル（「ホーム」など）の表示*/}
-              <span className={active ? "text-blue-500" : "text-gray-400"}>
+              <span className={active ? "text-gray-600" : "text-gray-400"}>
                 {item.label}
               </span>
             </button>
