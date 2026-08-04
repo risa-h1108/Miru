@@ -31,7 +31,7 @@ export type ResultButton = {
 };
 
 //[行動選択、理由選択まで]の1件分の選択記録データの型
-type UnfinishedRecord = {
+export type UnfinishedRecord = {
   selectedAction: string;
   selectedDecision: boolean | null;
   selectedReasons: string[];
