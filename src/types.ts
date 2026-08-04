@@ -30,6 +30,14 @@ export type ResultButton = {
   iconColor: string; //アイコンの色
 };
 
+//[行動選択、理由選択まで]の1件分の選択記録データの型
+type UnfinishedRecord = {
+  selectedAction: string;
+  selectedDecision: boolean | null;
+  selectedReasons: string[];
+  recordedAt: string; //記録が作成された日時（ISO文字列）
+};
+
 //1件分の選択後の記録データの型
 export type SaveRecord = {
   selectedAction: string;
