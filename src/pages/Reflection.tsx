@@ -69,18 +69,19 @@ export default function Reflection() {
     localStorage.getItem("records") ?? "[]",
   );
 
-  //location.state(前ページから渡されたデータ)があればそれを使い、なければlocalStorageに保存されているデータ(＝未振り返り記録)の最新1件を使う
+  //location.state(前ページから渡されたデータ)があればそれを使い、
+  //なければlocalStorageに保存されているデータ(＝未振り返り記録)の最新1件を使う
   const record = location.state ?? unfinishedRecords.at(-1);
 
-  const selectedAction = location.state?.selectedAction ?? "";
-  const selectedDecision = location.state?.selectedDecision ?? null;
+  const selectedAction = record?.selectedAction ?? "";
+  const selectedDecision = record?.selectedDecision ?? null;
 
   //:string[]：[location.state]の型をTSが推測できないため明示。
   //　?? []（空配列）とすることで、値がない場合も型がstring[]のまま保たれる
-  const selectedReasons: string[] = location.state?.selectedReasons ?? [];
+  const selectedReasons: string[] = record?.selectedReasons ?? [];
 
   //[全ての選択が確定した瞬間(in ReasonsChoice画面)の時間]をReasonsChoice画面から取得
-  const recordedAt = location.state?.recordedAt ?? "";
+  const recordedAt = record?.recordedAt ?? "";
 
   //選択中の結果(3ボタン、[良かった,普通,後悔,null])を管理するstate
   const [selectedResult, setSelectedResult] = useState<Result | null>(null);
