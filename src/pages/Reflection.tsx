@@ -1,7 +1,12 @@
 //振り返り画面
 import { Icon } from "@iconify/react";
 import { useLocation, useNavigate } from "react-router-dom";
-import type { Result, ResultButton, SaveRecord } from "../types";
+import type {
+  Result,
+  ResultButton,
+  SaveRecord,
+  UnfinishedRecord,
+} from "../types";
 import { useState } from "react";
 
 //記録内容ボックスのCSS
@@ -58,6 +63,15 @@ const saveButtonBase =
 export default function Reflection() {
   //以下のlocation.state?.~は各データを前ページから取得する機能
   const location = useLocation();
+
+  //localStorageに保存されている[未振り返りの(＝行動、理由選択まで保存している)]記録一覧を取得
+  const unfinishedRecords: UnfinishedRecord[] = JSON.parse(
+    localStorage.getItem("records") ?? "[]",
+  );
+
+  //location.state(前ページから渡されたデータ)があればそれを使い、なければlocalStorageに保存されているデータ(＝未振り返り記録)の最新1件を使う
+  const record = location.state ?? unfinishedRecords.at(-1);
+
   const selectedAction = location.state?.selectedAction ?? "";
   const selectedDecision = location.state?.selectedDecision ?? null;
 
