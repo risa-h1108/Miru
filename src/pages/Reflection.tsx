@@ -125,7 +125,9 @@ export default function Reflection() {
     navigate("/action");
   };
 
-  return (
+  //record(前ページから渡されたデータor未振り返り記録)があるなら、[?以降の(ここを表示)]、
+  //recordがないなら、[:以降の(ここを表示)]
+  return record ? (
     <div>
       <div className=" max-w-sm mx-auto mt-3 ">
         <h1 className="text-[24px] text-center">振り返り</h1>
@@ -200,6 +202,14 @@ export default function Reflection() {
       <button onClick={saveDecision} className={saveButtonBase}>
         保存する
       </button>
+    </div>
+  ) : (
+    //min-h-screen:画面の高さいっぱいまで広がる
+    //flexとmax-w-smが同じ要素に効いてしまい、意図通りの見た目にならない可能性がある為、divとpタグで分けて対応
+    <div className="min-h-screen flex items-center justify-center">
+      <p className="max-w-sm mx-auto text-center text-4xl text-black">
+        振り返るデータがありません
+      </p>
     </div>
   );
 }
