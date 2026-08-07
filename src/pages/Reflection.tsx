@@ -122,6 +122,15 @@ export default function Reflection() {
     //JSON.stringify()：JavaScriptの配列やオブジェクトを、localStorageに保存できる文字列に変換
     localStorage.setItem("records", JSON.stringify(updatedRecords));
 
+    //unfinishedRecords(未振り返り一覧)から、今回振り返った1件を取り除く
+    //.filter()：条件がtrue(条件通り)のものだけを残し、false(条件と異なる)のものは残さない(＝取り除く)処理
+    //「item.recordedAt(＝未振り返り一覧の中の1件) !== record.recordedAt(＝今回振り返り終えた記録)(一致していない＝別のレコード＝今回のtrue)」だけ残るため、
+    //一致するもの(＝今回振り返り終えたレコードそのもの)だけが結果的に取り除かれる
+    const remainingUnfinished = unfinishedRecords.filter(
+      (item) => item.recordedAt !== record.recordedAt,
+    );
+    localStorage.setItem("records", JSON.stringify(remainingUnfinished));
+
     navigate("/action");
   };
 
