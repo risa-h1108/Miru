@@ -1,7 +1,12 @@
 //振り返り画面
 import { Icon } from "@iconify/react";
 import { useLocation, useNavigate } from "react-router-dom";
-import type { Result, ResultButton, SaveRecord } from "../types";
+import type {
+  Result,
+  ResultButton,
+  SaveRecord,
+  UnfinishedRecord,
+} from "../types";
 import { useState } from "react";
 
 //記録内容ボックスのCSS
@@ -58,15 +63,26 @@ const saveButtonBase =
 export default function Reflection() {
   //以下のlocation.state?.~は各データを前ページから取得する機能
   const location = useLocation();
-  const selectedAction = location.state?.selectedAction ?? "";
-  const selectedDecision = location.state?.selectedDecision ?? null;
+
+  //localStorageに保存されている[未振り返りの(＝行動、理由選択まで保存している)]記録一覧を取得
+  //振り返り済みの記録("records")とキーが被らないよう、未振り返り記録の専用キー名"unfinishedRecords"を使用
+  const unfinishedRecords: UnfinishedRecord[] = JSON.parse(
+    localStorage.getItem("unfinishedRecords") ?? "[]",
+  );
+
+  //location.state(前ページから渡されたデータ)があればそれを使い、
+  //なければlocalStorageに保存されているデータ(＝未振り返り記録)の最新1件を使う
+  const record = location.state ?? unfinishedRecords.at(-1);
+
+  const selectedAction = record?.selectedAction ?? "";
+  const selectedDecision = record?.selectedDecision ?? null;
 
   //:string[]：[location.state]の型をTSが推測できないため明示。
   //　?? []（空配列）とすることで、値がない場合も型がstring[]のまま保たれる
-  const selectedReasons: string[] = location.state?.selectedReasons ?? [];
+  const selectedReasons: string[] = record?.selectedReasons ?? [];
 
   //[全ての選択が確定した瞬間(in ReasonsChoice画面)の時間]をReasonsChoice画面から取得
-  const recordedAt = location.state?.recordedAt ?? "";
+  const recordedAt = record?.recordedAt ?? "";
 
   //選択中の結果(3ボタン、[良かった,普通,後悔,null])を管理するstate
   const [selectedResult, setSelectedResult] = useState<Result | null>(null);
@@ -105,12 +121,29 @@ export default function Reflection() {
     const updatedRecords = [...existingRecords, record];
     //localStorage.setItem("records", ...)：updatedRecords(配列)を、[localStorageに保存できる文字列に変換した結果]を、recordsという名前で保存する
     //JSON.stringify()：JavaScriptの配列やオブジェクトを、localStorageに保存できる文字列に変換
+    //振り返り済みの記録一覧を保存（未振り返り一覧とキー名が被らないよう、振り返り済みの専用キー"records"に統一）
     localStorage.setItem("records", JSON.stringify(updatedRecords));
+
+    //unfinishedRecords(未振り返り一覧)から、今回振り返った1件を取り除く
+    //.filter()：条件がtrue(条件通り)のものだけを残し、false(条件と異なる)のものは残さない(＝取り除く)処理
+    //「item.recordedAt(＝未振り返り一覧の中の1件) !== record.recordedAt(＝今回振り返り終えた記録)(一致していない＝別のレコード＝今回のtrue)」だけ残るため、
+    //一致するもの(＝今回振り返り終えたレコードそのもの)だけが結果的に取り除かれる
+    const remainingUnfinished = unfinishedRecords.filter(
+      (item) => item.recordedAt !== record.recordedAt,
+    );
+
+    //未振り返りの記録一覧を保存（"records"と同じキーにすると上書きされるため、未振り返り記録の専用別キー"unfinishedRecords"を使用）
+    localStorage.setItem(
+      "unfinishedRecords",
+      JSON.stringify(remainingUnfinished),
+    );
 
     navigate("/action");
   };
 
-  return (
+  //record(前ページから渡されたデータor未振り返り記録)があるなら、[?以降の(ここを表示)]、
+  //recordがないなら、[:以降の(ここを表示)]
+  return record ? (
     <div>
       <div className=" max-w-sm mx-auto mt-3 ">
         <h1 className="text-[24px] text-center">振り返り</h1>
@@ -185,6 +218,14 @@ export default function Reflection() {
       <button onClick={saveDecision} className={saveButtonBase}>
         保存する
       </button>
+    </div>
+  ) : (
+    //min-h-screen:画面の高さいっぱいまで広がる
+    //flexとmax-w-smが同じ要素に効いてしまい、意図通りの見た目にならない可能性がある為、divとpタグで分けて対応
+    <div className="min-h-screen flex items-center justify-center">
+      <p className="max-w-sm mx-auto text-center text-4xl text-black">
+        振り返るデータがありません
+      </p>
     </div>
   );
 }

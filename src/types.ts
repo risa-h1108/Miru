@@ -1,6 +1,9 @@
 //行動選択、理由選択画面にある選択肢カードの型
 export type Cards = { id: string; label: string; icon: string };
 
+//TabListで使用する型
+export type TabCards = { id: string; label: string; icon: string; url: string };
+
 //1連の「行動、理由、振り返り」の記録全体の型
 export type Decision = {
   id: string; //カードを1枚ずつ区別する為の番号
@@ -25,6 +28,14 @@ export type ResultButton = {
   bgSelected: string; //選択時の背景色
   borderColor: string; //枠線の色
   iconColor: string; //アイコンの色
+};
+
+//[行動選択、理由選択まで]の1件分の選択記録データの型
+export type UnfinishedRecord = {
+  selectedAction: string;
+  selectedDecision: boolean | null;
+  selectedReasons: string[];
+  recordedAt: string; //記録が作成された日時（ISO文字列）
 };
 
 //1件分の選択後の記録データの型

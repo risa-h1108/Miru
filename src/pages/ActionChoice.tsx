@@ -92,7 +92,7 @@ export default function ActionChoice() {
       </button>
 
       {/* やる？やらない？エリア */}
-      <div className=" max-w-sm mx-auto mt-3">
+      <div className="max-w-sm mx-auto mt-3">
         <h2 className="text-[24px] text-center">やる？やらない？</h2>
       </div>
 
