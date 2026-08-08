@@ -65,8 +65,9 @@ export default function Reflection() {
   const location = useLocation();
 
   //localStorageに保存されている[未振り返りの(＝行動、理由選択まで保存している)]記録一覧を取得
+  //振り返り済みの記録("records")とキーが被らないよう、未振り返り記録の専用キー名"unfinishedRecords"を使用
   const unfinishedRecords: UnfinishedRecord[] = JSON.parse(
-    localStorage.getItem("records") ?? "[]",
+    localStorage.getItem("unfinishedRecords") ?? "[]",
   );
 
   //location.state(前ページから渡されたデータ)があればそれを使い、
@@ -120,6 +121,7 @@ export default function Reflection() {
     const updatedRecords = [...existingRecords, record];
     //localStorage.setItem("records", ...)：updatedRecords(配列)を、[localStorageに保存できる文字列に変換した結果]を、recordsという名前で保存する
     //JSON.stringify()：JavaScriptの配列やオブジェクトを、localStorageに保存できる文字列に変換
+    //振り返り済みの記録一覧を保存（未振り返り一覧とキー名が被らないよう、振り返り済みの専用キー"records"に統一）
     localStorage.setItem("records", JSON.stringify(updatedRecords));
 
     //unfinishedRecords(未振り返り一覧)から、今回振り返った1件を取り除く
@@ -129,7 +131,12 @@ export default function Reflection() {
     const remainingUnfinished = unfinishedRecords.filter(
       (item) => item.recordedAt !== record.recordedAt,
     );
-    localStorage.setItem("records", JSON.stringify(remainingUnfinished));
+
+    //未振り返りの記録一覧を保存（"records"と同じキーにすると上書きされるため、未振り返り記録の専用別キー"unfinishedRecords"を使用）
+    localStorage.setItem(
+      "unfinishedRecords",
+      JSON.stringify(remainingUnfinished),
+    );
 
     navigate("/action");
   };
