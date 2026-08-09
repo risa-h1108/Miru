@@ -28,42 +28,40 @@ export default function TabBar() {
   const navigate = useNavigate();
 
   const location = useLocation();
+
   //現在の表示ページ(location.pathname)とタブの遷移先url(引数)が一致しているか(＝どのタブを今選択中か)を判定する条件式
   const isActive = (url: string) => location.pathname === url;
+
+  //選択中のタブなら濃いめの色、未選択なら薄めの色を返す（アイコン・ラベル共通で使う）
+  const getColorClass = (url: string) =>
+    isActive(url) ? "text-gray-600" : "text-gray-400";
 
   return (
     <div className="fixed bottom-0 w-full bg-white">
       {/*タブの中身を表示*/}
       <div className={TabGridBase}>
         {/*map処理で3つのタブ選択肢を生成*/}
-        {TabList.map((item) => {
-          //表示しているタブのurl(item.url)が選択中かどうかをactiveに保存
-          const active = isActive(item.url);
-          return (
-            <button
-              key={item.id}
-              //タブが表示される瞬間（レンダリング時）にnavigateが実施されてページ遷移を起こさないために、
-              //アロー関数[()=>]で包んで「まだ実行しない関数」の形にしておく
-              onClick={() => navigate(item.url)}
-              //buttonタブ内をflexで縦方向（flex-col）に並べ、items-centerで横方向の中央も揃える
-              className="flex flex-col items-center"
-            >
-              {/*アイコンの表示*/}
-              <Icon
-                icon={item.icon}
-                width={36}
-                height={36}
-                //表示しているタブが選択中なら、濃いめの色。未選択中なら薄めの色。
-                className={active ? "text-gray-600" : "text-gray-400"}
-              />
+        {TabList.map((item) => (
+          <button
+            key={item.id}
+            //タブが表示される瞬間（レンダリング時）にnavigateが実施されてページ遷移を起こさないために、
+            //アロー関数[()=>]で包んで「まだ実行しない関数」の形にしておく
+            onClick={() => navigate(item.url)}
+            //buttonタブ内をflexで縦方向（flex-col）に並べ、items-centerで横方向の中央も揃える
+            className="flex flex-col items-center"
+          >
+            {/*アイコンの表示：選択中のタブかどうかでgetColorClassで色を出し分ける*/}
+            <Icon
+              icon={item.icon}
+              width={36}
+              height={36}
+              className={getColorClass(item.url)}
+            />
 
-              {/*ラベル（「ホーム」など）の表示*/}
-              <span className={active ? "text-gray-600" : "text-gray-400"}>
-                {item.label}
-              </span>
-            </button>
-          );
-        })}
+            {/*ラベル（「行動」など）の表示*/}
+            <span className={getColorClass(item.url)}>{item.label}</span>
+          </button>
+        ))}
       </div>
     </div>
   );
