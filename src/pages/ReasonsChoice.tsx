@@ -1,7 +1,7 @@
 //理由選択画面
 
 import { useLocation, useNavigate } from "react-router-dom";
-import type { Cards } from "../types";
+import type { Cards, UnfinishedRecord } from "../types";
 import { Icon } from "@iconify/react";
 import { useState } from "react";
 
@@ -93,11 +93,33 @@ export default function ReasonsChoice() {
       hour: "numeric",
       minute: "2-digit",
     });
+
+    //1.「新しい1件」のデータをまとめる
+    const newRecord: UnfinishedRecord = {
+      selectedAction,
+      selectedDecision,
+      selectedReasons,
+      recordedAt,
+    };
+
+    //2.今ある配列を取り出す（なければ空配列）
+    //localStorageにすでに保存されている記録一覧(unfinishedRecords)を取得（データがなければ空配列[]を返す）
+    //JSON.parse()：文字列になっているJSONデータを、実際のJavaScriptの配列やオブジェクトに戻す
+    //localStorage.getItem("unfinishedRecords"):unfinishedRecordsという名前で保存されているデータを取り出す
+    //振り返り済みの記録("records")とキーが被らないよう、未振り返り記録の専用キー名"unfinishedRecords"を使用
+    const unfinishedRecords: UnfinishedRecord[] = JSON.parse(
+      localStorage.getItem("unfinishedRecords") ?? "[]",
+    );
+
+    //3.新しい1件を追加して、書き戻す
+    //既存のunfinishedRecordsにnewRecordを1つ追加した新しい配列を作る
+    //振り返り済みの記録("records")とキーが被らないよう、未振り返り記録の専用キー名"unfinishedRecords"を使用
+    const updatedRecords = [...unfinishedRecords, newRecord];
+    localStorage.setItem("unfinishedRecords", JSON.stringify(updatedRecords));
+
+    //4.次の画面へ渡す（newRecordを使い回す）
     //navigate(遷移先, {state:{次のページに渡すデータ}})
-    //selectedReasons：現在選択中のカードのlabelが入った配列（クリックのたびにhandleCardsClickで[追加or削除]処理が更新される）
-    navigate("/reflection", {
-      state: { selectedAction, selectedDecision, selectedReasons, recordedAt },
-    });
+    navigate("/reflection", { state: newRecord });
   };
 
   return (
