@@ -1,8 +1,13 @@
-import type { Decision } from "../types";
+import type { Decision, SaveRecord } from "../types";
 
 //localStorageにデータ保存する用のキー名（STORAGE_KEY）を設定
 // "decisions"：新しく作った文字列で何も参照していない
 const STORAGE_KEY = "decisions";
+
+//振り返り済みのキー
+const RECORDS_KEY = "records";
+//未振り返りののキー
+const UNFINISHED_RECORDS_KEY = "unfinishedRecords";
 
 /// localStorageに保存されている「行動、理由、振り返り」の記録を「全部取得」する
 export function getDecisions(): Decision[] {
@@ -45,4 +50,17 @@ export function addDecision(decision: Decision): void {
   decisionList.push(decision);
   //「今までの記録＋新しい1件」になったdecisionListをsaveDecisions関数に渡し、「全部上書き」保存する
   saveDecisions(decisionList);
+}
+
+export function getRecords(): SaveRecord[] {
+  //RECORDS_KEYを元に情報を取得する処理
+  const json = localStorage.getItem(RECORDS_KEY);
+
+  //保存データがない場合
+  if (!json) {
+    return [];
+  }
+
+  //保存されているデータがある場合の処理
+  return JSON.parse(json) as SaveRecord[];
 }
