@@ -1,8 +1,12 @@
 //分析画面
 
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import type { SaveRecord } from "../types";
 
 export default function Analysis() {
+  //
+  const [analysisRecord, setAnalysisRecord] = useState<SaveRecord[]>();
   return (
     <div>
       <div className="max-w-sm mx-auto mt-3">
