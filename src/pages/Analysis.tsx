@@ -1,12 +1,21 @@
 //分析画面
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import type { SaveRecord } from "../types";
+import { getRecords } from "../utils/localStorage";
 
 export default function Analysis() {
-  //
-  const [analysisRecord, setAnalysisRecord] = useState<SaveRecord[]>();
+  //選択後の記録データを複数管理する
+  //([]):getRecordsがデータなしのとき[](配列)を返すようにする。
+  const [analysisRecord, setAnalysisRecord] = useState<SaveRecord[]>([]);
+
+  //画面が最初に表示された1回目だけgetRecordsから情報を取得し、そのデータ(records)をsetAnalysisRecordに渡す
+  useEffect(() => {
+    const records = getRecords();
+    setAnalysisRecord(records);
+  }, []);
+
   return (
     <div>
       <div className="max-w-sm mx-auto mt-3">
