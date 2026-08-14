@@ -22,6 +22,11 @@ export default function Analysis() {
         <h1 className="text-[24px] text-center">分析</h1>
         <h2 className="text-[16px] text-center">あなたの傾向を分析しました</h2>
       </div>
+
+      <div className="max-w-sm mx-auto mt-8">
+        <p className="text-[20px] pl-1">理由別の後悔率（やらなかった時）</p>
+      </div>
+
       <Link to="/" />
     </div>
   );
