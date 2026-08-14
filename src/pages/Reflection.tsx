@@ -167,7 +167,7 @@ export default function Reflection() {
 
       {/*記録した内容を評価する部分*/}
       <div>
-        <div className=" max-w-sm mx-auto mt-8">
+        <div className="max-w-sm mx-auto mt-8">
           <p className="text-[20px] pl-1">結果はどうでしたか？</p>
         </div>
 
