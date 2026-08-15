@@ -70,3 +70,18 @@ export function addUnfinishedRecord(unfinishedRecord: UnfinishedRecord): void {
   unfinishedRecordsList.push(unfinishedRecord); //1件追加
   saveUnfinishedRecords(unfinishedRecordsList); //保存(「既存分＋新しい1件」になったunfinishedRecordsListをsaveUnfinishedRecordsに渡して保存する)
 }
+
+//未振り返り一覧から「振り返り済みになった記録1件」を.filter()で除去して保存する
+export function removeUnfinishedRecord(recordedAt: string): void {
+  const unfinishedRecordsList = getUnfinishedRecords(); //1.全件取得
+
+  //3.保存(2の処理後にsaveUnfinishedRecordsで保存される)
+  saveUnfinishedRecords(
+    //2.「引数で渡されたrecordedAtと一致しないもの」だけを残す(＝日時が一致する、消したい1件だけが.filterで除かれる)
+    unfinishedRecordsList.filter(
+      (unfinishedRecord: UnfinishedRecord) =>
+        //右辺のrecordedAt：振り返り済みになった記録の日時(この日時と一致する未振り返りデータを削除する)
+        unfinishedRecord.recordedAt !== recordedAt,
+    ),
+  );
+}
