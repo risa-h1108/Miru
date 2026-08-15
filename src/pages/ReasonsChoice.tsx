@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import type { Cards, UnfinishedRecord } from "../types";
 import { Icon } from "@iconify/react";
 import { useState } from "react";
+import { addUnfinishedRecord } from "../utils/localStorage";
 
 //画面上のカードの位置調整CSS
 const reasonsGridBase = "grid gap-4  mb-4 mt-3 max-w-sm mx-auto";
@@ -102,22 +103,10 @@ export default function ReasonsChoice() {
       recordedAt,
     };
 
-    //2.今ある配列を取り出す（なければ空配列）
-    //localStorageにすでに保存されている記録一覧(unfinishedRecords)を取得（データがなければ空配列[]を返す）
-    //JSON.parse()：文字列になっているJSONデータを、実際のJavaScriptの配列やオブジェクトに戻す
-    //localStorage.getItem("unfinishedRecords"):unfinishedRecordsという名前で保存されているデータを取り出す
-    //振り返り済みの記録("records")とキーが被らないよう、未振り返り記録の専用キー名"unfinishedRecords"を使用
-    const unfinishedRecords: UnfinishedRecord[] = JSON.parse(
-      localStorage.getItem("unfinishedRecords") ?? "[]",
-    );
+    //2.未振り返りの記録(1のデータ)を1件だけ受け取って、既存の未振り返りの記録一覧に「1件のみ追加」して、保存する
+    addUnfinishedRecord(newRecord);
 
-    //3.新しい1件を追加して、書き戻す
-    //既存のunfinishedRecordsにnewRecordを1つ追加した新しい配列を作る
-    //振り返り済みの記録("records")とキーが被らないよう、未振り返り記録の専用キー名"unfinishedRecords"を使用
-    const updatedRecords = [...unfinishedRecords, newRecord];
-    localStorage.setItem("unfinishedRecords", JSON.stringify(updatedRecords));
-
-    //4.次の画面へ渡す（newRecordを使い回す）
+    //3.次の画面へ渡す（newRecordを使い回す）
     //navigate(遷移先, {state:{次のページに渡すデータ}})
     navigate("/reflection", { state: newRecord });
   };

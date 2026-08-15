@@ -8,6 +8,11 @@ import type {
   UnfinishedRecord,
 } from "../types";
 import { useState } from "react";
+import {
+  addRecord,
+  getUnfinishedRecords,
+  removeUnfinishedRecord,
+} from "../utils/localStorage";
 
 //記録内容ボックスのCSS
 const recordBase =
@@ -64,11 +69,8 @@ export default function Reflection() {
   //以下のlocation.state?.~は各データを前ページから取得する機能
   const location = useLocation();
 
-  //localStorageに保存されている[未振り返りの(＝行動、理由選択まで保存している)]記録一覧を取得
-  //振り返り済みの記録("records")とキーが被らないよう、未振り返り記録の専用キー名"unfinishedRecords"を使用
-  const unfinishedRecords: UnfinishedRecord[] = JSON.parse(
-    localStorage.getItem("unfinishedRecords") ?? "[]",
-  );
+  //localStorageに保存されている未振り返り記録の全件を取得
+  const unfinishedRecords: UnfinishedRecord[] = getUnfinishedRecords();
 
   //location.state(前ページから渡されたデータ)があればそれを使い、
   //なければlocalStorageに保存されているデータ(＝未振り返り記録)の最新1件を使う
@@ -110,33 +112,10 @@ export default function Reflection() {
       memo,
     };
 
-    //localStorageにすでに保存されている記録一覧(records)を取得（データがなければ空配列[]を返す）
-    //JSON.parse()：文字列になっているJSONデータを、実際のJavaScriptの配列やオブジェクトに戻す
-    //localStorage.getItem("records"):recordsという名前で保存されているデータを取り出す
-    const existingRecords: SaveRecord[] = JSON.parse(
-      localStorage.getItem("records") ?? "[]",
-    );
-
-    //今回の記録(record)を[既存の配列の中身(他の記録データ)]の末尾に追加して、再度保存する
-    const updatedRecords = [...existingRecords, record];
-    //localStorage.setItem("records", ...)：updatedRecords(配列)を、[localStorageに保存できる文字列に変換した結果]を、recordsという名前で保存する
-    //JSON.stringify()：JavaScriptの配列やオブジェクトを、localStorageに保存できる文字列に変換
-    //振り返り済みの記録一覧を保存（未振り返り一覧とキー名が被らないよう、振り返り済みの専用キー"records"に統一）
-    localStorage.setItem("records", JSON.stringify(updatedRecords));
-
-    //unfinishedRecords(未振り返り一覧)から、今回振り返った1件を取り除く
-    //.filter()：条件がtrue(条件通り)のものだけを残し、false(条件と異なる)のものは残さない(＝取り除く)処理
-    //「item.recordedAt(＝未振り返り一覧の中の1件) !== record.recordedAt(＝今回振り返り終えた記録)(一致していない＝別のレコード＝今回のtrue)」だけ残るため、
-    //一致するもの(＝今回振り返り終えたレコードそのもの)だけが結果的に取り除かれる
-    const remainingUnfinished = unfinishedRecords.filter(
-      (item) => item.recordedAt !== record.recordedAt,
-    );
-
-    //未振り返りの記録一覧を保存（"records"と同じキーにすると上書きされるため、未振り返り記録の専用別キー"unfinishedRecords"を使用）
-    localStorage.setItem(
-      "unfinishedRecords",
-      JSON.stringify(remainingUnfinished),
-    );
+    //先ほど上記処理で「振り返り済みになったばかりの記録」を受け取って、既存の振り返り済み記録一覧に「先ほど振り返り済みになった1件を追加」する
+    addRecord(record);
+    //未振り返り一覧から「振り返り済みになった記録1件」を.filter()で除去して保存する
+    removeUnfinishedRecord(record.recordedAt);
 
     navigate("/action");
   };
