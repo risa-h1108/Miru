@@ -16,7 +16,7 @@ export default function Analysis() {
     setAnalysisRecord(records);
   }, []);
 
-  //理由ごとの選択回数を集計する処理
+  //(全件対象)理由ごとの選択回数を集計する処理
   //└analysisRecordの中の各記録を1件ずつ処理し、最終的に「理由ごとの回数」をまとめたオブジェクト(reasonCounts)を作る
   //.reduce()：「配列を順番に処理してまとめる」メソッド
   const reasonCounts = analysisRecord.reduce(
@@ -36,6 +36,20 @@ export default function Analysis() {
     //最初の扱い(,{})：まだ何も数えていない「空のオブジェクト」。
     //型はTSに標準で存在する「Record<string, number>」(キーが文字列("疲れている"など)、値が数値(該当理由の既出回数)を使用。
     //Record<string, number>の型を用いると、{"疲れている": 2,"時間がない": 1,}のようになる。
+    {} as Record<string, number>,
+  );
+
+  //(やらないを選択した記録のみ対象)理由ごとの「やらなかった」件数を集計する処理
+  const falseDecisionCounts = analysisRecord.reduce(
+    (count, record) => {
+      //記録内で「やらない」を選択した記録のみをifでチェックして、falseを選んだ記録だけ理由ごとにカウントアップする
+      if (record.selectedDecision === false) {
+        record.selectedReasons.forEach((reason) => {
+          count[reason] = (count[reason] ?? 0) + 1;
+        });
+      }
+      return count;
+    },
     {} as Record<string, number>,
   );
 
