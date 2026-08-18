@@ -16,7 +16,7 @@ export default function Analysis() {
     setAnalysisRecord(records);
   }, []);
 
-  //(全件対象)理由ごとの選択回数を集計する処理
+  //理由ごとの選択回数を集計する処理(全件の理由別回数)
   //└analysisRecordの中の各記録を1件ずつ処理し、最終的に「理由ごとの回数」をまとめたオブジェクト(reasonCounts)を作る
   //.reduce()：「配列を順番に処理してまとめる」メソッド
   const reasonCounts = analysisRecord.reduce(
@@ -39,11 +39,29 @@ export default function Analysis() {
     {} as Record<string, number>,
   );
 
-  //(やらないを選択した記録のみ対象)理由ごとの「やらなかった」件数を集計する処理
+  //理由ごとの「やらなかった」件数を集計する処理(「やらなかった」時の理由別回数)
   const falseDecisionCounts = analysisRecord.reduce(
     (count, record) => {
       //記録内で「やらない」を選択した記録のみをifでチェックして、falseを選んだ記録だけ理由ごとにカウントアップする
       if (record.selectedDecision === false) {
+        record.selectedReasons.forEach((reason) => {
+          count[reason] = (count[reason] ?? 0) + 1;
+        });
+      }
+      return count;
+    },
+    {} as Record<string, number>,
+  );
+
+  //理由ごとに『後悔(regret)』だった件数を集計する処理(「やらなかった」かつ「後悔した」時の理由別回数)
+  const regretReasonCounts = analysisRecord.reduce(
+    (count, record) => {
+      if (
+        //記録済みのデータ内で「やるorやらない」を「やらない」と選択したデータと
+        //記録済みのデータ内で「結果」を「後悔」と選択したデータが両方満たすときだけカウントする
+        record.selectedDecision === false &&
+        record.selectedResult === "regret"
+      ) {
         record.selectedReasons.forEach((reason) => {
           count[reason] = (count[reason] ?? 0) + 1;
         });
