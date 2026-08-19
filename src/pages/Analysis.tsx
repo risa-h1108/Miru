@@ -53,7 +53,7 @@ export default function Analysis() {
     {} as Record<string, number>,
   );
 
-  //理由ごとに『後悔(regret)』だった件数を集計する処理(「やらなかった」かつ「後悔した」時の理由別回数)
+  //理由ごとに「後悔(regret)」だった件数を集計する処理(「やらなかった」かつ「後悔した」時の理由別回数)
   const regretReasonCounts = analysisRecord.reduce(
     (count, record) => {
       if (
@@ -70,6 +70,17 @@ export default function Analysis() {
     },
     {} as Record<string, number>,
   );
+
+  //件数から後悔率(%)を計算する処理
+  //理由ごとの後悔回数(rate)を計算し、{ reason, rate }という形にまとめる
+  const regretRates = Object.keys(falseDecisionCounts).map((reason) => {
+    const rate =
+      //regretReasonCounts[reason]：[]は取り出し(参照)の意味
+      //regretReasonCountsというオブジェクトの中からreasonという名前(ex)”疲れている”など)に対応する値(何回選択されたか)を読み取る
+      (regretReasonCounts[reason] / falseDecisionCounts[reason]) * 100;
+    //{ reason: "疲れている", rate: 40 }のようなオブジェクトになる
+    return { reason: reason, rate: rate };
+  });
 
   return (
     <div>
