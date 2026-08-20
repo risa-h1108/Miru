@@ -72,12 +72,15 @@ export default function Analysis() {
   );
 
   //件数から後悔率(%)を計算する処理
-  //理由ごとの後悔回数(rate)を計算し、{ reason, rate }という形にまとめる
+  //Object.keys()：オブジェクト(()内のもの)に実際にあるキーだけを返すため、
+  //Object.keys(falseDecisionCounts)で取り出すreasonは、必ず1回以上カウントされたキーだけの為、0にはならない。
   const regretRates = Object.keys(falseDecisionCounts).map((reason) => {
+    //理由ごとの後悔回数(rate)を計算し、{ reason, rate }という形にまとめる
     const rate =
       //regretReasonCounts[reason]：[]は取り出し(参照)の意味
-      //regretReasonCountsというオブジェクトの中からreasonという名前(ex)”疲れている”など)に対応する値(何回選択されたか)を読み取る
-      (regretReasonCounts[reason] / falseDecisionCounts[reason]) * 100;
+      //└regretReasonCountsというオブジェクトの中からreasonという名前(ex)”疲れている”など)に対応する値(何回選択されたか)を読み取る
+      //(regretReasonCounts[reason] ?? 0)： 該当理由が一度も「後悔」として記録されていない(undefined)場合は0として扱う
+      ((regretReasonCounts[reason] ?? 0) / falseDecisionCounts[reason]) * 100;
     //{ reason: "疲れている", rate: 40 }のようなオブジェクトになる
     return { reason: reason, rate: rate };
   });
