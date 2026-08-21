@@ -96,6 +96,29 @@ export default function Analysis() {
         <p className="text-[20px] pl-1">理由別の後悔率（やらなかった時）</p>
       </div>
 
+      {/* 理由別の後悔率バーの表示 */}
+      <div>
+        {/*map処理で7つのバーを生成*/}
+        {regretRates.map((item) => (
+          <div key={item.reason}>
+            {/* 理由名(「疲れている」など)を表示 */}
+            <span>{item.reason}</span>
+
+            {/* バーの「枠(背景)」 */}
+            {/* 空白部分を視覚的に見せれるように、バーの中身を[枠内のdiv]に入れる */}
+            <div className="bg-gray-200 w-full h-4 rounded">
+              {/* バーの「中身(rateに応じて伸びる部分)」 */}
+              <div
+                className="bg-blue-400 h-4 rounded"
+                //item.rate(後悔率の数値＝後悔している割合)を使って、バーの横幅(width)をrate%にする
+                //内側の{}は「CSSプロパティをオブジェクトで書く」という意味
+                style={{ width: `${item.rate}%` }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+
       <Link to="/" />
     </div>
   );
