@@ -77,12 +77,14 @@ export default function Analysis() {
   const regretRates = Object.keys(falseDecisionCounts)
     .map((reason) => {
       //理由ごとの後悔回数(rate、割合)を計算し、{ reason, rate }という形にまとめる
-      const rate =
+      //Math.round():計算式(... * 100)が終わった後までMath.round()で囲んで、計算時に四捨五入して整数にするメソッドを使用
+      const rate = Math.round(
         //regretReasonCounts[reason]：[]は取り出し(参照)の意味
         //└regretReasonCountsというオブジェクトの中からreasonという名前(ex)”疲れている”など)に対応する値(何回選択されたか)を読み取る
         //(regretReasonCounts[reason] ?? 0)： 該当理由が一度も「後悔」として記録されていない(undefined)場合は0として扱う
-        ((regretReasonCounts[reason] ?? 0) / falseDecisionCounts[reason]) * 100;
-      //{ reason: "疲れている", rate: 40 }のようなオブジェクトになる
+        ((regretReasonCounts[reason] ?? 0) / falseDecisionCounts[reason]) * 100,
+      );
+      //{ reason: "疲れている", rate: 40 }のようなオブジェクトで返される
       return { reason: reason, rate: rate };
     })
     //後悔率の高い順(大きい順)に.sortで並ばせて、ランキング形式にする
@@ -120,6 +122,9 @@ export default function Analysis() {
                 style={{ width: `${item.rate}%` }}
               />
             </div>
+
+            {/* 理由ごとのパーセンテージ％を各バーの右側に表示する */}
+            <span>{item.rate}%</span>
           </div>
         ))}
       </div>
