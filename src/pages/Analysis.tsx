@@ -5,6 +5,10 @@ import { Link } from "react-router-dom";
 import type { SaveRecord } from "../types";
 import { getRecords } from "../utils/localStorage";
 
+//7件それぞれの理由ごとにバーとパーセンテージ％を横並びにするCSS
+const regretBarRowBase =
+  "w-full max-w-sm mx-auto flex justify-center items-center mt-4";
+
 export default function Analysis() {
   //選択後の記録データを複数管理する
   //([]):getRecordsがデータなしのとき[](配列)を返すようにする。
@@ -104,16 +108,21 @@ export default function Analysis() {
       </div>
 
       {/* 理由別の後悔率バーの表示 */}
-      <div>
+      <div className="mt-8">
         {/*map処理で7つのバーを生成*/}
         {regretRates.map((item) => (
-          <div key={item.reason}>
+          //1件ごとに(理由名・バー・パーセンテージを1セットとして)横並びにする
+          <div key={item.reason} className={regretBarRowBase}>
             {/* 理由名(「疲れている」など)を表示 */}
-            <span>{item.reason}</span>
+            {/* shrink-0：理由名が縮まないようにする、whitespace-nowrap：折り返さない */}
+            <span className="w-35 shrink-0 whitespace-nowrap">
+              {item.reason}
+            </span>
 
             {/* バーの「枠(背景)」 */}
             {/* 空白部分を視覚的に見せれるように、バーの中身を[枠内のdiv]に入れる */}
-            <div className="bg-gray-200 w-full h-4 rounded">
+            {/* flex-1：残りのスペースをバーが埋める */}
+            <div className="bg-gray-200 flex-1 h-4 rounded">
               {/* バーの「中身(rateに応じて伸びる部分)」 */}
               <div
                 className="bg-blue-400 h-4 rounded"
@@ -124,7 +133,9 @@ export default function Analysis() {
             </div>
 
             {/* 理由ごとのパーセンテージ％を各バーの右側に表示する */}
-            <span>{item.rate}%</span>
+            {/* shrink-0：%が縮まないようにする、w-10:数字％の幅が数字によって異ならないように指定、
+            　　text-right：数字を右揃えにする　*/}
+            <span className="w-10 pl-2 text-right shrink-0">{item.rate}%</span>
           </div>
         ))}
       </div>
