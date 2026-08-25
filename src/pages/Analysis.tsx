@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import type { SaveRecord } from "../types";
 import { getRecords } from "../utils/localStorage";
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
 //7件それぞれの理由ごとにバーとパーセンテージ％を横並びにするCSS
 const regretBarRowBase =
@@ -93,6 +94,7 @@ export default function Analysis() {
     })
     //後悔率の高い順(大きい順)に.sortで並ばせて、ランキング形式にする
     .sort((a, b) => b.rate - a.rate);
+  console.log(regretRates);
 
   return (
     <div>
@@ -109,38 +111,58 @@ export default function Analysis() {
 
       {/* 理由別の後悔率バーの表示 */}
       <div className="mt-8">
-        {/*map処理で7つのバーを生成*/}
-        {regretRates.map((item) => (
-          //1件ごとに(理由名・バー・パーセンテージを1セットとして)横並びにする
-          <div key={item.reason} className={regretBarRowBase}>
-            {/* 理由名(「疲れている」など)を表示 */}
-            {/* shrink-0：理由名が縮まないようにする、whitespace-nowrap：折り返さない */}
-            <span className="w-35 shrink-0 whitespace-nowrap">
-              {item.reason}
-            </span>
+        {/* 今後、複数種類のグラフを使用する可能性を考え、データ可視化にチャートライブラリのRechartsを使用 */}
+        {/* UI・レイアウト → Tailwind、データ可視化 → Recharts と役割を分担 */}
 
-            {/* バーの「枠(背景)」 */}
-            {/* 空白部分を視覚的に見せれるように、バーの中身を[枠内のdiv]に入れる */}
-            {/* flex-1：残りのスペースをバーが埋める */}
-            <div className="bg-gray-200 flex-1 h-4 rounded">
-              {/* バーの「中身(rateに応じて伸びる部分)」 */}
-              <div
-                className="bg-blue-400 h-4 rounded"
-                //item.rate(後悔率の数値＝後悔している割合)を使って、バーの横幅(width)をrate%にする
-                //内側の{}は「CSSプロパティをオブジェクトで書く」という意味
-                style={{ width: `${item.rate}%` }}
-              />
-            </div>
+        {/* width="100%"：親要素の幅に合わせる、height={300}：高さは300px確保する */}
+        <ResponsiveContainer width="100%" height={300}>
+          {/* layout="vertical":(デフォルトが縦の為)棒を横方向に伸ばす */}
+          <BarChart data={regretRates} layout="vertical">
+            {/* 横軸を数字にして、後悔率を表示 */}
+            {/* hide:軸を表示しない */}
+            <XAxis type="number" hide />
 
-            {/* 理由ごとのパーセンテージ％を各バーの右側に表示する */}
-            {/* shrink-0：%が縮まないようにする、w-10:数字％の幅が数字によって異ならないように指定、
-            　　text-right：数字を右揃えにする　*/}
-            <span className="w-10 pl-2 text-right shrink-0">{item.rate}%</span>
-          </div>
-        ))}
+            {/* 縦軸をカテゴリーにして、理由名を表示 */}
+            {/* hide:軸を表示しない */}
+            <YAxis type="category" dataKey="reason" hide />
+
+            {/* regretRatesの各データの中にあるrateの値を「棒の大きさ(長さ)」として使用 */}
+            <Bar dataKey="rate" />
+          </BarChart>
+        </ResponsiveContainer>
       </div>
 
       <Link to="/" />
     </div>
   );
 }
+
+//  {/*map処理で7つのバーを生成*/}
+//         {regretRates.map((item) => (
+//           //1件ごとに(理由名・バー・パーセンテージを1セットとして)横並びにする
+//           <div key={item.reason} className={regretBarRowBase}>
+//             {/* 理由名(「疲れている」など)を表示 */}
+//             {/* shrink-0：理由名が縮まないようにする、whitespace-nowrap：折り返さない */}
+//             <span className="w-35 shrink-0 whitespace-nowrap">
+//               {item.reason}
+//             </span>
+
+//             {/* バーの「枠(背景)」 */}
+//             {/* 空白部分を視覚的に見せれるように、バーの中身を[枠内のdiv]に入れる */}
+//             {/* flex-1：残りのスペースをバーが埋める */}
+//             <div className="bg-gray-200 flex-1 h-4 rounded">
+//               {/* バーの「中身(rateに応じて伸びる部分)」 */}
+//               <div
+//                 className="bg-blue-400 h-4 rounded"
+//                 //item.rate(後悔率の数値＝後悔している割合)を使って、バーの横幅(width)をrate%にする
+//                 //内側の{}は「CSSプロパティをオブジェクトで書く」という意味
+//                 style={{ width: `${item.rate}%` }}
+//               />
+//             </div>
+
+//             {/* 理由ごとのパーセンテージ％を各バーの右側に表示する */}
+//             {/* shrink-0：%が縮まないようにする、w-10:数字％の幅が数字によって異ならないように指定、
+//             　　text-right：数字を右揃えにする　*/}
+//             <span className="w-10 pl-2 text-right shrink-0">{item.rate}%</span>
+//           </div>
+//         ))}
