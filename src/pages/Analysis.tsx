@@ -4,7 +4,14 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import type { SaveRecord } from "../types";
 import { getRecords } from "../utils/localStorage";
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import {
+  Bar,
+  BarChart,
+  LabelList,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 //7件それぞれの理由ごとにバーとパーセンテージ％を横並びにするCSS
 const regretBarRowBase =
@@ -117,17 +124,29 @@ export default function Analysis() {
         {/* width="100%"：親要素の幅に合わせる、height={300}：高さは300px確保する */}
         <ResponsiveContainer width="100%" height={300}>
           {/* layout="vertical":(デフォルトが縦の為)棒を横方向に伸ばす */}
-          <BarChart data={regretRates} layout="vertical">
+          <BarChart
+            data={regretRates}
+            layout="vertical"
+            margin={{ left: 140, right: 50 }}
+          >
             {/* 横軸を数字にして、後悔率を表示 */}
-            {/* hide:軸を表示しない */}
-            <XAxis type="number" hide />
+            {/* hide:軸を表示しない domain：横軸が常に0-100までになるよう固定*/}
+            <XAxis type="number" domain={[0, 100]} hide />
 
             {/* 縦軸をカテゴリーにして、理由名を表示 */}
             {/* hide:軸を表示しない */}
             <YAxis type="category" dataKey="reason" hide />
 
             {/* regretRatesの各データの中にあるrateの値を「棒の大きさ(長さ)」として使用 */}
-            <Bar dataKey="rate" />
+            {/* fill属性(図形の中身)に棒の背景色(#e5e7eb)を指定、radius：バーの角を丸くする指定*/}
+            <Bar dataKey="rate" background={{ fill: "#e5e7eb" }} radius={10}>
+              <LabelList dataKey="reason" position="left" />
+              <LabelList
+                dataKey="rate"
+                position="right"
+                formatter={(value) => `${value}%`} //valueには各行のrate(後悔率の数値)が入る。返り値に％をつけた形
+              />
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       </div>
