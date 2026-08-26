@@ -127,7 +127,8 @@ export default function Analysis() {
           <BarChart
             data={regretRates}
             layout="vertical"
-            margin={{ left: 140, right: 50 }}
+            margin={{ left: 170, right: 80 }}
+            barCategoryGap="25%" //理由・バー・％を1セットとした、各セット間の縦の間隔を調整
           >
             {/* 横軸を数字にして、後悔率を表示 */}
             {/* hide:軸を表示しない domain：横軸が常に0-100までになるよう固定*/}
@@ -138,9 +139,20 @@ export default function Analysis() {
             <YAxis type="category" dataKey="reason" hide />
 
             {/* regretRatesの各データの中にあるrateの値を「棒の大きさ(長さ)」として使用 */}
-            {/* fill属性(図形の中身)に棒の背景色(#e5e7eb)を指定、radius：バーの角を丸くする指定*/}
-            <Bar dataKey="rate" background={{ fill: "#e5e7eb" }} radius={10}>
-              <LabelList dataKey="reason" position="left" />
+            <Bar
+              dataKey="rate"
+              barSize={22} //バーの太さ(縦幅)を指定
+              //fill属性でバーの背景色(#e5e7eb)を指定、backgroundのradiusで背景の角を丸くする
+              background={{ fill: "#e5e7eb", radius: 10 }}
+              radius={10} //実際のバーの角を丸くする
+            >
+              {/* offset:基準点からの距離を決める(どの方向にずれるかはpositionが決めてる) */}
+              <LabelList
+                dataKey="reason"
+                position="left"
+                offset={145}
+                textAnchor="start"
+              />
               <LabelList
                 dataKey="rate"
                 position="right"
