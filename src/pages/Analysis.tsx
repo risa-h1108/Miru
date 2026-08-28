@@ -117,83 +117,66 @@ export default function Analysis() {
       </div>
 
       {/* 理由別の後悔率バーの表示 */}
-      <div className="mt-8">
-        {/* 今後、複数種類のグラフを使用する可能性を考え、データ可視化にチャートライブラリのRechartsを使用 */}
-        {/* UI・レイアウト → Tailwind、データ可視化 → Recharts と役割を分担 */}
 
-        {/* width="100%"：親要素の幅に合わせる、height={300}：高さは300px確保する */}
-        <ResponsiveContainer width="100%" height={300}>
-          {/* layout="vertical":(デフォルトが縦の為)棒を横方向に伸ばす */}
-          <BarChart
-            data={regretRates}
-            layout="vertical"
-            margin={{ left: 170, right: 80 }}
-            barCategoryGap="25%" //理由・バー・％を1セットとした、各セット間の縦の間隔を調整
-          >
-            {/* 横軸を数字にして、後悔率を表示 */}
-            {/* hide:軸を表示しない domain：横軸が常に0-100までになるよう固定*/}
-            <XAxis type="number" domain={[0, 100]} hide />
+      {/* space-y-4：各バーの縦の隙間を調整 */}
+      <div className="mt-8 space-y-4">
+        {/*map処理で7つのバーを生成*/}
+        {regretRates.map((item) => (
+          //1件ごとに(理由名・バー・パーセンテージを1セットとして)横並びにする
+          <div key={item.reason} className={regretBarRowBase}>
+            {/* 理由名を表示 */}
+            {/* shrink-0：理由名が縮まないようにする、whitespace-nowrap：折り返さない */}
+            <span className="w-35 shrink-0 whitespace-nowrap">
+              {item.reason}
+            </span>
 
-            {/* 縦軸をカテゴリーにして、理由名を表示 */}
-            {/* hide:軸を表示しない */}
-            <YAxis type="category" dataKey="reason" hide />
+            {/* バー部分 */}
+            {/* 理由名、％のレイアウト：Tailwind、バーの背景色、色付き部分：Rechartsと役割を分担 */}
 
-            {/* regretRatesの各データの中にあるrateの値を「棒の大きさ(長さ)」として使用 */}
-            <Bar
-              dataKey="rate"
-              barSize={22} //バーの太さ(縦幅)を指定
-              //fill属性でバーの背景色(#e5e7eb)を指定、backgroundのradiusで背景の角を丸くする
-              background={{ fill: "#e5e7eb", radius: 10 }}
-              radius={10} //実際のバーの角を丸くする
-            >
-              {/* offset:基準点からの距離を決める(どの方向にずれるかはpositionが決めてる) */}
-              <LabelList
-                dataKey="reason"
-                position="left"
-                offset={145}
-                textAnchor="start"
-              />
-              <LabelList
-                dataKey="rate"
-                position="right"
-                formatter={(value) => `${value}%`} //valueには各行のrate(後悔率の数値)が入る。返り値に％をつけた形
-              />
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+            {/* flex-1：残りのスペースをバーが埋める */}
+            <div className="flex-1">
+              {/* width="100%"：親要素の幅に合わせる、height={20}：高さは1行分の薄いバーになるように調整 */}
+              <ResponsiveContainer width="100%" height={20}>
+                <BarChart
+                  //全件(regretRates)ではなく、各バーの1件ずつだけを配列にして渡す。trackという「常に100固定」のダミー値を追加
+                  data={[{ ...item, track: 100 }]}
+                  layout="vertical" //(デフォルトが縦の為)棒を横方向に伸ばす
+                  barGap="-100%" //track用・rate用の2本のBarを横にずらさず、完全に重ねて描画するため
+                  margin={{ top: 0, right: 0, bottom: 0, left: 0 }} //理由名・%用の余白はTailwindCSSで調整するため、Rechartsでは全て0を指定
+                >
+                  {/* 横軸を数字にして、後悔率を表示 */}
+                  {/* hide:軸を表示しない domain：横軸が常に0-100までになるよう固定*/}
+                  <XAxis type="number" domain={[0, 100]} hide />
+
+                  {/* 縦軸をカテゴリーにして、理由名を表示 */}
+                  {/* hide:軸を表示しない */}
+                  <YAxis type="category" dataKey="reason" hide />
+
+                  {/* 補足：backgroundプロパティは値が0のとき背景ごと描画されない挙動があったため、
+                  常に固定値(track)を持つBarと、実際の値(rate)を持つBarを重ねて描く方式に変更した　*/}
+
+                  {/* 背景トラック用:常にtrack=100なので、rateの値に関わらず必ず描画される */}
+                  <Bar dataKey="track" fill="#e5e7eb" radius={10} />
+
+                  {/* 色付きの部分：実際の後悔率のバー */}
+                  <Bar
+                    dataKey="rate"
+                    fill="#EFA477" //色付き部分の色をfillで直接指定。
+                    radius={10} //実際のバーの角を丸くする
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* 理由ごとのパーセンテージ％を各バーの右側に表示する */}
+            {/* shrink-0：%が縮まないようにする、w-10:数字％の幅が数字によって異ならないように指定、
+             　　text-right：数字を右揃えにする　*/}
+            <span className="w-10 pl-2 text-right shrink-0">{item.rate}%</span>
+          </div>
+        ))}
       </div>
 
       <Link to="/" />
     </div>
   );
 }
-
-//  {/*map処理で7つのバーを生成*/}
-//         {regretRates.map((item) => (
-//           //1件ごとに(理由名・バー・パーセンテージを1セットとして)横並びにする
-//           <div key={item.reason} className={regretBarRowBase}>
-//             {/* 理由名(「疲れている」など)を表示 */}
-//             {/* shrink-0：理由名が縮まないようにする、whitespace-nowrap：折り返さない */}
-//             <span className="w-35 shrink-0 whitespace-nowrap">
-//               {item.reason}
-//             </span>
-
-//             {/* バーの「枠(背景)」 */}
-//             {/* 空白部分を視覚的に見せれるように、バーの中身を[枠内のdiv]に入れる */}
-//             {/* flex-1：残りのスペースをバーが埋める */}
-//             <div className="bg-gray-200 flex-1 h-4 rounded">
-//               {/* バーの「中身(rateに応じて伸びる部分)」 */}
-//               <div
-//                 className="bg-blue-400 h-4 rounded"
-//                 //item.rate(後悔率の数値＝後悔している割合)を使って、バーの横幅(width)をrate%にする
-//                 //内側の{}は「CSSプロパティをオブジェクトで書く」という意味
-//                 style={{ width: `${item.rate}%` }}
-//               />
-//             </div>
-
-//             {/* 理由ごとのパーセンテージ％を各バーの右側に表示する */}
-//             {/* shrink-0：%が縮まないようにする、w-10:数字％の幅が数字によって異ならないように指定、
-//             　　text-right：数字を右揃えにする　*/}
-//             <span className="w-10 pl-2 text-right shrink-0">{item.rate}%</span>
-//           </div>
-//         ))}
