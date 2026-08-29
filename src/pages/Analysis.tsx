@@ -4,18 +4,16 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import type { SaveRecord } from "../types";
 import { getRecords } from "../utils/localStorage";
-import {
-  Bar,
-  BarChart,
-  LabelList,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import { Icon } from "@iconify/react";
 
 //7件それぞれの理由ごとにバーとパーセンテージ％を横並びにするCSS
 const regretBarRowBase =
   "w-full max-w-sm mx-auto flex justify-center items-center mt-4";
+
+//アドバイスボックスのCSS
+const tipBoxBase =
+  "w-full max-w-sm mx-auto h-40 mt-16 rounded-lg border border-amber-300 bg-amber-100";
 
 export default function Analysis() {
   //選択後の記録データを複数管理する
@@ -174,6 +172,23 @@ export default function Analysis() {
             <span className="w-10 pl-2 text-right shrink-0">{item.rate}%</span>
           </div>
         ))}
+      </div>
+
+      {/*アドバイスボックス*/}
+      <div className={tipBoxBase}>
+        <h3 className="text-[20px] mt-3 mb-1 px-4 flex items-center justify-center">
+          <Icon icon={"lucide:lightbulb"} width={25} height={25} />
+          あなたへのアドバイス
+        </h3>
+        <p className="text-[16px] text-center px-5 ">
+          「疲れている」を理由にやらなかったときは、
+          <br />
+          後悔しやすい傾向はがあります。
+          <br />
+          「5分だけやる」など小さく始めることで
+          <br />
+          行動しやすくなります！
+        </p>
       </div>
 
       <Link to="/" />
