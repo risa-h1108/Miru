@@ -144,7 +144,7 @@ export default function ReasonsChoice() {
         {/* px: padding-left + padding-right の略
         justify-center:Flexboxの「主軸（基本は横方向）」に沿って中央寄せ
         items-center:Flexboxの「交差軸（基本は縦方向）」に沿って中央寄せ */}
-        <h3 className="text-[20px]  mt-3 mb-3 px-4 flex items-center justify-center">
+        <h3 className="text-[20px] mt-3 mb-3 px-4 flex items-center justify-center">
           <Icon icon={"lucide:lightbulb"} width={25} height={25} />
           ちょっとした気づき
         </h3>
