@@ -47,3 +47,9 @@ export type SaveRecord = {
   selectedResult: Result | null;
   memo: string;
 };
+
+//理由ごとのアドバイス文、1件分の型
+export type Advice = {
+  reason: string;
+  advice: string;
+};
