@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import type { SaveRecord } from "../types";
+import type { Advice, SaveRecord } from "../types";
 import { getRecords } from "../utils/localStorage";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { Icon } from "@iconify/react";
@@ -14,6 +14,45 @@ const regretBarRowBase =
 //アドバイスボックスのCSS
 const tipBoxBase =
   "w-full max-w-sm mx-auto h-40 mt-16 rounded-lg border border-amber-300 bg-amber-100";
+
+//理由ごとのアドバイス一覧
+const adviceList: Advice[] = [
+  {
+    reason: "疲れている",
+    advice:
+      "意外と「3分だけ」ならできることが多いです。タイマーを3分だけセットして始めてみましょう！",
+  },
+  {
+    reason: "面倒くさい",
+    advice:
+      "準備だけ先に済ませておくと、次に取り掛かるハードルが下がります。道具を出す・アプリを開くだけでもOKです！",
+  },
+  {
+    reason: "不安がある",
+    advice:
+      "不安な理由を紙に書き出すと、いくつかに分解できます。その中で「今すぐ確認できるもの」(例:やり方をひとつ調べる)から1つ潰してみましょう！",
+  },
+  {
+    reason: "時間がない",
+    advice:
+      "予定の前後に「3分だけ」の枠をあらかじめ確保しておくと、時間がない日でも取り掛かりやすくなります！",
+  },
+  {
+    reason: "他のことを優先したい",
+    advice:
+      "他の予定の前に1分だけ着手しておくと、後回しにせず終わらせやすくなります。先に少しだけ手をつけてみましょう！",
+  },
+  {
+    reason: "やり方が分からない",
+    advice:
+      "わからない部分だけを1つ検索してみましょう。全部理解してから始めるのではなく、わかったところまでで一旦手を動かしてみるのがコツです！",
+  },
+  {
+    reason: "その他",
+    advice:
+      "できなかった理由を一言メモしておくと、次回同じ状況になっても対策を立てやすくなります！",
+  },
+];
 
 export default function Analysis() {
   //選択後の記録データを複数管理する
@@ -77,6 +116,17 @@ export default function Analysis() {
     //後悔率の高い順(大きい順)に.sortで並ばせて、ランキング形式にする
     .sort((a, b) => b.rate - a.rate);
   console.log(regretRates);
+
+  //後悔率が最も高い理由名を取得(regretRatesはソート済みなので先頭(0)が後悔率最大)
+  //regretRates[0]でそのオブジェクト({ reason: "疲れている", rate: 80 }など)を取り出し、
+  //.reasonをつなげることで、その中の理由名(文字列)だけを取り出している
+  const topReason = regretRates[0].reason;
+
+  //topReason(最も後悔率が高い理由の名前)に対応するアドバイスを、adviceListの中から探す
+  //.find()：配列の中から、条件に最初に一致した1件だけを返すメソッド
+  //adviceListを1件ずつ調べ、item.reason(各アドバイスに紐づく理由名)がtopReasonと一致するものを探す
+  //一致するものが見つからなければ、matchedはundefinedになる
+  const matched = adviceList.find((item: Advice) => item.reason === topReason);
 
   return (
     <div>
