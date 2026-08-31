@@ -128,6 +128,12 @@ export default function Analysis() {
   //一致するものが見つからなければ、matchedはundefinedになる
   const matched = adviceList.find((item: Advice) => item.reason === topReason);
 
+  //matched(topReason(最も後悔率が高い理由名)に一致したアドバイス)があればそれを使い、
+  //無ければ(adviceListに一致する理由が登録されていないイレギュラー時)フォールバック用の文言(?? "ここ")を使う
+  //matched?.advice：matchedがundefinedの場合はエラーにならず、undefinedを返す(?:オプショナルチェイニング)
+  const fallbackAdvice =
+    matched?.advice ?? "該当するアドバイスが見つかりませんでした。";
+
   return (
     <div>
       <div className="max-w-sm mx-auto mt-3">
