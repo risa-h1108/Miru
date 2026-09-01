@@ -6,6 +6,7 @@ import type { Advice, SaveRecord } from "../types";
 import { getRecords } from "../utils/localStorage";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { Icon } from "@iconify/react";
+import { reasonsList } from "./ReasonsChoice";
 
 //7件それぞれの理由ごとにバーとパーセンテージ％を横並びにするCSS
 const regretBarRowBase =
@@ -118,9 +119,11 @@ export default function Analysis() {
   console.log(regretRates);
 
   //後悔率が最も高い理由名を取得(regretRatesはソート済みなので先頭(0)が後悔率最大)
+  //regretRatesが記録が1件以上ある場合のみ、topReason以降を計算する。
+  //0件の場合、topReason・matched・displayAdviceは全てundefinedにする
   //regretRates[0]でそのオブジェクト({ reason: "疲れている", rate: 80 }など)を取り出し、
   //.reasonをつなげることで、その中の理由名(文字列)だけを取り出している
-  const topReason = regretRates[0].reason;
+  const topReason = regretRates.length > 0 ? regretRates[0].reason : undefined;
 
   //topReason(最も後悔率が高い理由の名前)に対応するアドバイスを、adviceListの中から探す
   //.find()：配列の中から、条件に最初に一致した1件だけを返すメソッド
@@ -128,11 +131,11 @@ export default function Analysis() {
   //一致するものが見つからなければ、matchedはundefinedになる
   const matched = adviceList.find((item: Advice) => item.reason === topReason);
 
+  //画面に表示するアドバイス文(matchedがあればそのadvice、無ければデフォルト文言)
   //matched(topReason(最も後悔率が高い理由名)に一致したアドバイス)があればそれを使い、
-  //無ければ(adviceListに一致する理由が登録されていないイレギュラー時)フォールバック用の文言(?? "ここ")を使う
+  //無ければ(adviceListに一致する理由が登録されていないイレギュラー時)フォールバック用の文言(?? "ここ")を使用
   //matched?.advice：matchedがundefinedの場合はエラーにならず、undefinedを返す(?:オプショナルチェイニング)
-  const fallbackAdvice =
-    matched?.advice ?? "該当するアドバイスが見つかりませんでした。";
+  const displayAdvice = matched?.advice ?? "データがまだ十分にありません。";
 
   return (
     <div>
@@ -214,13 +217,12 @@ export default function Analysis() {
           あなたへのアドバイス
         </h3>
         <p className="text-[16px] text-center px-5 ">
-          「疲れている」を理由にやらなかったときは、
+          「{topReason}」を理由にやらなかったときは、
           <br />
           後悔しやすい傾向はがあります。
           <br />
-          「5分だけやる」など小さく始めることで
-          <br />
-          行動しやすくなります！
+          {/* 画面に表示するアドバイス文を表示(matchedがあればそのadvice、無ければデフォルト文言) */}
+          {displayAdvice}
         </p>
       </div>
 
