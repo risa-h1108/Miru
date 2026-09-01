@@ -24,7 +24,7 @@ const submitButtonBase =
   "border bg-blue-400 text-white rounded-lg mt-6 w-full max-w-sm mx-auto h-12 flex items-center justify-center text-2xl";
 
 //理由カードの選択肢一覧
-const reasonsList: Cards[] = [
+export const reasonsList: Cards[] = [
   { id: "tired", label: "疲れている", icon: "lucide:bed" },
   { id: "hassle", label: "面倒くさい", icon: "lucide:annoyed" },
   { id: "worried", label: "不安がある", icon: "fluent:thinking-20-regular" },
