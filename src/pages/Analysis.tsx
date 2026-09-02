@@ -118,6 +118,16 @@ export default function Analysis() {
     .sort((a, b) => b.rate - a.rate);
   console.log(regretRates);
 
+  //ダミーデータ:記録が0件の場合、reasonsListの各理由名に[rate:0]を割り当てる
+  const emptyRates = reasonsList.map((item) => ({
+    reason: item.label,
+    rate: 0,
+  }));
+
+  //実際に表示する配列:記録が1件以上ある場合、regretRates(後悔率)を表示させる。
+  // 　　　　　　　　　記録が0件の場合、ダミー(emptyRates)を使用する。
+  const displayRates = regretRates.length > 0 ? regretRates : emptyRates;
+
   //後悔率が最も高い理由名を取得(regretRatesはソート済みなので先頭(0)が後悔率最大)
   //regretRatesが記録が1件以上ある場合のみ、topReason以降を計算する。
   //0件の場合、topReason・matched・displayAdviceは全てundefinedにする
@@ -153,9 +163,13 @@ export default function Analysis() {
       {/* 理由別の後悔率バーの表示 */}
 
       {/* space-y-4：各バーの縦の隙間を調整 */}
-      <div className="mt-8 space-y-4">
-        {/*map処理で7つのバーを生成*/}
-        {regretRates.map((item) => (
+      {/* regretRatesの要素数が0件の場合、opacity-40(透明度40%で薄く見える＝グレーアウト)を適用。
+      regretRatesの要素数が0件でない(1件以上ある)場合、空文字を返し、[mt-8 space-y-4]だけを適用。 */}
+      <div
+        className={`mt-8 space-y-4 ${regretRates.length === 0 ? "opacity-40" : ""}`}
+      >
+        {/*map処理で7つのバーを生成(記録が0件の場合はダミーデータ(emptyRates)を表示)*/}
+        {displayRates.map((item) => (
           //1件ごとに(理由名・バー・パーセンテージを1セットとして)横並びにする
           <div key={item.reason} className={regretBarRowBase}>
             {/* 理由名を表示 */}
