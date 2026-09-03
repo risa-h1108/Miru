@@ -226,16 +226,27 @@ export default function Analysis() {
 
       {/*アドバイスボックス*/}
       <div className={tipBoxBase}>
+        {/* タイトルの部分 */}
         <h3 className="text-[20px] mt-3 mb-1 px-4 flex items-center justify-center">
           <Icon icon={"lucide:lightbulb"} width={25} height={25} />
           あなたへのアドバイス
         </h3>
+
+        {/*後悔する理由の表示*/}
         <p className="text-[16px] text-center px-5 ">
-          「{topReason}」を理由にやらなかったときは、
+          {/* topReasonがある場合(記録が1件以上ある時)のみ、下記の2行を表示する */}
+          {/* topReason && (...)：topReasonがundefined(記録0件)のときはfalsyと判定され、右側の(...)は描画されずスキップされる */}
+          {/* <>...</>：複数行のJSXを、余計なdivタグを増やさずに1つにまとめるためのフラグメント */}
+          {topReason && (
+            <>
+              「{topReason}」を理由にやらなかったときは、
+              <br />
+              後悔しやすい傾向はがあります。
+            </>
+          )}
+
+          {/* 理由に応じたアドバイス文を表示(matchedがあればそのadvice、無ければデフォルト文言) */}
           <br />
-          後悔しやすい傾向はがあります。
-          <br />
-          {/* 画面に表示するアドバイス文を表示(matchedがあればそのadvice、無ければデフォルト文言) */}
           {displayAdvice}
         </p>
       </div>
