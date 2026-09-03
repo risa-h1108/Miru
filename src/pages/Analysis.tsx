@@ -1,6 +1,6 @@
 //分析画面
 
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import type { Advice, SaveRecord } from "../types";
 import { getRecords } from "../utils/localStorage";
@@ -21,37 +21,37 @@ const adviceList: Advice[] = [
   {
     reason: "疲れている",
     advice:
-      "意外と「3分だけ」ならできることが多いです。タイマーを3分だけセットして始めてみましょう！",
+      "意外と「3分だけ」ならできることが多いです。\nタイマーを3分だけセットして始めてみましょう！",
   },
   {
     reason: "面倒くさい",
     advice:
-      "準備だけ先に済ませておくと、次に取り掛かるハードルが下がります。道具を出す・アプリを開くだけでもOKです！",
+      "準備だけ先に済ませておくと、\n次に取り掛かるハードルが下がります。\n道具を出す・アプリを開くだけでもOKです！",
   },
   {
     reason: "不安がある",
     advice:
-      "不安な理由を紙に書き出すと、いくつかに分解できます。その中で「今すぐ確認できるもの」(例:やり方をひとつ調べる)から1つ潰してみましょう！",
+      "不安な理由を紙に書き出すと、\nいくつかに分解できます。\nその中で「今すぐ確認できること」\n(ex:やり方を1つ調べる)から1つずつ潰してみましょう！",
   },
   {
     reason: "時間がない",
     advice:
-      "予定の前後に「3分だけ」の枠をあらかじめ確保しておくと、時間がない日でも取り掛かりやすくなります！",
+      "予定の前後に「3分だけ」の枠を\nあらかじめ確保しておくと、\n時間がない日でも取り掛かりやすくなります！",
   },
   {
     reason: "他のことを優先したい",
     advice:
-      "他の予定の前に1分だけ着手しておくと、後回しにせず終わらせやすくなります。先に少しだけ手をつけてみましょう！",
+      "他の予定の前に1分だけ着手しておくと、\n後回しにせず終わらせやすくなります。\n先に少しだけ手をつけてみましょう！",
   },
   {
     reason: "やり方が分からない",
     advice:
-      "わからない部分だけを1つ検索してみましょう。全部理解してから始めるのではなく、わかったところまでで一旦手を動かしてみるのがコツです！",
+      "わからない部分だけを1つ検索してみましょう！\n全部理解してから始めるのではなく、\n「わかったところまで」で\n一旦手を動かしてみるのがコツです！",
   },
   {
     reason: "その他",
     advice:
-      "できなかった理由を一言メモしておくと、次回同じ状況になっても対策を立てやすくなります！",
+      "できなかった理由を一言メモしておくと、\n次回同じ状況になっても対策を立てやすくなります！",
   },
 ];
 
@@ -233,7 +233,8 @@ export default function Analysis() {
         </h3>
 
         {/*後悔する理由の表示*/}
-        <p className="text-[16px] text-center px-5 ">
+        {/* leading-relaxed:行間やや広めにする */}
+        <p className="text-[16px] text-center px-5 leading-relaxed">
           {/* topReasonがある場合(記録が1件以上ある時)のみ、下記の2行を表示する */}
           {/* topReason && (...)：topReasonがundefined(記録0件)のときはfalsyと判定され、右側の(...)は描画されずスキップされる */}
           {/* <>...</>：複数行のJSXを、余計なdivタグを増やさずに1つにまとめるためのフラグメント */}
@@ -245,9 +246,20 @@ export default function Analysis() {
             </>
           )}
 
-          {/* 理由に応じたアドバイス文を表示(matchedがあればそのadvice、無ければデフォルト文言) */}
           <br />
-          {displayAdvice}
+
+          {/* displayAdvice:理由に応じたアドバイス文を表示(matchedがあればそのadvice、無ければデフォルト文言) */}
+          {/* displayAdvice(理由に応じたアドバイス文)を、\nの位置で改行して表示する */}
+          {/* .split("\n")：文字列を\nの位置で分割し、文字列の配列にする(例:"A\nB" → ["A", "B"]) */}
+          {/* .map((line, index) => ...)：分割した各行(line)を1つずつ処理し、<br />付きで表示する */}
+          {/* <Fragment key={index}>：.mapで複数要素を作る際に必要なkeyを付けるための入れ物。
+                                     一意な値が無いためindex(連番)をkeyとして使用 */}
+          {displayAdvice.split("\n").map((line, index) => (
+            <Fragment key={index}>
+              {line}
+              <br />
+            </Fragment>
+          ))}
         </p>
       </div>
 
