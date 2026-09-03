@@ -14,7 +14,7 @@ const regretBarRowBase =
 
 //アドバイスボックスのCSS
 const tipBoxBase =
-  "w-full max-w-sm mx-auto h-40 mt-16 rounded-lg border border-amber-300 bg-amber-100";
+  "w-full max-w-sm mx-auto min-h-40 mt-16 pb-2 rounded-lg border border-amber-300 bg-amber-100";
 
 //理由ごとのアドバイス一覧
 const adviceList: Advice[] = [
