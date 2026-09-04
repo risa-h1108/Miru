@@ -57,7 +57,7 @@ export default function ActionChoice() {
 
   return (
     <div>
-      <div className=" max-w-sm mx-auto mt-3 ">
+      <div className="max-w-sm mx-auto mt-3">
         <h1 className="text-[24px] text-center">今、何をやりたい？</h1>
         <h2 className="text-[16px] text-center">行動を選択してください</h2>
       </div>

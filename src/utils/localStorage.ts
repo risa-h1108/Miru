@@ -1,48 +1,87 @@
-import type { Decision } from "../types";
+import type { SaveRecord, UnfinishedRecord } from "../types";
 
-//localStorageにデータ保存する用のキー名（STORAGE_KEY）を設定
-// "decisions"：新しく作った文字列で何も参照していない
-const STORAGE_KEY = "decisions";
+//localStorageにデータ保存する用の「振り返り済み記録のキー」
+const RECORDS_KEY = "records";
+//localStorageにデータ保存する用の「未振り返り記録のキー」
+const UNFINISHED_RECORDS_KEY = "unfinishedRecords";
 
-/// localStorageに保存されている「行動、理由、振り返り」の記録を「全部取得」する
-export function getDecisions(): Decision[] {
-  //キー名：「STORAGE_KEY＝"decisions"」を使用して、localStorageに保存されている値を取り出す処理
+//↓振り返り済み記録の処理
+
+//localStorageに保存されている振り返り済みの記録を「全件取得」する
+export function getRecords(): SaveRecord[] {
+  //RECORDS_KEYを元に情報を取得する処理
   //getItem():localStorageから()内に適したデータを取得するメソッド
   //  └返り値：「文字列」か「null」のどちらかのみ
-  const json = localStorage.getItem(STORAGE_KEY);
+  const json = localStorage.getItem(RECORDS_KEY);
 
-  //何のデータも保存されていない場合の処理
-  // jsonがnull（または空文字列）だったら、空の配列[]を返す
+  //保存データがない場合の処理
+  //jsonがnull（または空文字列）だったら、空の配列[]を返す
   if (!json) {
     return [];
   }
-
   //保存されているデータがある場合の処理
   //JSON.parse()：localStorageから取り出した「文字列」のデータを、元の形（配列やオブジェクト）に変換
-  // └返り値が「any型」のため、型アノテーション（:）では型チェックが素通りするので、
-  //  型アサーション（as）でDecision[]の形と明記。
-  return JSON.parse(json) as Decision[];
+  // └返り値が「any型」のため、型アノテーション（:）では型チェックが素通りするので、型アサーション（as）でSaveRecord[]の形で明記。
+  return JSON.parse(json) as SaveRecord[];
 }
 
-//localStorageに保存されている「行動、理由、振り返り」の記録を、複数件をまとめて「全部上書き」保存する
-//decisionList：Decision型のデータが複数件まとまった配列のデータ
+//localStorageに保存されている「振り返り済み」記録を、複数件をまとめて「全部上書き」保存する
 //void:保存処理だけで、何も返さない型アノテーション
-export function saveDecisions(decisionList: Decision[]): void {
-  //setItem(key(=データ名), value(=保存するデータ：mustで文字列))：localStorageにデータを保存するメソッド
-  //JSON.stringify():引数で受け取った配列（()内のdecisionList）を「文字列」に変換
-  //　└localStorageは「文字列」しか保存できないため、decisionList（データが「配列」）を文字列に変換
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(decisionList));
+export function saveRecords(records: SaveRecord[]): void {
+  //recordsを文字列(JSON.stringify)に変換し、RECORDS_KEYの棚にrecordsを保存する
+  localStorage.setItem(RECORDS_KEY, JSON.stringify(records));
 }
 
-//「行動、理由、振り返り」のいずれかの記録を 1件だけ新しく追加する
-//「全件取得→追加→全件保存」という3段階を踏む
+//振り返り済みになったばかりの記録(SaveRecord型の為)を1件だけ受け取って、既存の振り返り済み記録一覧に「1件のみ追加」する
+export function addRecord(record: SaveRecord): void {
+  const recordsList = getRecords(); //既にlocalStorageに保存されている記録を「全件取得」する
+  recordsList.push(record); //引数で受け取った新しい1件（record）を、recordsListの最後に「追加(.push)」する
+  saveRecords(recordsList); //「今までの記録＋新しい1件」になったrecordsListをsaveRecords関数に渡し、「全部上書き」保存する
+}
 
-export function addDecision(decision: Decision): void {
-  //既にlocalStorageに保存されている記録を「全部取得」する
-  const decisionList = getDecisions();
-  //引数で受け取った新しい1件（decision）を、decisionListの最後に「追加(.push)」する
-  //下記実施後、decisionListのデータは「今までの記録＋新しい1件」になる
-  decisionList.push(decision);
-  //「今までの記録＋新しい1件」になったdecisionListをsaveDecisions関数に渡し、「全部上書き」保存する
-  saveDecisions(decisionList);
+//↓未振り返り記録の処理
+
+//localStorageに保存されている未振り返りの記録を「全件取得」する(画面側で1件or全件表示かは変更対応する)
+export function getUnfinishedRecords(): UnfinishedRecord[] {
+  const json = localStorage.getItem(UNFINISHED_RECORDS_KEY); //全件取得
+
+  //保存データがない場合の処理
+  if (!json) {
+    return [];
+  }
+  //保存されているデータがある場合の処理
+  return JSON.parse(json) as UnfinishedRecord[];
+}
+
+//localStorageに保存されている「未振り返り」記録を、複数件をまとめて「全部上書き」保存する実行役
+export function saveUnfinishedRecords(
+  unfinishedRecords: UnfinishedRecord[],
+): void {
+  //recordsを文字列(JSON.stringify)に変換し、UNFINISHED_RECORDS_KEYの棚にrecordsを保存する
+  localStorage.setItem(
+    UNFINISHED_RECORDS_KEY,
+    JSON.stringify(unfinishedRecords),
+  );
+}
+
+//未振り返りの記録(UnfinishedRecord型の為)を1件だけ受け取って、既存の未振り返りの記録一覧(unfinishedRecordsList)に「1件のみ追加」する
+export function addUnfinishedRecord(unfinishedRecord: UnfinishedRecord): void {
+  const unfinishedRecordsList = getUnfinishedRecords(); //全件取得(すでに保存されている未振り返り記録を全部持ってくる)
+  unfinishedRecordsList.push(unfinishedRecord); //1件追加
+  saveUnfinishedRecords(unfinishedRecordsList); //保存(「既存分＋新しい1件」になったunfinishedRecordsListをsaveUnfinishedRecordsに渡して保存する)
+}
+
+//未振り返り一覧から「振り返り済みになった記録1件」を.filter()で除去して保存する
+export function removeUnfinishedRecord(recordedAt: string): void {
+  const unfinishedRecordsList = getUnfinishedRecords(); //1.全件取得
+
+  //3.保存(2の処理後にsaveUnfinishedRecordsで保存される)
+  saveUnfinishedRecords(
+    //2.「引数で渡されたrecordedAtと一致しないもの」だけを残す(＝日時が一致する、消したい1件だけが.filterで除かれる)
+    unfinishedRecordsList.filter(
+      (unfinishedRecord: UnfinishedRecord) =>
+        //右辺のrecordedAt：振り返り済みになった記録の日時(この日時と一致する未振り返りデータを削除する)
+        unfinishedRecord.recordedAt !== recordedAt,
+    ),
+  );
 }
