@@ -2,12 +2,12 @@
 
 import { Fragment, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import type { Advice, SaveRecord } from "../types";
+import type { SaveRecord } from "../types";
 import { getRecords } from "../utils/localStorage";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { Icon } from "@iconify/react";
 import { reasonsList } from "./ReasonsChoice";
-import { calculateRegretRates } from "../utils/dynamicMessages";
+import { calculateRegretRates, getAdvice } from "../utils/dynamicMessages";
 
 //7件それぞれの理由ごとにバーとパーセンテージ％を横並びにするCSS
 const regretBarRowBase =
@@ -16,45 +16,6 @@ const regretBarRowBase =
 //アドバイスボックスのCSS
 const tipBoxBase =
   "w-full max-w-sm mx-auto min-h-40 mt-16 pb-2 rounded-lg border border-amber-300 bg-amber-100";
-
-//理由ごとのアドバイス一覧
-const adviceList: Advice[] = [
-  {
-    reason: "疲れている",
-    advice:
-      "意外と「3分だけ」ならできることが多いです。\nタイマーを3分だけセットして始めてみましょう！",
-  },
-  {
-    reason: "面倒くさい",
-    advice:
-      "準備だけ先に済ませておくと、\n次に取り掛かるハードルが下がります。\n道具を出す・アプリを開くだけでもOKです！",
-  },
-  {
-    reason: "不安がある",
-    advice:
-      "不安な理由を紙に書き出すと、\nいくつかに分解できます。\nその中で「今すぐ確認できること」\n(ex:やり方を1つ調べる)から1つずつ潰してみましょう！",
-  },
-  {
-    reason: "時間がない",
-    advice:
-      "予定の前後に「3分だけ」の枠を\nあらかじめ確保しておくと、\n時間がない日でも取り掛かりやすくなります！",
-  },
-  {
-    reason: "他のことを優先したい",
-    advice:
-      "他の予定の前に1分だけ着手しておくと、\n後回しにせず終わらせやすくなります。\n先に少しだけ手をつけてみましょう！",
-  },
-  {
-    reason: "やり方が分からない",
-    advice:
-      "わからない部分だけを1つ検索してみましょう！\n全部理解してから始めるのではなく、\n「わかったところまで」で\n一旦手を動かしてみるのがコツです！",
-  },
-  {
-    reason: "その他",
-    advice:
-      "できなかった理由を一言メモしておくと、\n次回同じ状況になっても対策を立てやすくなります！",
-  },
-];
 
 export default function Analysis() {
   //選択後の記録データを複数管理する
@@ -67,7 +28,8 @@ export default function Analysis() {
     setAnalysisRecord(records);
   }, []);
 
-  //理由ごとの後悔率を計算(dynamicMessages.tsに記載された関数を再利用)
+  //理由ごとの後悔率を計算(dynamicMessages.tsのcalculateRegretRates関数を再利用)
+  //下記のregretRatesはcalculateRegretRatesの戻り値を受け取った、Analysis.tsx内だけの変数(関数内のregretRatesとは別物)
   const regretRates = calculateRegretRates(analysisRecord);
 
   //ダミーデータ:記録が0件の場合、reasonsListの各理由名に[rate:0]を割り当てる
@@ -87,17 +49,8 @@ export default function Analysis() {
   //.reasonをつなげることで、その中の理由名(文字列)だけを取り出している
   const topReason = regretRates.length > 0 ? regretRates[0].reason : undefined;
 
-  //topReason(最も後悔率が高い理由の名前)に対応するアドバイスを、adviceListの中から探す
-  //.find()：配列の中から、条件に最初に一致した1件だけを返すメソッド
-  //adviceListを1件ずつ調べ、item.reason(各アドバイスに紐づく理由名)がtopReasonと一致するものを探す
-  //一致するものが見つからなければ、matchedはundefinedになる
-  const matched = adviceList.find((item: Advice) => item.reason === topReason);
-
-  //画面に表示するアドバイス文(matchedがあればそのadvice、無ければデフォルト文言)
-  //matched(topReason(最も後悔率が高い理由名)に一致したアドバイス)があればそれを使い、
-  //無ければ(adviceListに一致する理由が登録されていないイレギュラー時)フォールバック用の文言(?? "ここ")を使用
-  //matched?.advice：matchedがundefinedの場合はエラーにならず、undefinedを返す(?:オプショナルチェイニング)
-  const displayAdvice = matched?.advice ?? "データがまだ十分にありません。";
+  //各理由に対応するアドバイス文を取得(dynamicMessages.tsのgetAdvice関数を再利用)
+  const displayAdvice = getAdvice(topReason);
 
   return (
     <div>
