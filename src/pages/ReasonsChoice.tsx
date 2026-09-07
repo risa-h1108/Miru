@@ -1,10 +1,10 @@
 //理由選択画面
 
 import { useLocation, useNavigate } from "react-router-dom";
-import type { Cards, UnfinishedRecord } from "../types";
+import type { Cards, SaveRecord, UnfinishedRecord } from "../types";
 import { Icon } from "@iconify/react";
-import { useState } from "react";
-import { addUnfinishedRecord } from "../utils/localStorage";
+import { useEffect, useState } from "react";
+import { addUnfinishedRecord, getRecords } from "../utils/localStorage";
 
 //画面上のカードの位置調整CSS
 const reasonsGridBase = "grid gap-4  mb-4 mt-3 max-w-sm mx-auto";
@@ -54,6 +54,16 @@ export default function ReasonsChoice() {
   //選択中の理由ラベルを管理するstate
   //useState<string[]>()：<型：string型が複数>（初期値：空の配列[]、配列は存在しているが中身は0個）
   const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
+
+  //過去の記録データを管理するstate(気づきBOXでの後悔率計算に使用、初期値は空配列)
+  const [pastRecords, setPastRecords] = useState<SaveRecord[]>([]);
+
+  //画面が最初に表示された1回目だけ(＝第2引数が[]の部分)、
+  //getRecordsからlocalStorageにある過去の記録を取得し、setPastRecordsに保存する
+  useEffect(() => {
+    const records = getRecords();
+    setPastRecords(records);
+  }, []);
 
   const navigate = useNavigate();
 
