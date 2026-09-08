@@ -5,7 +5,7 @@ import type { Cards, SaveRecord, UnfinishedRecord } from "../types";
 import { Icon } from "@iconify/react";
 import { useEffect, useState } from "react";
 import { addUnfinishedRecord, getRecords } from "../utils/localStorage";
-import { calculateRegretRates } from "../utils/dynamicMessages";
+import { calculateRegretRates, getAdvice } from "../utils/dynamicMessages";
 
 //画面上のカードの位置調整CSS
 const reasonsGridBase = "grid gap-4  mb-4 mt-3 max-w-sm mx-auto";
@@ -124,6 +124,19 @@ export default function ReasonsChoice() {
 
   //理由ごとの後悔率を計算(dynamicMessages.tsのcalculateRegretRatesを再利用)
   const regretRates = calculateRegretRates(pastRecords);
+
+  //[選択中の理由(＝selectedReasons)]の中で、一番後悔率が高いもの(＝regretRates)を探す
+  //selectedReasons:ユーザーが今クリックして選んだ理由の配列を表す
+  //item.reason:regretRates(各理由の後悔率)で計算された、
+  //[全理由の後悔率一覧]の中にある、[1つの理由に対する後悔率データ]の理由名を指す
+  const topSelectedReason = regretRates.find((item) =>
+    selectedReasons.includes(item.reason),
+  );
+
+  //選択中の理由に対応するアドバイス文を取得(dynamicMessages.tsのgetAdviceを再利用)
+  //topSelectedReasonは[上の処理の.find()の結果]の為、
+  //[理由が未選択]のような見つからない場合はundefinedになる(エラーにしない為に?を記載)
+  const displayAdvice = getAdvice(topSelectedReason?.reason);
 
   return (
     <div>
