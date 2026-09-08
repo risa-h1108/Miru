@@ -5,6 +5,7 @@ import type { Cards, SaveRecord, UnfinishedRecord } from "../types";
 import { Icon } from "@iconify/react";
 import { useEffect, useState } from "react";
 import { addUnfinishedRecord, getRecords } from "../utils/localStorage";
+import { calculateRegretRates } from "../utils/dynamicMessages";
 
 //画面上のカードの位置調整CSS
 const reasonsGridBase = "grid gap-4  mb-4 mt-3 max-w-sm mx-auto";
@@ -120,6 +121,9 @@ export default function ReasonsChoice() {
     //navigate(遷移先, {state:{次のページに渡すデータ}})
     navigate("/reflection", { state: newRecord });
   };
+
+  //理由ごとの後悔率を計算(dynamicMessages.tsのcalculateRegretRatesを再利用)
+  const regretRates = calculateRegretRates(pastRecords);
 
   return (
     <div>
