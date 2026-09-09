@@ -14,7 +14,7 @@ const regretBarRowBase =
   "w-full max-w-sm mx-auto flex justify-center items-center mt-4";
 
 //アドバイスボックスのCSS
-const tipBoxBase =
+const adviceBoxBase =
   "w-full max-w-sm mx-auto min-h-40 mt-16 pb-2 rounded-lg border border-amber-300 bg-amber-100";
 
 export default function Analysis() {
@@ -130,7 +130,7 @@ export default function Analysis() {
       </div>
 
       {/*アドバイスボックス*/}
-      <div className={tipBoxBase}>
+      <div className={adviceBoxBase}>
         {/* タイトルの部分 */}
         <h3 className="text-[20px] mt-3 mb-1 px-4 flex items-center justify-center">
           <Icon icon={"lucide:lightbulb"} width={25} height={25} />
