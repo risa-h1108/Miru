@@ -3,7 +3,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import type { Cards, SaveRecord, UnfinishedRecord } from "../types";
 import { Icon } from "@iconify/react";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { addUnfinishedRecord, getRecords } from "../utils/localStorage";
 import { calculateRegretRates, getAdvice } from "../utils/dynamicMessages";
 
@@ -18,7 +18,7 @@ const reasonsCardsBase =
 
 //気づきボックスのCSS
 const tipBoxBase =
-  "w-full max-w-sm mx-auto h-36 mt-6 rounded-lg border border-amber-300 bg-amber-100";
+  "w-full max-w-sm mx-auto min-h-40 mt-6 pb-2 rounded-lg border border-amber-300 bg-amber-100";
 
 //次へ(確定)ボタンのCSS
 const submitButtonBase =
@@ -175,12 +175,26 @@ export default function ReasonsChoice() {
           <Icon icon={"lucide:lightbulb"} width={25} height={25} />
           ちょっとした気づき
         </h3>
+
         <p className="text-[16px] text-center px-5 ">
-          「疲れている」を理由にやらなかったときは、
+          {/*今選択されている中で一番後悔率が高い理由の表示*/}
+          {topSelectedReason && (
+            <>
+              「{topSelectedReason.reason}」を理由にやらなかったときは、
+              <br />
+              後悔しやすい傾向があります。
+            </>
+          )}
+
           <br />
-          後悔しやすい傾向があります。
-          <br />
-          5分だけやる、など小さく始めて見ませんか？
+
+          {/* displayAdvice(理由に応じたアドバイス文)を\n単位で改行して表示 */}
+          {displayAdvice.split("\n").map((line, index) => (
+            <Fragment key={index}>
+              {line}
+              <br />
+            </Fragment>
+          ))}
         </p>
       </div>
 
