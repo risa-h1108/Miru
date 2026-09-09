@@ -42,11 +42,19 @@ export default function ActionChoice() {
   //選択したActionカードと真偽（やる・やらない）をlogで出力
   const handleDecision = (decision: boolean) => {
     setSelectedDecision(decision); //ボタンの色を変えるためだけにstate更新
-    navigate("/reasons", {
-      //state更新は次のレンダリング時の為、現状反映されていない。
-      //state変数の代わりに確実に最新の値を持っている、引数decision(decision: boolean)を直接使う
-      state: { selectedAction, selectedDecision: decision },
-    });
+
+    //「やる」を選んだ場合は理由選択をスキップ(「やる」を選んだ行動の記録は無し)
+    if (decision === true) {
+      navigate("/analysis"); //一旦分析画面へ。後日、専用画面へ
+
+      //「やらない」を選んだ場合は理由選択画面へ遷移
+    } else {
+      navigate("/reasons", {
+        //state更新は次のレンダリング時の為、現状反映されていない。
+        //state変数の代わりに確実に最新の値を持っている、引数decision(decision: boolean)を直接使う
+        state: { selectedAction, selectedDecision: decision },
+      });
+    }
   };
 
   //「このカードが選ばれているか」の判定式：「selectedActionに保存された”選択中のラベル”」と、「今mapが処理しているカードのラベル」が同じか確認。
