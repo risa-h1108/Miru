@@ -1,10 +1,11 @@
 //理由選択画面
 
 import { useLocation, useNavigate } from "react-router-dom";
-import type { Cards, UnfinishedRecord } from "../types";
+import type { Cards, SaveRecord, UnfinishedRecord } from "../types";
 import { Icon } from "@iconify/react";
-import { useState } from "react";
-import { addUnfinishedRecord } from "../utils/localStorage";
+import { Fragment, useEffect, useState } from "react";
+import { addUnfinishedRecord, getRecords } from "../utils/localStorage";
+import { calculateRegretRates, getAdvice } from "../utils/dynamicMessages";
 
 //画面上のカードの位置調整CSS
 const reasonsGridBase = "grid gap-4  mb-4 mt-3 max-w-sm mx-auto";
@@ -17,7 +18,7 @@ const reasonsCardsBase =
 
 //気づきボックスのCSS
 const tipBoxBase =
-  "w-full max-w-sm mx-auto h-36 mt-6 rounded-lg border border-amber-300 bg-amber-100";
+  "w-full max-w-sm mx-auto min-h-40 mt-6 pb-2 rounded-lg border border-amber-300 bg-amber-100";
 
 //次へ(確定)ボタンのCSS
 const submitButtonBase =
@@ -55,6 +56,16 @@ export default function ReasonsChoice() {
   //useState<string[]>()：<型：string型が複数>（初期値：空の配列[]、配列は存在しているが中身は0個）
   const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
 
+  //過去の記録データを管理するstate(気づきBOXでの後悔率計算に使用、初期値は空配列)
+  const [pastRecords, setPastRecords] = useState<SaveRecord[]>([]);
+
+  //画面が最初に表示された1回目だけ(＝第2引数が[]の部分)、
+  //getRecordsからlocalStorageにある過去の記録を取得し、setPastRecordsに保存する
+  useEffect(() => {
+    const records = getRecords();
+    setPastRecords(records);
+  }, []);
+
   const navigate = useNavigate();
 
   //理由選択カードを「クリック＆削除」した時の処理(複数選択OK)
@@ -66,12 +77,12 @@ export default function ReasonsChoice() {
       ) =>
         //[「今の配列」の中(=prev)]にlabelが[含まれているか(=includes)]を質問,true/falseのどちらかで回答
         prev.includes(label)
-          ? //true(labelカードが既に選択されている)、既存と今クリックされたlabelが同じならそのlabelを「削除」する処理。
+          ? // true(labelカードが既に選択されている)、既存と今クリックされたlabelが同じならそのlabelを「削除」する処理。
             // 詳細：[今クリックされたlabel]と[既に配列に入っている選択済みのselected]を比較して、一致してない場合、[クリックされたlabel]と違うものだけ残す。
             prev.filter((selected) => selected !== label)
-          : //false(labelカードが選択されていない)、今クリックされたlabelを「追加」して、新しい配列を作る処理。
-            //詳細： prevの中身を[全部そのまま残して(＝...)]、最後に[labelを1つ追加した(=,label)]、新しい配列を作る
-            //ex ["疲れている", "面倒くさい", label]
+          : // false(labelカードが選択されていない)、今クリックされたlabelを「追加」して、新しい配列を作る処理。
+            // 詳細： prevの中身を[全部そのまま残して(＝...)]、最後に[labelを1つ追加した(=,label)]、新しい配列を作る
+            // ex ["疲れている", "面倒くさい", label]
             [...prev, label],
     );
   };
@@ -111,6 +122,26 @@ export default function ReasonsChoice() {
     navigate("/reflection", { state: newRecord });
   };
 
+  //理由ごとの後悔率を計算(dynamicMessages.tsのcalculateRegretRatesを再利用)
+  const regretRates = calculateRegretRates(pastRecords);
+
+  //選択中の理由(＝selectedReasons)]の中で、一番後悔率が高いもの(＝regretRates)を探す
+  //未選択/該当データなしの場合は、全体で一番後悔率が高い理由名を使用
+  // selectedReasons:ユーザーが今クリックして選んだ理由の配列を表す
+  // item.reason:regretRates(各理由の後悔率)で計算された、
+  // [全理由の後悔率一覧]の中にある、[1つの理由に対する後悔率データ]の理由名を指す
+  const topSelectedReason =
+    // .find()の結果が存在する場合(理由が選ばれてて、過去データもある)、該当の理由名を使用
+    // .find()の結果がundefinedの場合(理由が選ばれてない、または選んだ理由に過去データがない)、
+    // 「?? regretRates[0]」(＝Analysis画面で一番上に表示されてる、全体で一番後悔率が高い理由)を使用
+    regretRates.find((item) => selectedReasons.includes(item.reason)) ??
+    regretRates[0];
+
+  //選択中の理由に対応するアドバイス文を取得(dynamicMessages.tsのgetAdviceを再利用)
+  // topSelectedReasonは[上の処理の.find()の結果]の為、
+  // [理由が未選択]のような見つからない場合はundefinedになる(エラーにしない為に?を記載)
+  const displayAdvice = getAdvice(topSelectedReason?.reason);
+
   return (
     <div>
       <div className="max-w-sm mx-auto mt-3">
@@ -148,12 +179,26 @@ export default function ReasonsChoice() {
           <Icon icon={"lucide:lightbulb"} width={25} height={25} />
           ちょっとした気づき
         </h3>
+
         <p className="text-[16px] text-center px-5 ">
-          「疲れている」を理由にやらなかったときは、
+          {/*今選択されている中で一番後悔率が高い理由の表示*/}
+          {topSelectedReason && (
+            <>
+              「{topSelectedReason.reason}」を理由にやらなかったときは、
+              <br />
+              後悔しやすい傾向があります。
+            </>
+          )}
+
           <br />
-          後悔しやすい傾向があります。
-          <br />
-          5分だけやる、など小さく始めて見ませんか？
+
+          {/* displayAdvice(理由に応じたアドバイス文)を\n単位で改行して表示 */}
+          {displayAdvice.split("\n").map((line, index) => (
+            <Fragment key={index}>
+              {line}
+              <br />
+            </Fragment>
+          ))}
         </p>
       </div>
 
