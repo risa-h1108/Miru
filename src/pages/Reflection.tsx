@@ -13,6 +13,7 @@ import {
   getUnfinishedRecords,
   removeUnfinishedRecord,
 } from "../utils/localStorage";
+import { supabase } from "../lib/supabase";
 
 //記録内容ボックスのCSS
 const recordBase =
@@ -101,21 +102,42 @@ export default function Reflection() {
   const navigate = useNavigate();
 
   //「保存する」ボタンが押された時の処理
-  const saveDecision = () => {
-    //1件分の記録データ(前画面から受け取ったもの＋この画面で入力したselectedResultとmemo)をまとめる
-    const record: SaveRecord = {
-      selectedAction,
-      selectedDecision,
-      selectedReasons,
-      recordedAt,
-      selectedResult,
-      memo,
-    };
+  const saveDecision = async () => {
+    //supabaseで[action_masters(行動選択)テーブル]のidを{ data, error }という形で検索結果を返す処理
+    const { data: actionData, error: actionError } = await supabase
+      //action_mastersというテーブルを[操作(=from)]
+      .from("action_masters")
+      //id列だけ[取得(=select)]
+      .select("id")
+      //label列がselectedActionの値(例:"勉強する")と[一致する(=eq)]行だけに絞り込む
+      .eq("label", selectedAction)
+      //結果は1件だけなので、配列ではなく[1つのオブジェクト(=single)]で返す
+      .single();
 
-    //先ほど上記処理で「振り返り済みになったばかりの記録」を受け取って、既存の振り返り済み記録一覧に「先ほど振り返り済みになった1件を追加」する
-    addRecord(record);
-    //未振り返り一覧から「振り返り済みになった記録1件」を.filter()で除去して保存する
-    removeUnfinishedRecord(record.recordedAt);
+    //supabaseで[reason_masters(理由選択)テーブル]のidを{ data, error }という形で検索結果を返す処理
+    //selectedReasonsは複数選ばれる可能性がある為、
+    // reasonDataは「配列のオブジェクト」で返ってくる場合があるので、
+    // .single()(1件だけを強制するオプション)を付けない
+    const { data: reasonData, error: reasonError } = await supabase
+      .from("reason_masters")
+      .select("id")
+      //label列がselectedReasons配列の中の[どれかと一致する(=in)]行を全部取得する
+      .in("label", selectedReasons);
+
+    //1件分の記録データ(前画面から受け取ったもの＋この画面で入力したselectedResultとmemo)をまとめる
+    // const record: SaveRecord = {
+    //   selectedAction,
+    //   selectedDecision,
+    //   selectedReasons,
+    //   recordedAt,
+    //   selectedResult,
+    //   memo,
+    // };
+
+    // //先ほど上記処理で「振り返り済みになったばかりの記録」を受け取って、既存の振り返り済み記録一覧に「先ほど振り返り済みになった1件を追加」する
+    // addRecord(record);
+    // //未振り返り一覧から「振り返り済みになった記録1件」を.filter()で除去して保存する
+    // removeUnfinishedRecord(record.recordedAt);
 
     navigate("/action");
   };
