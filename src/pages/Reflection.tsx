@@ -124,6 +124,28 @@ export default function Reflection() {
       //label列がselectedReasons配列の中の[どれかと一致する(=in)]行を全部取得する
       .in("label", selectedReasons);
 
+    //supabaseの[decisions(決定記録)テーブル]にinsertのデータ({}の中身)を
+    // { data, error }という形で受け取って新しい行に追加する処理
+    const { data: decisionData, error: decisionError } = await supabase
+      .from("decisions")
+      //オブジェクトの中身(={}の中身)がdecisionsテーブルに新しい1行として[追加(=insert)]される
+      .insert({
+        //上で検索したactionData({ id: 1 }のような形)から、id部分だけを取り出す処理。
+        //万が一actionDataが[null(検索失敗)]だった場合、エラーで処理が止まるのを防ぐため「?」を使用
+        action_id: actionData?.id,
+
+        //selectedDecisionの型定義が[boolean | null]だが、
+        // Reflection画面にたどり着く時点で「やる/やらない」はmustで選択済みなので、
+        // supabase上で[decisionsテーブル＞decisionカラム]はNOT NULL(必須)設定にした。
+        decision: selectedDecision,
+        result: selectedResult,
+        memo: memo,
+      })
+      //insertした後、[新しく作った行のid(=select)]を[1件だけ(=single)]返してもらう
+      // ※insertだけだと本来「成功したかどうか」程度の情報しか返らない為、下記2点を追加
+      .select("id")
+      .single();
+
     //1件分の記録データ(前画面から受け取ったもの＋この画面で入力したselectedResultとmemo)をまとめる
     // const record: SaveRecord = {
     //   selectedAction,
