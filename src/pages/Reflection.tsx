@@ -114,7 +114,8 @@ export default function Reflection() {
       //結果は1件だけなので、配列ではなく[1つのオブジェクト(=single)]で返す
       .single();
 
-    //actionDataがundefined/nullだった場合、その場で処理を中断するガード処理
+    //action_masters検索でエラー(検索処理が失敗など)が発生した場合、「又は」
+    // actionDataがnullだった場合、その場で処理を中断するガード処理
     if (actionError || !actionData) {
       console.error("action_mastersへのid検索エラー:", actionError);
       return;
@@ -130,7 +131,8 @@ export default function Reflection() {
       //label列がselectedReasons配列の中の[どれかと一致する(=in)]行を全部取得する
       .in("label", selectedReasons);
 
-    //reasonDataがundefined/nullだった場合、その場で処理を中断するガード処理
+    //reason_masters検索でエラー(検索処理が失敗など)が発生した場合、「又は」
+    // reasonDataがnullだった場合、その場で処理を中断するガード処理
     if (reasonError || !reasonData) {
       console.error("reason_mastersへのid検索エラー:", reasonError);
       return;
@@ -159,21 +161,30 @@ export default function Reflection() {
       .select("id")
       .single();
 
-    //decisionDataがundefined/nullだった場合、その場で処理を中断するガード処理
+    //decisionsへの追加でエラー(追加処理が失敗など)が発生した場合、「又は」
+    // decisionDataがnullだった場合、その場で処理を中断するガード処理
     if (decisionError || !decisionData) {
-      console.error("decisionsへのinsert&id返却エラー:", decisionError);
+      console.error("decisionsへのinsert & id返却エラー:", decisionError);
       return;
     }
 
     //[decision_reasonsテーブル]に理由が複数選択された場合、理由ごとに複数行insert(追加)する処理
     const decisionReasonsToInsert = reasonData?.map((reason) => ({
-      decision_id: decisionData?.id, //↑[decisions(決定記録)テーブル]にinsertして作成されたdecisionDataのこと
+      decision_id: decisionData.id, //↑[decisions(決定記録)テーブル]にinsertして作成されたdecisionDataのこと
       reason_id: reason.id,
     }));
 
     const { error: decisionReasonsError } = await supabase
       .from("decision_reasons")
-      .insert(decisionReasonsToInsert); //「オブジェクト1個」か「オブジェクトの配列」しか受け取れない
+      //insertの仕様として、「オブジェクト1個」か「オブジェクトの配列」しか受け取れない
+      .insert(decisionReasonsToInsert);
+
+    //[decision_reasonsテーブル]へのinsert処理がエラーになった場合、その場で処理を中断するガード処理
+    // ※decision_reasonsへinsert後は保存して終わりの為、dataを受け取る処理は記述しない
+    if (decisionReasonsError) {
+      console.error("decision_reasonsへのinsertエラー:", decisionReasonsError);
+      return;
+    }
 
     //1件分の記録データ(前画面から受け取ったもの＋この画面で入力したselectedResultとmemo)をまとめる
     // const record: SaveRecord = {
