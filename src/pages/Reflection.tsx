@@ -114,6 +114,12 @@ export default function Reflection() {
       //結果は1件だけなので、配列ではなく[1つのオブジェクト(=single)]で返す
       .single();
 
+    //actionDataがundefined/nullだった場合、その場で処理を中断するガード処理
+    if (actionError || !actionData) {
+      console.error("action_mastersへのid検索エラー:", actionError);
+      return;
+    }
+
     //supabaseで[reason_masters(理由選択)テーブル]のidを{ data, error }という形で検索結果を返す処理
     //selectedReasonsは複数選ばれる可能性がある為、
     // reasonDataは「配列のオブジェクト」で返ってくる場合があるので、
@@ -124,8 +130,15 @@ export default function Reflection() {
       //label列がselectedReasons配列の中の[どれかと一致する(=in)]行を全部取得する
       .in("label", selectedReasons);
 
+    //reasonDataがundefined/nullだった場合、その場で処理を中断するガード処理
+    if (reasonError || !reasonData) {
+      console.error("reason_mastersへのid検索エラー:", reasonError);
+      return;
+    }
+
     //supabaseの[decisions(決定記録)テーブル]にinsertのデータ({}の中身)を
     // { data, error }という形で受け取って新しい行に追加する処理
+    // 新しく作られた決定記録のidの結果例:decisionData　=　{ id: 5 }
     const { data: decisionData, error: decisionError } = await supabase
       .from("decisions")
       //オブジェクトの中身(={}の中身)がdecisionsテーブルに新しい1行として[追加(=insert)]される
@@ -145,6 +158,22 @@ export default function Reflection() {
       // ※insertだけだと本来「成功したかどうか」程度の情報しか返らない為、下記2点を追加
       .select("id")
       .single();
+
+    //decisionDataがundefined/nullだった場合、その場で処理を中断するガード処理
+    if (decisionError || !decisionData) {
+      console.error("decisionsへのinsert&id返却エラー:", decisionError);
+      return;
+    }
+
+    //[decision_reasonsテーブル]に理由が複数選択された場合、理由ごとに複数行insert(追加)する処理
+    const decisionReasonsToInsert = reasonData?.map((reason) => ({
+      decision_id: decisionData?.id, //↑[decisions(決定記録)テーブル]にinsertして作成されたdecisionDataのこと
+      reason_id: reason.id,
+    }));
+
+    const { error: decisionReasonsError } = await supabase
+      .from("decision_reasons")
+      .insert(decisionReasonsToInsert); //「オブジェクト1個」か「オブジェクトの配列」しか受け取れない
 
     //1件分の記録データ(前画面から受け取ったもの＋この画面で入力したselectedResultとmemo)をまとめる
     // const record: SaveRecord = {
