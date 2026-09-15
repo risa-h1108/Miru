@@ -1,18 +1,10 @@
 //振り返り画面
 import { Icon } from "@iconify/react";
 import { useLocation, useNavigate } from "react-router-dom";
-import type {
-  Result,
-  ResultButton,
-  SaveRecord,
-  UnfinishedRecord,
-} from "../types";
+import type { Result, ResultButton, UnfinishedRecord } from "../types";
 import { useState } from "react";
-import {
-  addRecord,
-  getUnfinishedRecords,
-  removeUnfinishedRecord,
-} from "../utils/localStorage";
+import { getUnfinishedRecords } from "../utils/localStorage";
+import { supabase } from "../lib/supabase";
 
 //記録内容ボックスのCSS
 const recordBase =
@@ -101,21 +93,89 @@ export default function Reflection() {
   const navigate = useNavigate();
 
   //「保存する」ボタンが押された時の処理
-  const saveDecision = () => {
-    //1件分の記録データ(前画面から受け取ったもの＋この画面で入力したselectedResultとmemo)をまとめる
-    const record: SaveRecord = {
-      selectedAction,
-      selectedDecision,
-      selectedReasons,
-      recordedAt,
-      selectedResult,
-      memo,
-    };
+  const saveDecision = async () => {
+    //supabaseで[action_masters(行動選択)テーブル]のidを{ data, error }という形で検索結果を返す処理
+    const { data: actionData, error: actionError } = await supabase
+      //action_mastersというテーブルを[操作(=from)]
+      .from("action_masters")
+      //id列だけ[取得(=select)]
+      .select("id")
+      //label列がselectedActionの値(例:"勉強する")と[一致する(=eq)]行だけに絞り込む
+      .eq("label", selectedAction)
+      //結果は1件だけなので、配列ではなく[1つのオブジェクト(=single)]で返す
+      .single();
 
-    //先ほど上記処理で「振り返り済みになったばかりの記録」を受け取って、既存の振り返り済み記録一覧に「先ほど振り返り済みになった1件を追加」する
-    addRecord(record);
-    //未振り返り一覧から「振り返り済みになった記録1件」を.filter()で除去して保存する
-    removeUnfinishedRecord(record.recordedAt);
+    //action_masters検索でエラー(検索処理が失敗など)が発生した場合、「又は」
+    // actionDataがnullだった場合、その場で処理を中断するガード処理
+    if (actionError || !actionData) {
+      console.error("action_mastersへのid検索エラー:", actionError);
+      return;
+    }
+
+    //supabaseで[reason_masters(理由選択)テーブル]のidを{ data, error }という形で検索結果を返す処理
+    //selectedReasonsは複数選ばれる可能性がある為、
+    // reasonDataは「配列のオブジェクト」で返ってくる場合があるので、
+    // .single()(1件だけを強制するオプション)を付けない
+    const { data: reasonData, error: reasonError } = await supabase
+      .from("reason_masters")
+      .select("id")
+      //label列がselectedReasons配列の中の[どれかと一致する(=in)]行を全部取得する
+      .in("label", selectedReasons);
+
+    //reason_masters検索でエラー(検索処理が失敗など)が発生した場合、「又は」
+    // reasonDataがnullだった場合、その場で処理を中断するガード処理
+    if (reasonError || !reasonData) {
+      console.error("reason_mastersへのid検索エラー:", reasonError);
+      return;
+    }
+
+    //supabaseの[decisions(決定記録)テーブル]にinsertのデータ({}の中身)を
+    // { data, error }という形で受け取って新しい行に追加する処理
+    // 新しく作られた決定記録のidの結果例:decisionData　=　{ id: 5 }
+    const { data: decisionData, error: decisionError } = await supabase
+      .from("decisions")
+      //オブジェクトの中身(={}の中身)がdecisionsテーブルに新しい1行として[追加(=insert)]される
+      .insert({
+        //上で検索したactionData({ id: 1 }のような形)から、id部分だけを取り出す処理。
+        //万が一actionDataが[null(検索失敗)]だった場合、エラーで処理が止まるのを防ぐため「?」を使用
+        action_id: actionData?.id,
+
+        //selectedDecisionの型定義が[boolean | null]だが、
+        // Reflection画面にたどり着く時点で「やる/やらない」はmustで選択済みなので、
+        // supabase上で[decisionsテーブル＞decisionカラム]はNOT NULL(必須)設定にした。
+        decision: selectedDecision,
+        result: selectedResult,
+        memo: memo,
+      })
+      //insertした後、[新しく作った行のid(=select)]を[1件だけ(=single)]返してもらう
+      // ※insertだけだと本来「成功したかどうか」程度の情報しか返らない為、下記2点を追加
+      .select("id")
+      .single();
+
+    //decisionsへの追加でエラー(追加処理が失敗など)が発生した場合、「又は」
+    // decisionDataがnullだった場合、その場で処理を中断するガード処理
+    if (decisionError || !decisionData) {
+      console.error("decisionsへのinsert & id返却エラー:", decisionError);
+      return;
+    }
+
+    //[decision_reasonsテーブル]に理由が複数選択された場合、理由ごとに複数行insert(追加)する処理
+    const decisionReasonsToInsert = reasonData?.map((reason) => ({
+      decision_id: decisionData.id, //↑[decisions(決定記録)テーブル]にinsertして作成されたdecisionDataのこと
+      reason_id: reason.id,
+    }));
+
+    const { error: decisionReasonsError } = await supabase
+      .from("decision_reasons")
+      //insertの仕様として、「オブジェクト1個」か「オブジェクトの配列」しか受け取れない
+      .insert(decisionReasonsToInsert);
+
+    //[decision_reasonsテーブル]へのinsert処理がエラーになった場合、その場で処理を中断するガード処理
+    // ※decision_reasonsへinsert後は保存して終わりの為、dataを受け取る処理は記述しない
+    if (decisionReasonsError) {
+      console.error("decision_reasonsへのinsertエラー:", decisionReasonsError);
+      return;
+    }
 
     navigate("/action");
   };
