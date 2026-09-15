@@ -1,18 +1,9 @@
 //振り返り画面
 import { Icon } from "@iconify/react";
 import { useLocation, useNavigate } from "react-router-dom";
-import type {
-  Result,
-  ResultButton,
-  SaveRecord,
-  UnfinishedRecord,
-} from "../types";
+import type { Result, ResultButton, UnfinishedRecord } from "../types";
 import { useState } from "react";
-import {
-  addRecord,
-  getUnfinishedRecords,
-  removeUnfinishedRecord,
-} from "../utils/localStorage";
+import { getUnfinishedRecords } from "../utils/localStorage";
 import { supabase } from "../lib/supabase";
 
 //記録内容ボックスのCSS
@@ -185,21 +176,6 @@ export default function Reflection() {
       console.error("decision_reasonsへのinsertエラー:", decisionReasonsError);
       return;
     }
-
-    //1件分の記録データ(前画面から受け取ったもの＋この画面で入力したselectedResultとmemo)をまとめる
-    // const record: SaveRecord = {
-    //   selectedAction,
-    //   selectedDecision,
-    //   selectedReasons,
-    //   recordedAt,
-    //   selectedResult,
-    //   memo,
-    // };
-
-    // //先ほど上記処理で「振り返り済みになったばかりの記録」を受け取って、既存の振り返り済み記録一覧に「先ほど振り返り済みになった1件を追加」する
-    // addRecord(record);
-    // //未振り返り一覧から「振り返り済みになった記録1件」を.filter()で除去して保存する
-    // removeUnfinishedRecord(record.recordedAt);
 
     navigate("/action");
   };
