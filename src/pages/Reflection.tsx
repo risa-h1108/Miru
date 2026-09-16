@@ -5,6 +5,11 @@ import type { Result, ResultButton, UnfinishedRecord } from "../types";
 import { useState } from "react";
 import { getUnfinishedRecords } from "../utils/localStorage";
 import { supabase } from "../lib/supabase";
+import {
+  getActionId,
+  getReasonIds,
+  insertDecisionReasons,
+} from "../utils/supabaseHelpers";
 
 //記録内容ボックスのCSS
 const recordBase =
@@ -95,15 +100,8 @@ export default function Reflection() {
   //「保存する」ボタンが押された時の処理
   const saveDecision = async () => {
     //supabaseで[action_masters(行動選択)テーブル]のidを{ data, error }という形で検索結果を返す処理
-    const { data: actionData, error: actionError } = await supabase
-      //action_mastersというテーブルを[操作(=from)]
-      .from("action_masters")
-      //id列だけ[取得(=select)]
-      .select("id")
-      //label列がselectedActionの値(例:"勉強する")と[一致する(=eq)]行だけに絞り込む
-      .eq("label", selectedAction)
-      //結果は1件だけなので、配列ではなく[1つのオブジェクト(=single)]で返す
-      .single();
+    const { data: actionData, error: actionError } =
+      await getActionId(selectedAction);
 
     //action_masters検索でエラー(検索処理が失敗など)が発生した場合、「又は」
     // actionDataがnullだった場合、その場で処理を中断するガード処理
@@ -113,14 +111,8 @@ export default function Reflection() {
     }
 
     //supabaseで[reason_masters(理由選択)テーブル]のidを{ data, error }という形で検索結果を返す処理
-    //selectedReasonsは複数選ばれる可能性がある為、
-    // reasonDataは「配列のオブジェクト」で返ってくる場合があるので、
-    // .single()(1件だけを強制するオプション)を付けない
-    const { data: reasonData, error: reasonError } = await supabase
-      .from("reason_masters")
-      .select("id")
-      //label列がselectedReasons配列の中の[どれかと一致する(=in)]行を全部取得する
-      .in("label", selectedReasons);
+    const { data: reasonData, error: reasonError } =
+      await getReasonIds(selectedReasons);
 
     //reason_masters検索でエラー(検索処理が失敗など)が発生した場合、「又は」
     // reasonDataがnullだった場合、その場で処理を中断するガード処理
@@ -160,15 +152,15 @@ export default function Reflection() {
     }
 
     //[decision_reasonsテーブル]に理由が複数選択された場合、理由ごとに複数行insert(追加)する処理
-    const decisionReasonsToInsert = reasonData?.map((reason) => ({
-      decision_id: decisionData.id, //↑[decisions(決定記録)テーブル]にinsertして作成されたdecisionDataのこと
-      reason_id: reason.id,
-    }));
 
-    const { error: decisionReasonsError } = await supabase
-      .from("decision_reasons")
-      //insertの仕様として、「オブジェクト1個」か「オブジェクトの配列」しか受け取れない
-      .insert(decisionReasonsToInsert);
+    //reasonData([{ id: 1 }, { id: 2 }])から、idの値だけを取り出して[数字の配列(=map)]に変換
+    // r:配列を1つずつ処理する時の、その時点の1要素({ id: 1 }など)を指す変数名
+    // r.id:そのオブジェクトからidプロパティの値だけを取り出す
+    const reasonIds = reasonData.map((r) => r.id);
+    const { error: decisionReasonsError } = await insertDecisionReasons(
+      decisionData.id, //直前のdecisionsへのinsertで作られた行のid
+      reasonIds, //上で変換した数字だけの配列
+    );
 
     //[decision_reasonsテーブル]へのinsert処理がエラーになった場合、その場で処理を中断するガード処理
     // ※decision_reasonsへinsert後は保存して終わりの為、dataを受け取る処理は記述しない
