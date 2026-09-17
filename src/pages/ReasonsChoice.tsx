@@ -1,11 +1,17 @@
 //理由選択画面
 
 import { useLocation, useNavigate } from "react-router-dom";
-import type { Cards, SaveRecord, UnfinishedRecord } from "../types";
+import type { Cards, SaveRecord } from "../types";
 import { Icon } from "@iconify/react";
 import { Fragment, useEffect, useState } from "react";
-import { addUnfinishedRecord, getRecords } from "../utils/localStorage";
+import { getRecords } from "../utils/localStorage";
 import { calculateRegretRates, getAdvice } from "../utils/dynamicMessages";
+import {
+  getActionId,
+  getReasonIds,
+  insertDecisionReasons,
+} from "../utils/supabaseHelpers";
+import { supabase } from "../lib/supabase";
 
 //画面上のカードの位置調整CSS
 const reasonsGridBase = "grid gap-4  mb-4 mt-3 max-w-sm mx-auto";
@@ -95,31 +101,14 @@ export default function ReasonsChoice() {
       : "hover:bg-blue-200"; //不一致（未選択）の場合
 
   //「次へ」ボタンが押された時に実行する関数処理
-  const handleSubmit = () => {
-    //クリックされた瞬間の日本での日時(.toLocaleString("ja-JP"))を作成
-    const recordedAt = new Date().toLocaleString("ja-JP", {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
-      weekday: "short", //日本語ロケール(ja-JP)の仕様として、ブラウザが自動的に曜日にカッコが付く
-      hour: "numeric",
-      minute: "2-digit",
-    });
+  const handleSubmit = async () => {
+    //supabaseで[action_masters(行動選択)テーブル]のidを{ data, error }という形で検索結果を返す処理
+    const { data: actionData, error: actionError } =
+      await getActionId(selectedAction);
 
-    //1.「新しい1件」のデータをまとめる
-    const newRecord: UnfinishedRecord = {
-      selectedAction,
-      selectedDecision,
-      selectedReasons,
-      recordedAt,
-    };
-
-    //2.未振り返りの記録(1のデータ)を1件だけ受け取って、既存の未振り返りの記録一覧に「1件のみ追加」して、保存する
-    addUnfinishedRecord(newRecord);
-
-    //3.次の画面へ渡す（newRecordを使い回す）
-    //navigate(遷移先, {state:{次のページに渡すデータ}})
-    navigate("/reflection", { state: newRecord });
+    //supabaseで[reason_masters(理由選択)テーブル]のidを{ data, error }という形で検索結果を返す処理
+    const { data: reasonData, error: reasonError } =
+      await getReasonIds(selectedReasons);
   };
 
   //理由ごとの後悔率を計算(dynamicMessages.tsのcalculateRegretRatesを再利用)
