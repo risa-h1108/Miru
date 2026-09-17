@@ -106,9 +106,23 @@ export default function ReasonsChoice() {
     const { data: actionData, error: actionError } =
       await getActionId(selectedAction);
 
+    //action_masters検索でエラー(検索処理が失敗など)が発生した場合、「又は」
+    // actionDataがnullだった場合、その場で処理を中断するガード処理
+    if (actionError || !actionData) {
+      console.error("action_mastersへのid検索エラー:", actionError);
+      return;
+    }
+
     //supabaseで[reason_masters(理由選択)テーブル]のidを{ data, error }という形で検索結果を返す処理
     const { data: reasonData, error: reasonError } =
       await getReasonIds(selectedReasons);
+
+    //reason_masters検索でエラー(検索処理が失敗など)が発生した場合、「又は」
+    // reasonDataがnullだった場合、その場で処理を中断するガード処理
+    if (reasonError || !reasonData) {
+      console.error("reason_mastersへのid検索エラー:", reasonError);
+      return;
+    }
 
     //supabaseの[decisions(決定記録)テーブル]にinsertのデータ({}の中身)を
     // { data, error }という形で受け取って新しい行に追加する処理
@@ -126,12 +140,39 @@ export default function ReasonsChoice() {
       .select("id")
       .single();
 
+    //decisionsへの追加でエラー(追加処理が失敗など)が発生した場合、「又は」
+    // decisionDataがnullだった場合、その場で処理を中断するガード処理
+    if (decisionError || !decisionData) {
+      console.error("decisionsへのinsert & id返却エラー:", decisionError);
+      return;
+    }
+
     //[decision_reasonsテーブル]に理由が複数選択された場合、理由ごとに複数行insert(追加)する処理
     const reasonIds = reasonData.map((r) => r.id);
     const { error: decisionReasonsError } = await insertDecisionReasons(
       decisionData.id,
       reasonIds,
     );
+
+    //[decision_reasonsテーブル]へのinsert処理がエラーになった場合、その場で処理を中断するガード処理
+    // ※decision_reasonsへinsert後は保存して終わりの為、dataを受け取る処理は記述しない
+    if (decisionReasonsError) {
+      console.error("decision_reasonsへのinsertエラー:", decisionReasonsError);
+      return;
+    }
+
+    //次の画面へstateの中身を渡す
+    //navigate(遷移先, {state:{次のページに渡すデータ}})
+    navigate("/reflection", {
+      state: {
+        //decisionId：「ReasonsChoiceで新規作成された、まだresultが空の行」を
+        // Reflection画面で保存する時に正しく特定して更新するために必要
+        decisionId: decisionData.id,
+        selectedAction,
+        selectedDecision,
+        selectedReasons,
+      },
+    });
   };
 
   //理由ごとの後悔率を計算(dynamicMessages.tsのcalculateRegretRatesを再利用)
