@@ -109,6 +109,29 @@ export default function ReasonsChoice() {
     //supabaseで[reason_masters(理由選択)テーブル]のidを{ data, error }という形で検索結果を返す処理
     const { data: reasonData, error: reasonError } =
       await getReasonIds(selectedReasons);
+
+    //supabaseの[decisions(決定記録)テーブル]にinsertのデータ({}の中身)を
+    // { data, error }という形で受け取って新しい行に追加する処理
+    const { data: decisionData, error: decisionError } = await supabase
+      .from("decisions")
+      .insert({
+        action_id: actionData.id,
+        decision: selectedDecision,
+        //理由選択画面のため、振り返り結果(result)とメモ欄の記述(memo)は[記述なし(null)]とする
+        result: null,
+        memo: null,
+      })
+      //insertした後、[新しく作った行のid(=select)]を[1件だけ(=single)]返してもらう
+      // ※insertだけだと本来「成功したかどうか」程度の情報しか返らない為、下記2点を追加
+      .select("id")
+      .single();
+
+    //[decision_reasonsテーブル]に理由が複数選択された場合、理由ごとに複数行insert(追加)する処理
+    const reasonIds = reasonData.map((r) => r.id);
+    const { error: decisionReasonsError } = await insertDecisionReasons(
+      decisionData.id,
+      reasonIds,
+    );
   };
 
   //理由ごとの後悔率を計算(dynamicMessages.tsのcalculateRegretRatesを再利用)
