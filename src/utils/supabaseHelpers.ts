@@ -69,3 +69,29 @@ export async function insertDecisionReasons(
   //insert処理の結果(成功ならnull、失敗ならエラー内容)を呼び出し元(フロントエンド側)に返す処理
   return { error };
 }
+
+//未振り返りのdecision行を取得する。
+//タブ切り替え後などでdecisionIdが分からない場合があるので、
+// その時はdecisionIdを渡さずに呼び出し、代わりに「result IS NULLの最新1件」を検索する
+// 上記の時のため、?を付けてdecisionIdが必ず渡されなくてもOKにする。
+//ReasonsChoiceから遷移直後はlocation.stateにdecisionIdがあるため、
+// そのdecisionIdを渡して、ピンポイントで対象の行を取得できる
+export async function getUnfinishedDecision(decisionId?: number) {
+  const query = supabase
+    .from("decisions")
+    .select("id, created_at, action_id, decision, result, memo");
+
+  const { data, error } = decisionId
+    ? //"id"列がdecisionIdと一致する行を追加して、1件だけ取得する
+      await query.eq("id", decisionId).single()
+    : await query
+        //"result"列がnull(まだ振り返っていない)行に絞り込む
+        .is("result", null)
+        //created_at列で並び替え、ascending: false(降順、新しい順)にする
+        .order("created_at", { ascending: false })
+        //1件だけに絞る
+        .limit(1)
+        .single();
+
+  return { data, error };
+}
