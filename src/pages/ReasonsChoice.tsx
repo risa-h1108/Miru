@@ -1,11 +1,17 @@
 //理由選択画面
 
 import { useLocation, useNavigate } from "react-router-dom";
-import type { Cards, SaveRecord, UnfinishedRecord } from "../types";
+import type { Cards, SaveRecord } from "../types";
 import { Icon } from "@iconify/react";
 import { Fragment, useEffect, useState } from "react";
-import { addUnfinishedRecord, getRecords } from "../utils/localStorage";
+import { getRecords } from "../utils/localStorage";
 import { calculateRegretRates, getAdvice } from "../utils/dynamicMessages";
+import {
+  getActionId,
+  getReasonIds,
+  insertDecisionReasons,
+} from "../utils/supabaseHelpers";
+import { supabase } from "../lib/supabase";
 
 //画面上のカードの位置調整CSS
 const reasonsGridBase = "grid gap-4  mb-4 mt-3 max-w-sm mx-auto";
@@ -95,31 +101,78 @@ export default function ReasonsChoice() {
       : "hover:bg-blue-200"; //不一致（未選択）の場合
 
   //「次へ」ボタンが押された時に実行する関数処理
-  const handleSubmit = () => {
-    //クリックされた瞬間の日本での日時(.toLocaleString("ja-JP"))を作成
-    const recordedAt = new Date().toLocaleString("ja-JP", {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
-      weekday: "short", //日本語ロケール(ja-JP)の仕様として、ブラウザが自動的に曜日にカッコが付く
-      hour: "numeric",
-      minute: "2-digit",
-    });
+  const handleSubmit = async () => {
+    //supabaseで[action_masters(行動選択)テーブル]のidを{ data, error }という形で検索結果を返す処理
+    const { data: actionData, error: actionError } =
+      await getActionId(selectedAction);
 
-    //1.「新しい1件」のデータをまとめる
-    const newRecord: UnfinishedRecord = {
-      selectedAction,
-      selectedDecision,
-      selectedReasons,
-      recordedAt,
-    };
+    //action_masters検索でエラー(検索処理が失敗など)が発生した場合、「又は」
+    // actionDataがnullだった場合、その場で処理を中断するガード処理
+    if (actionError || !actionData) {
+      console.error("action_mastersへのid検索エラー:", actionError);
+      return;
+    }
 
-    //2.未振り返りの記録(1のデータ)を1件だけ受け取って、既存の未振り返りの記録一覧に「1件のみ追加」して、保存する
-    addUnfinishedRecord(newRecord);
+    //supabaseで[reason_masters(理由選択)テーブル]のidを{ data, error }という形で検索結果を返す処理
+    const { data: reasonData, error: reasonError } =
+      await getReasonIds(selectedReasons);
 
-    //3.次の画面へ渡す（newRecordを使い回す）
+    //reason_masters検索でエラー(検索処理が失敗など)が発生した場合、「又は」
+    // reasonDataがnullだった場合、その場で処理を中断するガード処理
+    if (reasonError || !reasonData) {
+      console.error("reason_mastersへのid検索エラー:", reasonError);
+      return;
+    }
+
+    //supabaseの[decisions(決定記録)テーブル]にinsertのデータ({}の中身)を
+    // { data, error }という形で受け取って新しい行に追加する処理
+    const { data: decisionData, error: decisionError } = await supabase
+      .from("decisions")
+      .insert({
+        action_id: actionData.id,
+        decision: selectedDecision,
+        //理由選択画面のため、振り返り結果(result)とメモ欄の記述(memo)は[記述なし(null)]とする
+        result: null,
+        memo: null,
+      })
+      //insertした後、[新しく作った行のid(=select)]を[1件だけ(=single)]返してもらう
+      // ※insertだけだと本来「成功したかどうか」程度の情報しか返らない為、下記2点を追加
+      .select("id")
+      .single();
+
+    //decisionsへの追加でエラー(追加処理が失敗など)が発生した場合、「又は」
+    // decisionDataがnullだった場合、その場で処理を中断するガード処理
+    if (decisionError || !decisionData) {
+      console.error("decisionsへのinsert & id返却エラー:", decisionError);
+      return;
+    }
+
+    //[decision_reasonsテーブル]に理由が複数選択された場合、理由ごとに複数行insert(追加)する処理
+    const reasonIds = reasonData.map((r) => r.id);
+    const { error: decisionReasonsError } = await insertDecisionReasons(
+      decisionData.id,
+      reasonIds,
+    );
+
+    //[decision_reasonsテーブル]へのinsert処理がエラーになった場合、その場で処理を中断するガード処理
+    // ※decision_reasonsへinsert後は保存して終わりの為、dataを受け取る処理は記述しない
+    if (decisionReasonsError) {
+      console.error("decision_reasonsへのinsertエラー:", decisionReasonsError);
+      return;
+    }
+
+    //次の画面へstateの中身を渡す
     //navigate(遷移先, {state:{次のページに渡すデータ}})
-    navigate("/reflection", { state: newRecord });
+    navigate("/reflection", {
+      state: {
+        //decisionId：「ReasonsChoiceで新規作成された、まだresultが空の行」を
+        // Reflection画面で保存する時に正しく特定して更新するために必要
+        decisionId: decisionData.id,
+        selectedAction,
+        selectedDecision,
+        selectedReasons,
+      },
+    });
   };
 
   //理由ごとの後悔率を計算(dynamicMessages.tsのcalculateRegretRatesを再利用)
