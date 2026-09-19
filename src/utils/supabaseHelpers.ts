@@ -119,3 +119,19 @@ export async function getActionLabel(actionId: number) {
 
   return { data, error };
 }
+
+//[decision_reasonsテーブル]と[reason_mastersテーブル]を結合して、
+// その[decisionId]に紐づく[理由labelの配列]を取得する
+export async function getReasonLabels(decisionId: number) {
+  const { data, error } = await supabase
+    .from("decision_reasons")
+    //"reason_masters(label)"：[decision_reasonsテーブルのreason_id]を辿って、
+    // 　繋がっている[reason_mastersテーブルのlabel]まで一気に取得できる。SQLのJOINに相当。
+    .select("reason_masters(label)")
+    //[decision_reasonsテーブルに存在するdecision_id列]が
+    // [getReasonLabels関数の引数であるdecisionIdの値(＝振り返り画面で表示したい記録1件のid)]と一致する行を全部取得する
+    // ＝決定記録(id=数字)に紐づいている理由を全て取得(複数選択している可能性ある為)
+    .eq("decision_id", decisionId);
+
+  return { data, error };
+}
