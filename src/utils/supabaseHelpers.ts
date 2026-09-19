@@ -86,12 +86,36 @@ export async function getUnfinishedDecision(decisionId?: number) {
       await query.eq("id", decisionId).single()
     : await query
         //"result"列がnull(まだ振り返っていない)行に絞り込む
+        // ※複数件ヒットする可能性があり
         .is("result", null)
-        //created_at列で並び替え、ascending: false(降順、新しい順)にする
+        //created_at列で並び替え、ascending(昇順): false(降順・新しい順)にする
         .order("created_at", { ascending: false })
-        //1件だけに絞る
+        //orderで並び替えた結果の[先頭1件だけ(=limit(1))]に絞り込む
         .limit(1)
+        //1件のオブジェクトとして返す
+        // ※[.order()+.limit(1)]で明確に1件だけに絞り込まれているので、
+        // singleをエラーを出さずに使用可能
         .single();
+
+  //検索した結果(dataとerror)を呼び出し元(フロントエンド側)に返す処理
+  return { data, error };
+}
+
+//action_mastersテーブルから、actionIdに一致するlabelを取得する。
+// ※[decisionsテーブルのaction_id]はidの数字しか持っていないため、
+//   画面に表示する日本語ラベルを下記で取得する必要がある。
+
+// getActionLabel：idからラベル文字列を検索する(表示時に使う)
+// getActionId(in Reflection.tsx)：ラベル文字列からidを検索する(保存時に使う)
+export async function getActionLabel(actionId: number) {
+  const { data, error } = await supabase
+    .from("action_masters")
+    //label列だけ取得(=select)
+    .select("label")
+    //id列がactionIdの値と一致する行だけに絞り込む
+    // ※actionIdは主キー(Primary Key)の為、自動的に一意性(ユニーク性)が保証されており1件しかない
+    .eq("id", actionId)
+    .single();
 
   return { data, error };
 }
