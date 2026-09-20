@@ -1,13 +1,13 @@
 //振り返り画面
 import { Icon } from "@iconify/react";
 import { useLocation, useNavigate } from "react-router-dom";
-import type { Result, ResultButton, UnfinishedRecord } from "../types";
-import { useState } from "react";
-import { getUnfinishedRecords } from "../utils/localStorage";
+import type { Result, ResultButton, SupabaseUnfinishedRecord } from "../types";
+import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import {
   getActionId,
   getReasonIds,
+  getUnfinishedDecision,
   insertDecisionReasons,
 } from "../utils/supabaseHelpers";
 
@@ -66,22 +66,54 @@ export default function Reflection() {
   //以下のlocation.state?.~は各データを前ページから取得する機能
   const location = useLocation();
 
-  //localStorageに保存されている未振り返り記録の全件を取得
-  const unfinishedRecords: UnfinishedRecord[] = getUnfinishedRecords();
+  //supabaseから取得した[未振り返り記録]を管理するstate(初期値はnull、取得できるまで表示しない)
+  const [record, setRecord] = useState<SupabaseUnfinishedRecord | null>(null);
 
-  //location.state(前ページから渡されたデータ)があればそれを使い、
-  //なければlocalStorageに保存されているデータ(＝未振り返り記録)の最新1件を使う
-  const record = location.state ?? unfinishedRecords.at(-1);
+  //画面が最初に表示された時、未振り返り記録をsupabaseから取得する
+  useEffect(() => {
+    const fetchRecord = async () => {
+      //ReasonsChoiceから遷移して、そのままReflection画面を表示した場合、
+      // location.stateにデータがあるので、そこからdecisionIdを取得する
+      const decisionId = location.state?.decisionId;
 
-  const selectedAction = record?.selectedAction ?? "";
-  const selectedDecision = record?.selectedDecision ?? null;
+      //decisionIdがあれば(ReasonsChoiceから遷移した場合)、該当の記録をピンポイントで、
+      // decisionIdがなければ(タブ切り替えやURL直打ちの場合)、最新1件を取得する
+      const { data: unfinishedData, error: unfinishedError } =
+        //getUnfinishedDecision関数内部で、decisionIdの有無
+        // (Reflection画面への遷移経路で自動的に決定)によって検索方法が自動的に切り替わる
+        await getUnfinishedDecision(decisionId);
 
-  //:string[]：[location.state]の型をTSが推測できないため明示。
-  //　?? []（空配列）とすることで、値がない場合も型がstring[]のまま保たれる
-  const selectedReasons: string[] = record?.selectedReasons ?? [];
+      //getUnfinishedDecision検索でエラー(検索処理が失敗など)が発生した場合、「又は」
+      // unfinishedDataがnullだった場合(振り返るべき記録が見つからなかった場合など)、
+      // その場でfetchRecord関数(この非同期処理)を中断するガード処理
+      if (unfinishedError || !unfinishedData) {
+        console.error("未振り返りdecision取得エラー:", unfinishedError);
+        return;
+      }
+    };
 
-  //[全ての選択が確定した瞬間(in ReasonsChoice画面)の時間]をReasonsChoice画面から取得
-  const recordedAt = record?.recordedAt ?? "";
+    //実際に上記で定義した関数を呼び出す一文
+    fetchRecord();
+
+    //location.stateが変わった時にも再取得して欲しいため、依存配列に追加
+  }, [location.state]);
+
+  // //localStorageに保存されている未振り返り記録の全件を取得
+  // const unfinishedRecords: UnfinishedRecord[] = getUnfinishedRecords();
+
+  // //location.state(前ページから渡されたデータ)があればそれを使い、
+  // //なければlocalStorageに保存されているデータ(＝未振り返り記録)の最新1件を使う
+  // const record = location.state ?? unfinishedRecords.at(-1);
+
+  // const selectedAction = record?.selectedAction ?? "";
+  // const selectedDecision = record?.selectedDecision ?? null;
+
+  // //:string[]：[location.state]の型をTSが推測できないため明示。
+  // //　?? []（空配列）とすることで、値がない場合も型がstring[]のまま保たれる
+  // const selectedReasons: string[] = record?.selectedReasons ?? [];
+
+  // //[全ての選択が確定した瞬間(in ReasonsChoice画面)の時間]をReasonsChoice画面から取得
+  // const recordedAt = record?.recordedAt ?? "";
 
   //選択中の結果(3ボタン、[良かった,普通,後悔,null])を管理するstate
   const [selectedResult, setSelectedResult] = useState<Result | null>(null);
