@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import {
   getActionId,
+  getActionLabel,
   getReasonIds,
   getUnfinishedDecision,
   insertDecisionReasons,
@@ -88,6 +89,19 @@ export default function Reflection() {
       // その場でfetchRecord関数(この非同期処理)を中断するガード処理
       if (unfinishedError || !unfinishedData) {
         console.error("未振り返りdecision取得エラー:", unfinishedError);
+        return;
+      }
+
+      // [decisions行]に保存されている[action_id(数字、例:3)]から、
+      // [action_mastersテーブル]を検索して、表示用の日本語ラベル(例:"勉強する")を取得する処理
+      // ※[decisionsテーブル]には[action_id]という数字しか保存されていないため、画面表示にはこの逆引き変換が必要
+      const { data: actionLabelData, error: actionLabelError } =
+        await getActionLabel(unfinishedData.action_id);
+
+      //getActionLabel検索でエラー(検索処理が失敗など)が発生した場合、「又は」
+      // actionLabelDataがnullだった場合、その場でfetchRecord関数を中断するガード処理
+      if (actionLabelError || !actionLabelData) {
+        console.error("action_masters逆引きエラー:", actionLabelError);
         return;
       }
     };
