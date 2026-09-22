@@ -8,6 +8,7 @@ import {
   getActionId,
   getActionLabel,
   getReasonIds,
+  getReasonLabels,
   getUnfinishedDecision,
   insertDecisionReasons,
 } from "../utils/supabaseHelpers";
@@ -102,6 +103,17 @@ export default function Reflection() {
       // actionLabelDataがnullだった場合、その場でfetchRecord関数を中断するガード処理
       if (actionLabelError || !actionLabelData) {
         console.error("action_masters逆引きエラー:", actionLabelError);
+        return;
+      }
+
+      //decisionIdから、紐づく[理由ラベルの配列(理由は複数選択が可能な為、複数になりうる)]を取得
+      const { data: reasonLabelsData, error: reasonLabelsError } =
+        await getReasonLabels(unfinishedData.id);
+
+      //getReasonLabels検索でエラー(検索処理が失敗など)が発生した場合、「又は」
+      // reasonLabelsDataがnullだった場合、その場でfetchRecord関数を中断するガード処理
+      if (reasonLabelsError || !reasonLabelsData) {
+        console.error("reason_masters逆引きエラー:", reasonLabelsError);
         return;
       }
     };
