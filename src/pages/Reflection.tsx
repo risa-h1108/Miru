@@ -116,6 +116,55 @@ export default function Reflection() {
         console.error("reason_masters逆引きエラー:", reasonLabelsError);
         return;
       }
+
+      //getUnfinishedDecision/getActionLabel/getReasonLabelsで取得した情報を、
+      // 画面表示用のrecordオブジェクトにまとめてstateに保存する
+      setRecord({
+        //getUnfinishedDecisionで取得したdecisionsテーブルの行自身のid
+        decisionId: unfinishedData.id,
+
+        //getActionLabelで取得した{ label: "勉強する" })から、取り出したlabel部分(ex)"勉強する")
+        selectedAction: actionLabelData.label,
+
+        //decisionsテーブルのdecision列(true/false)を使用
+        selectedDecision: unfinishedData.decision,
+
+        //reasonLabelsData([{ reason_masters: { label: "疲れている" } }, ...])から、
+        // labelの値だけを取り出して文字列の配列(ex)["疲れている", "面倒くさい"])に変換
+        selectedReasons: reasonLabelsData
+          .map((r) => {
+            //Array.isArray：[r.reason_mastersが本当に配列かどうか]を実行時に実際のデータの形でチェック
+            const reasonMaster = Array.isArray(r.reason_masters)
+              ? //もし配列だった場合、配列の先頭の要素[0]を取り出す
+                // ※decision_reasonsとreason_mastersは1対1で結合されているので、
+                // 　配列でも中身は1件のみ取り出される
+                r.reason_masters[0]
+              : //もし配列でなかった場合、オブジェクトそのものをそのまま使う
+                r.reason_masters;
+
+            //もしreasonMasterがundefinedだった場合、
+            // エラーにならずundefinedを返すようにするため、?を使用
+            return reasonMaster?.label;
+          })
+          //.map()の結果に混ざっているかもしれないundefinedを取り除く処理
+          // label !== undefined:「labelがundefinedではない」ものだけを残す
+          // (label): label is string =>:「この条件を満たしたlabelはstring型である」と保証する型ガード
+          // .filter()後の配列の型が「(string | undefined)[](=.map()の結果)」から「string[]」に絞り込まれる
+          .filter((label): label is string => label !== undefined),
+
+        //DB(decisionsテーブル)に保存されているUTC時刻(created_at)を日本語の日時表示に変換
+        recordedAt: new Date(unfinishedData.created_at).toLocaleString(
+          "ja-JP",
+          {
+            year: "numeric",
+            month: "numeric",
+            day: "numeric",
+            weekday: "short", //日本語ロケール(ja-JP)の仕様として、ブラウザが自動的に曜日にカッコが付く
+            hour: "numeric",
+            minute: "2-digit",
+          },
+        ),
+      });
     };
 
     //実際に上記で定義した関数を呼び出す一文
