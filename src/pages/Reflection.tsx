@@ -71,6 +71,8 @@ export default function Reflection() {
   //supabaseから取得した[未振り返り記録]を管理するstate(初期値はnull、取得できるまで表示しない)
   const [record, setRecord] = useState<SupabaseUnfinishedRecord | null>(null);
 
+  const [isLoading, setIsLoading] = useState(true);
+
   //画面が最初に表示された時、未振り返り記録をsupabaseから取得する
   useEffect(() => {
     const fetchRecord = async () => {
@@ -90,6 +92,8 @@ export default function Reflection() {
       // その場でfetchRecord関数(この非同期処理)を中断するガード処理
       if (unfinishedError || !unfinishedData) {
         console.error("未振り返りdecision取得エラー:", unfinishedError);
+        //[読み込み中]を表し、検索処理の成功/失敗に問わず処理が終わったことを示す
+        setIsLoading(false);
         return;
       }
 
@@ -103,6 +107,8 @@ export default function Reflection() {
       // actionLabelDataがnullだった場合、その場でfetchRecord関数を中断するガード処理
       if (actionLabelError || !actionLabelData) {
         console.error("action_masters逆引きエラー:", actionLabelError);
+        //[読み込み中]を表し、検索処理の成功/失敗に問わず処理が終わったことを示す
+        setIsLoading(false);
         return;
       }
 
@@ -114,6 +120,8 @@ export default function Reflection() {
       // reasonLabelsDataがnullだった場合、その場でfetchRecord関数を中断するガード処理
       if (reasonLabelsError || !reasonLabelsData) {
         console.error("reason_masters逆引きエラー:", reasonLabelsError);
+        //[読み込み中]を表し、検索処理の成功/失敗に問わず処理が終わったことを示す
+        setIsLoading(false);
         return;
       }
 
@@ -165,6 +173,8 @@ export default function Reflection() {
           },
         ),
       });
+      //[読み込み中]を表し、検索処理の成功/失敗に問わず処理が終わったことを示す
+      setIsLoading(false);
     };
 
     //実際に上記で定義した関数を呼び出す一文
@@ -180,15 +190,15 @@ export default function Reflection() {
   // //なければlocalStorageに保存されているデータ(＝未振り返り記録)の最新1件を使う
   // const record = location.state ?? unfinishedRecords.at(-1);
 
-  // const selectedAction = record?.selectedAction ?? "";
-  // const selectedDecision = record?.selectedDecision ?? null;
+  const selectedAction = record?.selectedAction ?? "";
+  const selectedDecision = record?.selectedDecision ?? null;
 
-  // //:string[]：[location.state]の型をTSが推測できないため明示。
-  // //　?? []（空配列）とすることで、値がない場合も型がstring[]のまま保たれる
-  // const selectedReasons: string[] = record?.selectedReasons ?? [];
+  //:string[]：[location.state]の型をTSが推測できないため明示。
+  //　?? []（空配列）とすることで、値がない場合も型がstring[]のまま保たれる
+  const selectedReasons: string[] = record?.selectedReasons ?? [];
 
-  // //[全ての選択が確定した瞬間(in ReasonsChoice画面)の時間]をReasonsChoice画面から取得
-  // const recordedAt = record?.recordedAt ?? "";
+  //[全ての選択が確定した瞬間(in ReasonsChoice画面)の時間]をReasonsChoice画面から取得
+  const recordedAt = record?.recordedAt ?? "";
 
   //選択中の結果(3ボタン、[良かった,普通,後悔,null])を管理するstate
   const [selectedResult, setSelectedResult] = useState<Result | null>(null);
@@ -279,9 +289,14 @@ export default function Reflection() {
     navigate("/action");
   };
 
+  //isLoading[読み込み中]なら、divタブの中を表示。[読み込み中でない]なら、recordを表示。
   //record(前ページから渡されたデータor未振り返り記録)があるなら、[?以降の(ここを表示)]、
   //recordがないなら、[:以降の(ここを表示)]
-  return record ? (
+  return isLoading ? (
+    <div className="min-h-screen flex items-center justify-center">
+      <p className="text-4xl">読み込み中...</p>
+    </div>
+  ) : record ? (
     <div>
       <div className="max-w-sm mx-auto mt-3">
         <h1 className="text-[24px] text-center">振り返り</h1>
