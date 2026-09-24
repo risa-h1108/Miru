@@ -183,13 +183,6 @@ export default function Reflection() {
     //location.stateが変わった時にも再取得して欲しいため、依存配列に追加
   }, [location.state]);
 
-  // //localStorageに保存されている未振り返り記録の全件を取得
-  // const unfinishedRecords: UnfinishedRecord[] = getUnfinishedRecords();
-
-  // //location.state(前ページから渡されたデータ)があればそれを使い、
-  // //なければlocalStorageに保存されているデータ(＝未振り返り記録)の最新1件を使う
-  // const record = location.state ?? unfinishedRecords.at(-1);
-
   const selectedAction = record?.selectedAction ?? "";
   const selectedDecision = record?.selectedDecision ?? null;
 
