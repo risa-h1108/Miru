@@ -1,6 +1,7 @@
 //supabase連携で同じロジックが2箇所以上で必要になったため、切り出し
 
 import { supabase } from "../lib/supabase";
+import type { Result } from "../types";
 
 //[action_masters]テーブルから、labelに一致するidを検索する
 // supabaseで[action_masters(行動選択)テーブル]のidを{ data, error }という形で検索結果を返す処理
@@ -134,4 +135,30 @@ export async function getReasonLabels(decisionId: number) {
     .eq("decision_id", decisionId);
 
   return { data, error };
+}
+
+//[decisionsテーブル]の既存の1行(result/memoのみ)を更新する
+// ※action_id/decisionはReasonsChoice.tsxで既にinsert済みのため、ここでは触らない
+export async function updateDecision(
+  //更新対象を一意(ユニーク)に絞り込むための[decisions行自身のid]
+  decisionId: number,
+
+  //振り返り画面で選択された結果("good"/"neutral"/"regret"のいずれか、またはnull)
+  result: Result | null,
+
+  //振り返り画面で入力されたメモ
+  memo: string,
+) {
+  const { error } = await supabase
+    .from("decisions")
+
+    //[result/memoの2列だけ]を更新対象にする(=update()の引数に渡したキーだけが書き換わり、他の列は変化しない)
+    .update({ result, memo })
+
+    //"id"列がdecisionIdと[一致する行だけ(=.eq)]を更新する
+    // ※これが無いとdecisionsテーブルの[全行のresult/memo]が書き換わってしまうので必須
+    .eq("id", decisionId);
+
+  //update処理の結果(成功ならnull、失敗ならエラー内容)を呼び出し元に返す
+  return { error };
 }
