@@ -3,14 +3,11 @@ import { Icon } from "@iconify/react";
 import { useLocation, useNavigate } from "react-router-dom";
 import type { Result, ResultButton, SupabaseUnfinishedRecord } from "../types";
 import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabase";
 import {
-  getActionId,
   getActionLabel,
-  getReasonIds,
   getReasonLabels,
   getUnfinishedDecision,
-  insertDecisionReasons,
+  updateDecision,
 } from "../utils/supabaseHelpers";
 
 //記録内容ボックスのCSS
@@ -209,73 +206,28 @@ export default function Reflection() {
 
   //「保存する」ボタンが押された時の処理
   const saveDecision = async () => {
-    //supabaseで[action_masters(行動選択)テーブル]のidを{ data, error }という形で検索結果を返す処理
-    const { data: actionData, error: actionError } =
-      await getActionId(selectedAction);
+    //record.decisionId：ReasonsChoice.tsxで既にinsert済みの[更新対象となるdecisions行のid]
+    //recordは、nullの可能性がある(isLoading/読み込み失敗時)型なので、
+    // 「?」をつけて安全にアクセスし、値が無い場合はガード処理で中断する
+    const decisionId = record?.decisionId;
 
-    //action_masters検索でエラー(検索処理が失敗など)が発生した場合、「又は」
-    // actionDataがnullだった場合、その場で処理を中断するガード処理
-    if (actionError || !actionData) {
-      console.error("action_mastersへのid検索エラー:", actionError);
+    //decisionIdがない場合、エラーメッセージを返す
+    if (!decisionId) {
+      console.error("更新対象のdecisionIdが取得できていません");
       return;
     }
 
-    //supabaseで[reason_masters(理由選択)テーブル]のidを{ data, error }という形で検索結果を返す処理
-    const { data: reasonData, error: reasonError } =
-      await getReasonIds(selectedReasons);
-
-    //reason_masters検索でエラー(検索処理が失敗など)が発生した場合、「又は」
-    // reasonDataがnullだった場合、その場で処理を中断するガード処理
-    if (reasonError || !reasonData) {
-      console.error("reason_mastersへのid検索エラー:", reasonError);
-      return;
-    }
-
-    //supabaseの[decisions(決定記録)テーブル]にinsertのデータ({}の中身)を
-    // { data, error }という形で受け取って新しい行に追加する処理
-    // 新しく作られた決定記録のidの結果例:decisionData　=　{ id: 5 }
-    const { data: decisionData, error: decisionError } = await supabase
-      .from("decisions")
-      //オブジェクトの中身(={}の中身)がdecisionsテーブルに新しい1行として[追加(=insert)]される
-      .insert({
-        //上で検索したactionData({ id: 1 }のような形)から、id部分だけを取り出す処理。
-        //万が一actionDataが[null(検索失敗)]だった場合、エラーで処理が止まるのを防ぐため「?」を使用
-        action_id: actionData?.id,
-
-        //selectedDecisionの型定義が[boolean | null]だが、
-        // Reflection画面にたどり着く時点で「やる/やらない」はmustで選択済みなので、
-        // supabase上で[decisionsテーブル＞decisionカラム]はNOT NULL(必須)設定にした。
-        decision: selectedDecision,
-        result: selectedResult,
-        memo: memo,
-      })
-      //insertした後、[新しく作った行のid(=select)]を[1件だけ(=single)]返してもらう
-      // ※insertだけだと本来「成功したかどうか」程度の情報しか返らない為、下記2点を追加
-      .select("id")
-      .single();
-
-    //decisionsへの追加でエラー(追加処理が失敗など)が発生した場合、「又は」
-    // decisionDataがnullだった場合、その場で処理を中断するガード処理
-    if (decisionError || !decisionData) {
-      console.error("decisionsへのinsert & id返却エラー:", decisionError);
-      return;
-    }
-
-    //[decision_reasonsテーブル]に理由が複数選択された場合、理由ごとに複数行insert(追加)する処理
-
-    //reasonData([{ id: 1 }, { id: 2 }])から、idの値だけを取り出して[数字の配列(=map)]に変換
-    // r:配列を1つずつ処理する時の、その時点の1要素({ id: 1 }など)を指す変数名
-    // r.id:そのオブジェクトからidプロパティの値だけを取り出す
-    const reasonIds = reasonData.map((r) => r.id);
-    const { error: decisionReasonsError } = await insertDecisionReasons(
-      decisionData.id, //直前のdecisionsへのinsertで作られた行のid
-      reasonIds, //上で変換した数字だけの配列
+    //action_id/reason_idの再検索(getActionId/getReasonIds)は不要
+    // ※ReasonsChoice.tsxでのinsert時点ですでにdecisions/decision_reasonsに保存済みのため
+    const { error: updateError } = await updateDecision(
+      decisionId,
+      selectedResult,
+      memo,
     );
 
-    //[decision_reasonsテーブル]へのinsert処理がエラーになった場合、その場で処理を中断するガード処理
-    // ※decision_reasonsへinsert後は保存して終わりの為、dataを受け取る処理は記述しない
-    if (decisionReasonsError) {
-      console.error("decision_reasonsへのinsertエラー:", decisionReasonsError);
+    //update処理でエラーが発生した場合、その場で処理を中断するガード処理
+    if (updateError) {
+      console.error("decisionsへのupdateエラー:", updateError);
       return;
     }
 
