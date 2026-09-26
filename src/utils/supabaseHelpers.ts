@@ -162,3 +162,26 @@ export async function updateDecision(
   //update処理の結果(成功ならnull、失敗ならエラー内容)を呼び出し元に返す
   return { error };
 }
+
+//振り返り済み(=result列がnullではない)記録一覧を取得する
+//下記関数をReasonsChoice.tsxの気づきBOX(calculateRegretRatesに渡す用)で使用
+export async function getFinishedDecisions() {
+  const { data, error } = await supabase
+    .from("decisions")
+    //[decisionsテーブル自身の列]と[JOINで取ってくる列]を1回のselectでまとめて取得する
+    // action_masters(label)：[decisions.action_id]が指す[action_masters.id]を辿って、
+    //   　紐づくlabel(行動名)まで一気に取得(SQLのJOINに相当)
+    // decision_reasons(reason_masters(label))：[decisions.id]に紐づく[decision_reasons(=中間テーブル)]を経由して、
+    //   　さらにその先の[reason_masters.label(理由名)]まで一気に取得(2段階のJOIN)
+    .select(
+      "id, created_at, decision, result, memo, action_masters(label), decision_reasons(reason_masters(label))",
+    )
+    //"result"列がnullでは[ない(=.not)]行だけに絞り込む(振り返り済みの行だけを対象にする為)
+    // ※[.is("result", null)(="result"列がnullである)]を逆にした
+    .not("result", "is", null);
+
+  // 件数が確定していない(0件〜複数件)ため、.single()は付けない
+
+  //検索した結果(dataとerror)を呼び出し元(フロントエンド側)に返す処理
+  return { data, error };
+}
