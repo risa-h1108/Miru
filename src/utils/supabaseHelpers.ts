@@ -1,7 +1,7 @@
 //supabase連携で同じロジックが2箇所以上で必要になったため、切り出し
 
 import { supabase } from "../lib/supabase";
-import type { Result } from "../types";
+import type { Result, SaveRecord } from "../types";
 
 //[action_masters]テーブルから、labelに一致するidを検索する
 // supabaseで[action_masters(行動選択)テーブル]のidを{ data, error }という形で検索結果を返す処理
@@ -184,4 +184,89 @@ export async function getFinishedDecisions() {
 
   //検索した結果(dataとerror)を呼び出し元(フロントエンド側)に返す処理
   return { data, error };
+}
+
+//getFinishedDecisionsが返すdataと同じ型を、手動で書き写さずに自動で借りてくる書き方で記載
+//　※getFinishedDecisions側の[.select()の中身]を変更しても、下記の型定義を手動で書き直す必要がなくなる
+
+// 1.typeof getFinishedDecisions：関数そのものの型(設計図)を取得
+// 2.ReturnType<...>：その関数(getFinishedDecisions)を呼んだ時の戻り値の型(Promise<{data, error}>)を取得
+//   ※getFinishedDecisionsは[async function]のため、
+//     [returnした中身({data, error})]がそのまま返るのではなく、
+//     必ずPromise(後で値が手に入る箱)に包まれた形(Promise<{data, error}>)になる
+// 3.Awaited<...>：Promiseという箱を開けて、中身({data, error})の型だけを取り出す
+// 4.["data"]：そのオブジェクト型(={data, error})から、dataプロパティだけの型(={data})を取り出す
+
+export function toSaveRecords(
+  data: Awaited<ReturnType<typeof getFinishedDecisions>>["data"],
+): SaveRecord[] {
+  //dataがnull(エラー時など)の場合、空配列を返す
+  if (!data) return [];
+
+  //1行(row)ずつ、SaveRecord型の1件に変換する
+  return data.map((row) => {
+    //action_mastersが[配列/オブジェクト]どちらの形で来ても対応できるように記載
+    //Array.isArray：[r.action_mastersが本当に配列かどうか]を実行時に実際のデータの形でチェック
+    const actionMaster = Array.isArray(row.action_masters)
+      ? //もし配列だった場合、配列の先頭の要素[0]を取り出す
+        row.action_masters[0]
+      : //もし配列でなかった場合、オブジェクトそのものをそのまま使う
+        row.action_masters;
+
+    //decision_reasons(複数の理由が紐づく配列)の中の、さらにreason_masters(1件)からlabelを取り出す
+    const selectedReasons = row.decision_reasons
+      //row.decision_reasons配列を1件(dr)ずつ処理し、それぞれのlabelを取り出した新しい配列を作る
+      .map((dr) => {
+        //dr.reason_mastersが[配列/オブジェクト]どちらの形で来ても対応できるように記載
+        //　Array.isArray：[dr.reason_mastersが本当に配列かどうか]を実行時に実際のデータの形でチェック
+        const reasonMaster = Array.isArray(dr.reason_masters)
+          ? //もし配列だった場合、配列の先頭の要素[0]を取り出す
+            // ※[decision_reasons]と[reason_masters]は1対1で結合されているので、配列でも中身は1件のみ
+            dr.reason_masters[0]
+          : //もし配列でなかった場合、オブジェクトそのものをそのまま使う
+            dr.reason_masters;
+
+        //もしreasonMasterがundefinedだった場合、
+        // エラーにならずundefinedを返すようにするため、?を使用
+        // ※この時点でreturnされる[labelの型]は[(string | undefined)]になる
+        // 　(reasonMasterがundefinedの可能性がある為)
+        return reasonMaster?.label;
+      })
+
+      //.map()直後の配列の型は(string | undefined)[]だが、
+      //最終的に欲しい[SaveRecord型のselectedReasons]は
+      // string[](純粋な文字列のみ)のため、型を合わせる必要がある
+
+      //undefinedを取り除き、配列の型を「(string | undefined)[]」→「string[]」に絞り込む処理
+      // label !== undefined：「labelがundefinedではない」ものだけを残す(=実際の中身はここでstring[]になる)
+      //しかし.filter()だけでは、TSは「undefinedが消えた」ことを自動で理解してくれないので、[(label): label is string]が必要
+      // (label): label is string =>：「この条件を満たしたlabelはstring型である」とTSに保証する型ガード
+      .filter((label): label is string => label !== undefined);
+
+    //ここまでで取り出した値をSaveRecord型の形に組み立てる
+    return {
+      //actionMaster?.label：actionMasterが[undefinedだった]場合、エラーにならないよう?を使用
+      //　?? ""：actionMaster自体が[undefinedだった]場合(取得失敗時など)、空文字を代わりに使う
+      selectedAction: actionMaster?.label ?? "",
+
+      //decisionsテーブルのdecision列(true/false)をそのまま使用
+      selectedDecision: row.decision,
+
+      //上の[map + filter]で作った、[理由labelのみ]のstring[]をそのまま使用
+      selectedReasons,
+
+      //decisionsテーブルの[created_at列(ISO文字列、UTC)]をそのままrecordedAtとして使用
+      // ※Reflection.tsxのような日本語表示への変換(toLocaleString)はここでは行わない
+      //   (気づきBOXでは日時の表示は使わず、calculateRegretRatesの計算にしか使わないため)
+      recordedAt: row.created_at,
+
+      //decisionsテーブルの[result列]をそのまま使用
+      // ※getFinishedDecisionsで[.not("result", "is", null)]により絞り込み済みのため、
+      //   ここにデータが来る時点で[result]は[nullではない]ことが保証されている
+      selectedResult: row.result,
+
+      //row.memoがnull(未入力)の場合、空文字を代わりに使う
+      memo: row.memo ?? "",
+    };
+  });
 }
