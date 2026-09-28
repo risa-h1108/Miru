@@ -4,12 +4,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import type { Cards, SaveRecord } from "../types";
 import { Icon } from "@iconify/react";
 import { Fragment, useEffect, useState } from "react";
-import { getRecords } from "../utils/localStorage";
 import { calculateRegretRates, getAdvice } from "../utils/dynamicMessages";
 import {
   getActionId,
+  getFinishedDecisions,
   getReasonIds,
   insertDecisionReasons,
+  toSaveRecords,
 } from "../utils/supabaseHelpers";
 import { supabase } from "../lib/supabase";
 
@@ -62,14 +63,28 @@ export default function ReasonsChoice() {
   //useState<string[]>()：<型：string型が複数>（初期値：空の配列[]、配列は存在しているが中身は0個）
   const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
 
-  //過去の記録データを管理するstate(気づきBOXでの後悔率計算に使用、初期値は空配列)
+  //以前既に振り返り済みになった記録データを管理するstate(気づきBOXでの後悔率計算に使用、初期値は空配列)
   const [pastRecords, setPastRecords] = useState<SaveRecord[]>([]);
 
   //画面が最初に表示された1回目だけ(＝第2引数が[]の部分)、
-  //getRecordsからlocalStorageにある過去の記録を取得し、setPastRecordsに保存する
+  // Supabaseから振り返り済み記録を取得し、setPastRecordsに保存する
   useEffect(() => {
-    const records = getRecords();
-    setPastRecords(records);
+    const fetchPastRecords = async () => {
+      //Supabaseから振り返り済み(result IS NOT NULL)だけの記録一覧を取得
+      const { data, error } = await getFinishedDecisions();
+
+      //取得処理でエラーが発生した場合、その場で処理を中断するガード処理
+      if (error) {
+        console.error("振り返り済み記録の取得エラー:", error);
+        return;
+      }
+
+      //「Supabaseから取得したdata([入れ子=ネスト]の状態)」を
+      // 　SaveRecord[](=アプリで使用/表示する)の形に変換し、その結果をsetPastRecordsでstateに保存
+      setPastRecords(toSaveRecords(data));
+    };
+
+    fetchPastRecords();
   }, []);
 
   const navigate = useNavigate();
