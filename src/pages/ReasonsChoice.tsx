@@ -80,7 +80,7 @@ export default function ReasonsChoice() {
       }
 
       //「Supabaseから取得したdata([入れ子=ネスト]の状態)」を
-      // 　SaveRecord[](=アプリで使用/表示する)の形に変換し、その結果をsetPastRecordsでstateに保存
+      // SaveRecord[](=アプリで使用/表示する)の形に変換し、その結果をsetPastRecordsでstateに保存
       setPastRecords(toSaveRecords(data));
     };
 
