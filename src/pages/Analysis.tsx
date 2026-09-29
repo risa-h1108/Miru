@@ -36,7 +36,8 @@ export default function Analysis() {
       }
 
       //「Supabaseから取得したdata([入れ子=ネスト]の状態)」を
-      // SaveRecord[](=アプリで使用/表示する)の形に変換し、その結果をsetAnalysisRecordでstateに保存
+      // SaveRecord[](=アプリで使用/表示する)の形に変換し(=toSaveRecords)、
+      // その結果をsetAnalysisRecordでstateに保存
       setAnalysisRecord(toSaveRecords(data));
     };
 
