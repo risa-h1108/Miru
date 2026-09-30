@@ -5,7 +5,8 @@ import { Link } from "react-router-dom";
 export default function Home() {
   return (
     <div>
-      <h1>アプリ紹介・ログイン画面</h1>
+      <h1>Miru</h1>
+      <h2>アプリ紹介・ログイン画面</h2>
       <Link to="/action">ゲストとして始める</Link>
     </div>
   );
