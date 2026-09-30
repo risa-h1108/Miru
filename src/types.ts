@@ -53,3 +53,12 @@ export type Advice = {
   reason: string;
   advice: string;
 };
+
+//supabaseで管理する未振り返り記録の型
+export type SupabaseUnfinishedRecord = {
+  decisionId: number;
+  selectedAction: string;
+  selectedDecision: boolean | null;
+  selectedReasons: string[];
+  recordedAt: string;
+};

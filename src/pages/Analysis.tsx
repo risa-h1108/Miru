@@ -3,11 +3,11 @@
 import { Fragment, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import type { SaveRecord } from "../types";
-import { getRecords } from "../utils/localStorage";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { Icon } from "@iconify/react";
 import { reasonsList } from "./ReasonsChoice";
 import { calculateRegretRates, getAdvice } from "../utils/dynamicMessages";
+import { getFinishedDecisions, toSaveRecords } from "../utils/supabaseHelpers";
 
 //7件それぞれの理由ごとにバーとパーセンテージ％を横並びにするCSS
 const regretBarRowBase =
@@ -19,13 +19,29 @@ const adviceBoxBase =
 
 export default function Analysis() {
   //選択後の記録データを複数管理する
-  //([]):getRecordsがデータなしのとき[](配列)を返すようにする。
+  //([]):getFinishedDecisionsがデータなしのとき[](配列)を返すようにする。
   const [analysisRecord, setAnalysisRecord] = useState<SaveRecord[]>([]);
 
-  //画面が最初に表示された1回目だけgetRecordsから情報を取得し、そのデータ(records)をsetAnalysisRecordに渡す
+  //画面が最初に表示された1回目だけ(＝第2引数が[]の部分)、
+  // Supabaseから振り返り済み記録を取得し、setAnalysisRecordに保存する
   useEffect(() => {
-    const records = getRecords();
-    setAnalysisRecord(records);
+    const fetchAnalysisRecord = async () => {
+      //Supabaseから振り返り済み(result IS NOT NULL)だけの記録一覧を取得
+      const { data, error } = await getFinishedDecisions();
+
+      //取得処理でエラーが発生した場合、その場で処理を中断するガード処理
+      if (error) {
+        console.error("振り返り済み記録の取得エラー:", error);
+        return;
+      }
+
+      //「Supabaseから取得したdata([入れ子=ネスト]の状態)」を
+      // SaveRecord[](=アプリで使用/表示する)の形に変換し(=toSaveRecords)、
+      // その結果をsetAnalysisRecordでstateに保存
+      setAnalysisRecord(toSaveRecords(data));
+    };
+
+    fetchAnalysisRecord();
   }, []);
 
   //理由ごとの後悔率を計算(dynamicMessages.tsのcalculateRegretRates関数を再利用)

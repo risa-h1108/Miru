@@ -1,18 +1,14 @@
 //振り返り画面
 import { Icon } from "@iconify/react";
 import { useLocation, useNavigate } from "react-router-dom";
-import type {
-  Result,
-  ResultButton,
-  SaveRecord,
-  UnfinishedRecord,
-} from "../types";
-import { useState } from "react";
+import type { Result, ResultButton, SupabaseUnfinishedRecord } from "../types";
+import { useEffect, useState } from "react";
 import {
-  addRecord,
-  getUnfinishedRecords,
-  removeUnfinishedRecord,
-} from "../utils/localStorage";
+  getActionLabel,
+  getReasonLabels,
+  getUnfinishedDecision,
+  updateDecision,
+} from "../utils/supabaseHelpers";
 
 //記録内容ボックスのCSS
 const recordBase =
@@ -69,12 +65,120 @@ export default function Reflection() {
   //以下のlocation.state?.~は各データを前ページから取得する機能
   const location = useLocation();
 
-  //localStorageに保存されている未振り返り記録の全件を取得
-  const unfinishedRecords: UnfinishedRecord[] = getUnfinishedRecords();
+  //supabaseから取得した[未振り返り記録]を管理するstate(初期値はnull、取得できるまで表示しない)
+  const [record, setRecord] = useState<SupabaseUnfinishedRecord | null>(null);
 
-  //location.state(前ページから渡されたデータ)があればそれを使い、
-  //なければlocalStorageに保存されているデータ(＝未振り返り記録)の最新1件を使う
-  const record = location.state ?? unfinishedRecords.at(-1);
+  const [isLoading, setIsLoading] = useState(true);
+
+  //画面が最初に表示された時、未振り返り記録をsupabaseから取得する
+  useEffect(() => {
+    const fetchRecord = async () => {
+      //ReasonsChoiceから遷移して、そのままReflection画面を表示した場合、
+      // location.stateにデータがあるので、そこからdecisionIdを取得する
+      const decisionId = location.state?.decisionId;
+
+      //decisionIdがあれば(ReasonsChoiceから遷移した場合)、該当の記録をピンポイントで、
+      // decisionIdがなければ(タブ切り替えやURL直打ちの場合)、最新1件を取得する
+      const { data: unfinishedData, error: unfinishedError } =
+        //getUnfinishedDecision関数内部で、decisionIdの有無
+        // (Reflection画面への遷移経路で自動的に決定)によって検索方法が自動的に切り替わる
+        await getUnfinishedDecision(decisionId);
+
+      //getUnfinishedDecision検索でエラー(検索処理が失敗など)が発生した場合、「又は」
+      // unfinishedDataがnullだった場合(振り返るべき記録が見つからなかった場合など)、
+      // その場でfetchRecord関数(この非同期処理)を中断するガード処理
+      if (unfinishedError || !unfinishedData) {
+        console.error("未振り返りdecision取得エラー:", unfinishedError);
+        //[読み込み中]を表し、検索処理の成功/失敗に問わず処理が終わったことを示す
+        setIsLoading(false);
+        return;
+      }
+
+      // [decisions行]に保存されている[action_id(数字、例:3)]から、
+      // [action_mastersテーブル]を検索して、表示用の日本語ラベル(例:"勉強する")を取得する処理
+      // ※[decisionsテーブル]には[action_id]という数字しか保存されていないため、画面表示にはこの逆引き変換が必要
+      const { data: actionLabelData, error: actionLabelError } =
+        await getActionLabel(unfinishedData.action_id);
+
+      //getActionLabel検索でエラー(検索処理が失敗など)が発生した場合、「又は」
+      // actionLabelDataがnullだった場合、その場でfetchRecord関数を中断するガード処理
+      if (actionLabelError || !actionLabelData) {
+        console.error("action_masters逆引きエラー:", actionLabelError);
+        //[読み込み中]を表し、検索処理の成功/失敗に問わず処理が終わったことを示す
+        setIsLoading(false);
+        return;
+      }
+
+      //decisionIdから、紐づく[理由ラベルの配列(理由は複数選択が可能な為、複数になりうる)]を取得
+      const { data: reasonLabelsData, error: reasonLabelsError } =
+        await getReasonLabels(unfinishedData.id);
+
+      //getReasonLabels検索でエラー(検索処理が失敗など)が発生した場合、「又は」
+      // reasonLabelsDataがnullだった場合、その場でfetchRecord関数を中断するガード処理
+      if (reasonLabelsError || !reasonLabelsData) {
+        console.error("reason_masters逆引きエラー:", reasonLabelsError);
+        //[読み込み中]を表し、検索処理の成功/失敗に問わず処理が終わったことを示す
+        setIsLoading(false);
+        return;
+      }
+
+      //getUnfinishedDecision/getActionLabel/getReasonLabelsで取得した情報を、
+      // 画面表示用のrecordオブジェクトにまとめてstateに保存する
+      setRecord({
+        //getUnfinishedDecisionで取得したdecisionsテーブルの行自身のid
+        decisionId: unfinishedData.id,
+
+        //getActionLabelで取得した{ label: "勉強する" })から、取り出したlabel部分(ex)"勉強する")
+        selectedAction: actionLabelData.label,
+
+        //decisionsテーブルのdecision列(true/false)を使用
+        selectedDecision: unfinishedData.decision,
+
+        //reasonLabelsData([{ reason_masters: { label: "疲れている" } }, ...])から、
+        // labelの値だけを取り出して文字列の配列(ex)["疲れている", "面倒くさい"])に変換
+        selectedReasons: reasonLabelsData
+          .map((r) => {
+            //Array.isArray：[r.reason_mastersが本当に配列かどうか]を実行時に実際のデータの形でチェック
+            const reasonMaster = Array.isArray(r.reason_masters)
+              ? //もし配列だった場合、配列の先頭の要素[0]を取り出す
+                // ※decision_reasonsとreason_mastersは1対1で結合されているので、
+                // 　配列でも中身は1件のみ取り出される
+                r.reason_masters[0]
+              : //もし配列でなかった場合、オブジェクトそのものをそのまま使う
+                r.reason_masters;
+
+            //もしreasonMasterがundefinedだった場合、
+            // エラーにならずundefinedを返すようにするため、?を使用
+            return reasonMaster?.label;
+          })
+          //.map()の結果に混ざっているかもしれないundefinedを取り除く処理
+          // label !== undefined:「labelがundefinedではない」ものだけを残す
+          // (label): label is string =>:「この条件を満たしたlabelはstring型である」と保証する型ガード
+          // .filter()後の配列の型が「(string | undefined)[](=.map()の結果)」から「string[]」に絞り込まれる
+          .filter((label): label is string => label !== undefined),
+
+        //DB(decisionsテーブル)に保存されているUTC時刻(created_at)を日本語の日時表示に変換
+        recordedAt: new Date(unfinishedData.created_at).toLocaleString(
+          "ja-JP",
+          {
+            year: "numeric",
+            month: "numeric",
+            day: "numeric",
+            weekday: "short", //日本語ロケール(ja-JP)の仕様として、ブラウザが自動的に曜日にカッコが付く
+            hour: "numeric",
+            minute: "2-digit",
+          },
+        ),
+      });
+      //[読み込み中]を表し、検索処理の成功/失敗に問わず処理が終わったことを示す
+      setIsLoading(false);
+    };
+
+    //実際に上記で定義した関数を呼び出す一文
+    fetchRecord();
+
+    //location.stateが変わった時にも再取得して欲しいため、依存配列に追加
+  }, [location.state]);
 
   const selectedAction = record?.selectedAction ?? "";
   const selectedDecision = record?.selectedDecision ?? null;
@@ -101,28 +205,43 @@ export default function Reflection() {
   const navigate = useNavigate();
 
   //「保存する」ボタンが押された時の処理
-  const saveDecision = () => {
-    //1件分の記録データ(前画面から受け取ったもの＋この画面で入力したselectedResultとmemo)をまとめる
-    const record: SaveRecord = {
-      selectedAction,
-      selectedDecision,
-      selectedReasons,
-      recordedAt,
+  const saveDecision = async () => {
+    //record.decisionId：ReasonsChoice.tsxで既にinsert済みの[更新対象となるdecisions行のid]
+    //recordは、nullの可能性がある(isLoading/読み込み失敗時)型なので、
+    // 「?」をつけて安全にアクセスし、値が無い場合はガード処理で中断する
+    const decisionId = record?.decisionId;
+
+    //decisionIdがない場合、エラーメッセージを返す
+    if (!decisionId) {
+      console.error("更新対象のdecisionIdが取得できていません");
+      return;
+    }
+
+    //action_id/reason_idの再検索(getActionId/getReasonIds)は不要
+    // ※ReasonsChoice.tsxでのinsert時点ですでにdecisions/decision_reasonsに保存済みのため
+    const { error: updateError } = await updateDecision(
+      decisionId,
       selectedResult,
       memo,
-    };
+    );
 
-    //先ほど上記処理で「振り返り済みになったばかりの記録」を受け取って、既存の振り返り済み記録一覧に「先ほど振り返り済みになった1件を追加」する
-    addRecord(record);
-    //未振り返り一覧から「振り返り済みになった記録1件」を.filter()で除去して保存する
-    removeUnfinishedRecord(record.recordedAt);
+    //update処理でエラーが発生した場合、その場で処理を中断するガード処理
+    if (updateError) {
+      console.error("decisionsへのupdateエラー:", updateError);
+      return;
+    }
 
     navigate("/action");
   };
 
+  //isLoading[読み込み中]なら、divタブの中を表示。[読み込み中でない]なら、recordを表示。
   //record(前ページから渡されたデータor未振り返り記録)があるなら、[?以降の(ここを表示)]、
   //recordがないなら、[:以降の(ここを表示)]
-  return record ? (
+  return isLoading ? (
+    <div className="min-h-screen flex items-center justify-center">
+      <p className="text-4xl">読み込み中...</p>
+    </div>
+  ) : record ? (
     <div>
       <div className="max-w-sm mx-auto mt-3">
         <h1 className="text-[24px] text-center">振り返り</h1>
