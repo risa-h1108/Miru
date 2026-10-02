@@ -14,6 +14,8 @@ export default function Home() {
         <br />
         少しずつ改善していくための習慣化サポートアプリ
       </p>
+      <Link to="/login">ログイン</Link>
+      <Link to="/signup">新規登録</Link>
       <Link to="/action">ゲストとして始める</Link>
     </div>
   );
