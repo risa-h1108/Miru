@@ -1,3 +1,9 @@
+//[ログイン・新規登録]フォームの入力フィールドの型定義
+export type AuthFormValues = {
+  email: string;
+  password: string;
+};
+
 //行動選択、理由選択画面にある選択肢カードの型
 export type Cards = { id: string; label: string; icon: string };
 
