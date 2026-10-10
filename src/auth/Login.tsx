@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { AuthFormValues } from "../types";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
+import Button from "../components/Button";
 
 export default function Login() {
   //処理のあとで移動するので、Link ではなくuseNavigateを使用
@@ -36,7 +37,7 @@ export default function Login() {
   };
 
   return (
-    <div>
+    <div className="px-8">
       <h1>ログイン</h1>
       <input
         type="email"
@@ -59,8 +60,12 @@ export default function Login() {
       />
 
       {/* ログインボタン */}
-      {/* ボタンを押したらsupabaseへemail.password確認の処理が実施される */}
-      <button onClick={handleLogin}>ログインする</button>
+      {/* ログインボタンの色・文字の大きさ・太さはvariantの"primary"で決めている 
+      　　　ボタンの形は、Buttonコンポーネントで決めている */}
+      {/* ボタンを押したらonClickが動き、supabaseへemail,password確認の処理が実施される */}
+      <Button variant="primary" onClick={handleLogin}>
+        ログイン
+      </Button>
 
       {/* エラーメッセージがあるなら(=エラーなら)、赤字でエラーメッセージを表示する */}
       {/* &&：「左が成り立つなら、右を表示する」の意味 */}
