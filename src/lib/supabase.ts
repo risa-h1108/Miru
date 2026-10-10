@@ -13,5 +13,3 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 //これ以降はこのsupabase変数を経由して、
 // 他ファイルでデータの取得(select)や保存(insert)を使えるようsupabaseの名称でexportする
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-console.log(supabase);
