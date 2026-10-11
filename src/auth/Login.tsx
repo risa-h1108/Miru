@@ -38,20 +38,52 @@ export default function Login() {
 
   return (
     <div className="px-8">
-      <h1>ログイン</h1>
+      <h1 className="mb-2">ログイン</h1>
+      <p className="mb-4 text-[13px] text-[#9B8FB5]">
+        メールアドレスとパスワードでログインしてください。
+      </p>
+
+      <label
+        htmlFor="email"
+        //block:入力欄の上に出す
+        //font-semibold:フォントの太さをセミボールド(やや太め)にする
+        className="block mb-2 text-xs font-semibold text-[#3D3058]"
+      >
+        メールアドレス
+      </label>
       <input
+        id="email"
+        //border-[○○ px]:境界線の太さを○○ pxにする
+        //placeholder:text-[#○○]：プレースホルダー(入力前の薄い文字)の文字色をつける
+        className="w-full px-4 mb-6 text-sm h-12 rounded-xl bg-white border-[1.5px] border-[#EDE6FA] placeholder:text-[#C5B8DC]"
         type="email"
         value={form.email}
+        //placeholder:入力前の薄い文字
+        placeholder="example@mail.com"
         //onChange：文字が打たれるたびに呼ばれる
         //e.target.value：そのとき入力欄に入っている文字列
         //...form：...で既存の中身を全部コピーし、パスワードなど他の値を残したまま、
         // 　　　　emailだけをe.target.valueの文字列に更新する
         onChange={(e) => setForm({ ...form, email: e.target.value })}
       />
+
+      <label
+        htmlFor="password"
+        //block:入力欄の上に出す
+        //font-semibold:フォントの太さをセミボールド(やや太め)にする
+        className="block mb-2 text-xs font-semibold text-[#3D3058]"
+      >
+        パスワード
+      </label>
       <input
+        id="password"
+        //border-[○○ px]:境界線の太さを○○ pxにする
+        //placeholder:text-[#○○]：プレースホルダー(入力前の薄い文字)の文字色をつける
+        className="w-full px-4 mb-6 text-sm h-12 rounded-xl bg-white border-[1.5px] border-[#EDE6FA] placeholder:text-[#C5B8DC]"
         //type="password"にすると、入力された文字表示が「●」で隠れる
         type="password"
         value={form.password}
+        placeholder="パスワードを入力"
         //onChange：文字が打たれるたびに呼ばれる
         //e.target.value：そのとき入力欄に入っている文字列
         //...form：...で既存の中身を全部コピーし、emailなど他の値を残したまま、
