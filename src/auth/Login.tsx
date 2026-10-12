@@ -3,6 +3,7 @@ import type { AuthFormValues } from "../types";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import Button from "../components/Button";
+import Header from "../components/Header";
 
 export default function Login() {
   //処理のあとで移動するので、Link ではなくuseNavigateを使用
@@ -38,7 +39,8 @@ export default function Login() {
 
   return (
     <div className="px-8">
-      <h1 className="mb-2">ログイン</h1>
+      <Header />
+      <h1 className="mb-2 text-center text-[22px] font-semibold">ログイン</h1>
       <p className="mb-4 text-[13px] text-[#9B8FB5]">
         メールアドレスとパスワードでログインしてください。
       </p>
