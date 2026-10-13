@@ -7,7 +7,7 @@ export default function Header() {
       {/* 1段目：ロゴ(左)とお問い合わせ・ログイン状態(右) */}
 
       {/* justify-between:最初を左端、最後を右端に離す。 */}
-      <div className="mb-4 flex justify-between items-center">
+      <div className="mt-4 mb-4 flex justify-between items-center">
         {/* ロゴ */}
         {/* ロゴのタグは<div>や<p>にして、各ページの見出しを<h1>になるようにする */}
         <p className="text-[22px] font-bold">
@@ -17,7 +17,7 @@ export default function Header() {
 
         {/* 右側：問い合わせ、ログイン状態 */}
         <div className="flex items-center gap-3">
-          {/* アイコンだけで文字がないので、aria-labelで「何のリンクか」を伝える */}
+          {/* アイコンだけで文字がないので、aria-labelで「名前(これは何か)」を伝える */}
           <Link to="/contact" aria-label="お問い合わせ">
             <Icon
               icon="fluent:mail-32-regular"
@@ -31,7 +31,7 @@ export default function Header() {
       {/* 2段目：戻るリンク */}
 
       {/* block：横幅いっぱいの行にする */}
-      <Link to="/" className="block mb-6 text-[13px] text-[#9B8FB5]">
+      <Link to="/" className="block mb-1 text-[13px] text-[#9B8FB5]">
         ← ホームに戻る
       </Link>
     </div>
