@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import Button from "../components/Button";
 import Header from "../components/Header";
+import { Icon } from "@iconify/react";
 
 export default function Login() {
   //処理のあとで移動するので、Link ではなくuseNavigateを使用
@@ -40,8 +41,10 @@ export default function Login() {
   return (
     <div className="px-8">
       <Header />
-      <h1 className="mb-2 text-center text-[22px] font-semibold">ログイン</h1>
-      <p className="mb-4 text-[13px] text-[#9B8FB5]">
+      <h1 className="mb-2 text-center text-[22px] text-[#3D3058] font-semibold">
+        ログイン
+      </h1>
+      <p className="mb-6 text-[13px] text-[#9B8FB5]">
         メールアドレスとパスワードでログインしてください。
       </p>
 
@@ -57,7 +60,7 @@ export default function Login() {
         id="email"
         //border-[○○ px]:境界線の太さを○○ pxにする
         //placeholder:text-[#○○]：プレースホルダー(入力前の薄い文字)の文字色をつける
-        className="w-full px-4 mb-6 text-sm h-12 rounded-xl bg-white border-[1.5px] border-[#EDE6FA] placeholder:text-[#C5B8DC]"
+        className="w-full px-4 mb-3 text-sm h-12 rounded-xl text-[#3D3058] bg-white border-[1.5px] border-[#EDE6FA] placeholder:text-[#C5B8DC]"
         type="email"
         value={form.email}
         //placeholder:入力前の薄い文字
@@ -81,7 +84,7 @@ export default function Login() {
         id="password"
         //border-[○○ px]:境界線の太さを○○ pxにする
         //placeholder:text-[#○○]：プレースホルダー(入力前の薄い文字)の文字色をつける
-        className="w-full px-4 mb-6 text-sm h-12 rounded-xl bg-white border-[1.5px] border-[#EDE6FA] placeholder:text-[#C5B8DC]"
+        className="w-full px-4 text-sm h-12 rounded-xl text-[#3D3058] bg-white border-[1.5px] border-[#EDE6FA] placeholder:text-[#C5B8DC]"
         //type="password"にすると、入力された文字表示が「●」で隠れる
         type="password"
         value={form.password}
@@ -93,17 +96,32 @@ export default function Login() {
         onChange={(e) => setForm({ ...form, password: e.target.value })}
       />
 
-      {/* ログインボタン */}
-      {/* ログインボタンの色・文字の大きさ・太さはvariantの"primary"で決めている 
-      　　　ボタンの形は、Buttonコンポーネントで決めている */}
-      {/* ボタンを押したらonClickが動き、supabaseへemail,password確認の処理が実施される */}
-      <Button variant="primary" onClick={handleLogin}>
-        ログイン
-      </Button>
-
       {/* エラーメッセージがあるなら(=エラーなら)、赤字でエラーメッセージを表示する */}
       {/* &&：「左が成り立つなら、右を表示する」の意味 */}
-      {errorMessage && <p className="text-red-600">{errorMessage}</p>}
+      {/* mt-2：入力欄のすぐ下に出す。エラーがないときは、この要素ごと存在しない */}
+      {/* flex items-center：アイコンと文字を横に並べて、縦の位置をそろえる */}
+      {errorMessage && (
+        <p
+          role="alert" //role:あとから出るエラー文を出た瞬間に読み上げさせる合図
+          className="mt-2 text-[11px] flex items-center gap-0.5 text-[#FF7B7B]"
+        >
+          {/* 色はつけず、親の<p>の文字色(#FF7B7B)を引き継ぐ */}
+          <Icon icon="fluent:warning-16-filled" />
+          {errorMessage}
+        </p>
+      )}
+
+      {/* ログインボタン */}
+
+      {/* mt-5：エラーの有無で間隔を変えない為、ボタンの上の余白を下記のdivタブで保持。 */}
+      <div className="mt-5">
+        {/* ログインボタンの色・文字の大きさ・太さはvariantの"primary"で決めている 
+      　　　ボタンの形は、Buttonコンポーネントで決めている */}
+        {/* ボタンを押したらonClickが動き、supabaseへemail,password確認の処理が実施される */}
+        <Button variant="primary" onClick={handleLogin}>
+          ログイン
+        </Button>
+      </div>
     </div>
   );
 }
