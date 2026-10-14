@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { AuthFormValues } from "../types";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import Button from "../components/Button";
 import Header from "../components/Header";
@@ -121,6 +121,24 @@ export default function Login() {
         <Button variant="primary" onClick={handleLogin}>
           ログイン
         </Button>
+      </div>
+
+      {/* または */}
+      <p className="mt-5 text-center text-xs text-[#9B8FB5]">または</p>
+
+      {/* ゲストボタン(今は見た目だけ、押したときの処理(匿名サインイン)は後で追加する) */}
+      <div className="mt-5">
+        <Button variant="guest">ゲストとして続ける</Button>
+      </div>
+
+      {/* 新規登録への案内 */}
+      <div className="mt-3 text-center text-xs text-[#9B8FB5]">
+        <p>アカウントをお持ちでない方は</p>
+        {/* block：Linkは横並びの部品で、上下の余白(mt-/mb-)が効かないため、
+        　　　　　　横幅いっぱいの行(block)にしてmt-1を効かせる */}
+        <Link to="/signup" className="block mt-1 text-[#799EFF] font-semibold">
+          新規登録
+        </Link>
       </div>
     </div>
   );
