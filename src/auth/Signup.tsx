@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { AuthFormValues } from "../types";
 import { supabase } from "../lib/supabase";
+import Header from "../components/Header";
 
 export default function Signup() {
   //処理のあとで移動するので、Link ではなくuseNavigateを使用
@@ -38,8 +39,15 @@ export default function Signup() {
   };
 
   return (
-    <div>
-      <h1>新規登録</h1>
+    <div className="px-8">
+      <Header />
+      <h1 className="mb-2 text-center text-[22px] text-[#3D3058] font-semibold">
+        新規登録
+      </h1>
+      <p className="mb-6 text-[13px] text-[#9B8FB5]">
+        アカウントを作って、自分の傾向を記録しよう!
+      </p>
+
       <input
         type="email"
         value={form.email}
