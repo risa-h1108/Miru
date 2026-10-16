@@ -56,6 +56,7 @@ export default function Login() {
       >
         メールアドレス
       </label>
+
       <input
         id="email"
         //border-[○○ px]:境界線の太さを○○ pxにする
@@ -113,7 +114,7 @@ export default function Login() {
 
       {/* ログインボタン */}
 
-      {/* mt-5：エラーの有無で間隔を変えない為、ボタンの上の余白を下記のdivタブで保持。 */}
+      {/* mt-5：エラーの有無で間隔を変えない為、ボタンの上の余白を下記のdivタグで保持。 */}
       <div className="mt-5">
         {/* ログインボタンの色・文字の大きさ・太さはvariantの"primary"で決めている 
       　　　ボタンの形は、Buttonコンポーネントで決めている */}
@@ -124,10 +125,10 @@ export default function Login() {
       </div>
 
       {/* または */}
-      <p className="mt-5 text-center text-xs text-[#9B8FB5]">または</p>
+      <p className="mt-3 text-center text-xs text-[#9B8FB5]">または</p>
 
       {/* ゲストボタン(今は見た目だけ、押したときの処理(匿名サインイン)は後で追加する) */}
-      <div className="mt-5">
+      <div className="mt-3">
         <Button variant="guest">ゲストとして続ける</Button>
       </div>
 
