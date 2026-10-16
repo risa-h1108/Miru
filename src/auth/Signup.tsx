@@ -30,7 +30,7 @@ export default function Signup() {
     //失敗(エラーあり)の場合：画面遷移せず、エラー文を管理するstateにエラーメッセージを入れて、画面に表示させる
     if (error) {
       setErrorMessage(
-        "登録に失敗しました。メールアドレスの形式と、パスワードが8文字以上かを確認してください",
+        "登録に失敗しました。\n「メールアドレスの形式」と、「パスワードが英数字を含む8文字以上」かを確認してください",
       );
       return; // ここで終了(下の移動は実行しない)
     }
@@ -100,17 +100,24 @@ export default function Signup() {
         onChange={(e) => setForm({ ...form, password: e.target.value })}
       />
 
+      {/* パスワードの要件(ヒント文)：常に表示　*/}
+      {/* ルールは Supabase の設定(英数字を含む8文字以上)と合わせる */}
+      <p className="mt-2 text-[11px] text-[#9B8FB5]">英数字を含む8文字以上</p>
+
       {/* エラーメッセージがあるなら(=エラーなら)、赤字でエラーメッセージを表示する */}
       {/* &&：「左が成り立つなら、右を表示する」の意味 */}
-      {/* mt-2：入力欄のすぐ下に出す。エラーがないときは、この要素ごと存在しない */}
-      {/* flex items-center：アイコンと文字を横に並べて、縦の位置をそろえる */}
       {errorMessage && (
         <p
           role="alert" //role:あとから出るエラー文を出た瞬間に読み上げさせる合図
-          className="mt-2 text-[11px] flex items-center gap-0.5 text-[#FF7B7B]"
+          //whitespace-pre-line：文字の中の \n を改行として表示する
+          //mt-2：パスワードの要件文の下に出す。エラーがないときは、この要素ごと存在しない
+          //flex items-start：アイコンと文字を横に並べて、2行になっても1行目の高さにアイコンをそろえる
+          className="mt-2 text-[11px] flex items-start gap-0.5 whitespace-pre-line text-[#FF7B7B]"
         >
           {/* 色はつけず、親の<p>の文字色(#FF7B7B)を引き継ぐ */}
-          <Icon icon="fluent:warning-16-filled" />
+          {/* shrink-0：長い文字に押されても、アイコンが縮まないようにする
+              mt-1:アイコンと文字の位置を合わせるためにアイコンを下げた */}
+          <Icon icon="fluent:warning-16-filled" className="shrink-0 mt-1" />
           {errorMessage}
         </p>
       )}
