@@ -8,11 +8,17 @@ import Reflection from "./pages/Reflection";
 import Analysis from "./pages/Analysis";
 import ReasonsChoice from "./pages/ReasonsChoice";
 import LayoutWithTabBar from "./components/LayoutWithTabBar";
+import Login from "./auth/Login";
+import Signup from "./auth/Signup";
+import Contact from "./contact/Contact";
 
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/contact" element={<Contact />} />
 
       {/* 下記のページにて、タブバー付きの見た目にする */}
       <Route element={<LayoutWithTabBar />}>
