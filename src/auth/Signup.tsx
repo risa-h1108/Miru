@@ -5,6 +5,7 @@ import { supabase } from "../lib/supabase";
 import Header from "../components/Header";
 import { Icon } from "@iconify/react";
 import Button from "../components/Button";
+import { useGuestLogin } from "../hooks/useGuestLogin";
 
 export default function Signup() {
   //処理のあとで移動するので、Link ではなくuseNavigateを使用
@@ -19,6 +20,9 @@ export default function Signup() {
   //エラー文を管理するstate。nullなら「エラーなし」の意味。
   // 画面に出す値なので、新規登録の結果(成功or失敗)によって変化するstateで記載
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  //ゲストボタン、ゲストログインエラーを管理するフック
+  const { handleGuest, guestError } = useGuestLogin();
 
   //新規登録ボタンが押された時、入力されていたemail,passwordをsupabaseに保存する処理
   const handleSignup = async () => {
@@ -134,9 +138,23 @@ export default function Signup() {
       {/* または */}
       <p className="mt-3 text-center text-xs text-[#9B8FB5]">または</p>
 
-      {/* ゲストボタン(今は見た目だけ、押したときの処理(匿名サインイン)は後で追加する) */}
+      {/* ゲストボタン：押すと匿名サインイン(=handleGuestが作動)して「/action」へ移動する */}
       <div className="mt-3">
-        <Button variant="guest">ゲストとして試す</Button>
+        <Button variant="guest" onClick={handleGuest}>
+          ゲストとして試す
+        </Button>
+
+        {/* ゲストエラーは、ゲストボタンの下に出す */}
+        {guestError && (
+          <p
+            role="alert"
+            className="mt-2 text-[11px] flex items-center gap-0.5 text-[#FF7B7B]"
+          >
+            {/* 色はつけず、親の<p>の文字色(#FF7B7B)を引き継ぐ */}
+            <Icon icon="fluent:warning-16-filled" />
+            {guestError}
+          </p>
+        )}
       </div>
 
       {/* ログインへの案内 */}
