@@ -5,6 +5,7 @@ import { supabase } from "../lib/supabase";
 import Button from "../components/Button";
 import Header from "../components/Header";
 import { Icon } from "@iconify/react";
+import { useGuestLogin } from "../hooks/useGuestLogin";
 
 export default function Login() {
   //処理のあとで移動するので、Link ではなくuseNavigateを使用
@@ -15,9 +16,13 @@ export default function Login() {
     email: "", // メール欄の初期値(空文字)
     password: "", // パスワード欄の初期値(空文字)
   });
+
   //エラー文を管理するstate。nullなら「エラーなし」の意味。
   // 画面に出す値なので、ログインの結果(成功or失敗)によって変化するstateで記載
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  //ゲストボタン、ゲストログインエラーを管理するフック
+  const { handleGuest, guestError } = useGuestLogin();
 
   //ログインボタンが押された時、入力されていたemail,passwordが
   // supabaseにある新規登録の際に登録したemail,passwordと相違がないか認証確認をする処理
@@ -30,24 +35,6 @@ export default function Login() {
     //失敗(エラーあり)の場合：画面遷移せず、エラー文を管理するstateにエラーメッセージを入れて、画面に表示させる
     if (error) {
       setErrorMessage("メールアドレスまたはパスワードが正しくありません");
-      return; // ここで終了(下の移動は実行しない)
-    }
-
-    //成功の場合：エラー文をnullとして、表示せずに「/action」へ移動する
-    setErrorMessage(null);
-    navigate("/action");
-  };
-
-  //ゲストボタン
-  //signInAnonymously()：引数なしで呼べる(メールもパスワードも不要)
-  const handleGuest = async () => {
-    const { error } = await supabase.auth.signInAnonymously();
-
-    //失敗(エラーあり)の場合：画面遷移せず、エラー文を管理するstateにエラーメッセージを入れて、画面に表示させる
-    if (error) {
-      setErrorMessage(
-        "ゲストログインに失敗しました。時間をおいて、もう一度お試しください",
-      );
       return; // ここで終了(下の移動は実行しない)
     }
 
@@ -150,6 +137,18 @@ export default function Login() {
         <Button variant="guest" onClick={handleGuest}>
           ゲストとして続ける
         </Button>
+
+        {/* ゲストエラーは、ゲストボタンの下に出す */}
+        {guestError && (
+          <p
+            role="alert"
+            className="mt-2 text-[11px] flex items-center gap-0.5 text-[#FF7B7B]"
+          >
+            {/* 色はつけず、親の<p>の文字色(#FF7B7B)を引き継ぐ */}
+            <Icon icon="fluent:warning-16-filled" />
+            {guestError}
+          </p>
+        )}
       </div>
 
       {/* 新規登録への案内 */}
