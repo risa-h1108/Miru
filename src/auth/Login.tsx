@@ -38,6 +38,24 @@ export default function Login() {
     navigate("/action");
   };
 
+  //ゲストボタン
+  //signInAnonymously()：引数なしで呼べる(メールもパスワードも不要)
+  const handleGuest = async () => {
+    const { error } = await supabase.auth.signInAnonymously();
+
+    //失敗(エラーあり)の場合：画面遷移せず、エラー文を管理するstateにエラーメッセージを入れて、画面に表示させる
+    if (error) {
+      setErrorMessage(
+        "ゲストログインに失敗しました。時間をおいて、もう一度お試しください",
+      );
+      return; // ここで終了(下の移動は実行しない)
+    }
+
+    //成功の場合：エラー文をnullとして、表示せずに「/action」へ移動する
+    setErrorMessage(null);
+    navigate("/action");
+  };
+
   return (
     <div className="px-8">
       <Header />
@@ -127,9 +145,11 @@ export default function Login() {
       {/* または */}
       <p className="mt-3 text-center text-xs text-[#9B8FB5]">または</p>
 
-      {/* ゲストボタン(今は見た目だけ、押したときの処理(匿名サインイン)は後で追加する) */}
+      {/* ゲストボタン：押すと匿名サインイン(=handleGuestが作動)して「/action」へ移動する */}
       <div className="mt-3">
-        <Button variant="guest">ゲストとして続ける</Button>
+        <Button variant="guest" onClick={handleGuest}>
+          ゲストとして続ける
+        </Button>
       </div>
 
       {/* 新規登録への案内 */}
