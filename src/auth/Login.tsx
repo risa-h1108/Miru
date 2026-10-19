@@ -45,14 +45,14 @@ export default function Login() {
 
   return (
     <div className="px-8">
-      <Header />
+      {/* showLoginStatus={false}：右上の「ログイン」表示だけを隠し、それ以外のHeaderは表示する */}
+      <Header showLoginStatus={false} />
       <h1 className="mb-2 text-center text-[22px] text-[#3D3058] font-semibold">
         ログイン
       </h1>
       <p className="mb-6 text-[13px] text-[#9B8FB5]">
         メールアドレスとパスワードでログインしてください。
       </p>
-
       <label
         htmlFor="email"
         //block:入力欄の上に出す
@@ -61,7 +61,6 @@ export default function Login() {
       >
         メールアドレス
       </label>
-
       <input
         id="email"
         //border-[○○ px]:境界線の太さを○○ pxにする
@@ -77,7 +76,6 @@ export default function Login() {
         // 　　　　emailだけをe.target.valueの文字列に更新する
         onChange={(e) => setForm({ ...form, email: e.target.value })}
       />
-
       <label
         htmlFor="password"
         //block:入力欄の上に出す
@@ -101,7 +99,6 @@ export default function Login() {
         // 　　　　passwordだけをe.target.valueの文字列に更新する
         onChange={(e) => setForm({ ...form, password: e.target.value })}
       />
-
       {/* エラーメッセージがあるなら(=エラーなら)、赤字でエラーメッセージを表示する */}
       {/* &&：「左が成り立つなら、右を表示する」の意味 */}
       {/* mt-2：入力欄のすぐ下に出す。エラーがないときは、この要素ごと存在しない */}
@@ -116,9 +113,7 @@ export default function Login() {
           {errorMessage}
         </p>
       )}
-
       {/* ログインボタン */}
-
       {/* mt-5：エラーの有無で間隔を変えない為、ボタンの上の余白を下記のdivタグで保持。 */}
       <div className="mt-5">
         {/* ログインボタンの色・文字の大きさ・太さはvariantの"primary"で決めている 
@@ -128,10 +123,8 @@ export default function Login() {
           ログイン
         </Button>
       </div>
-
       {/* または */}
       <p className="mt-3 text-center text-xs text-[#9B8FB5]">または</p>
-
       {/* ゲストボタン：押すと匿名サインイン(=handleGuestが作動)して「/action」へ移動する */}
       <div className="mt-3">
         <Button variant="guest" onClick={handleGuest}>
@@ -150,7 +143,6 @@ export default function Login() {
           </p>
         )}
       </div>
-
       {/* 新規登録への案内 */}
       <div className="mt-3 text-center text-xs text-[#9B8FB5]">
         <p>アカウントをお持ちでない方は</p>

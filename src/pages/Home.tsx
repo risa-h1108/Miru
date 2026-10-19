@@ -1,10 +1,13 @@
 //トップページ画面（アプリ紹介やログイン・ゲストログイン機能）
 
 import { Link } from "react-router-dom";
+import Header from "../components/Header";
 
 export default function Home() {
   return (
     <div>
+      {/* showBackLink={false}：「← ホームに戻る」だけを隠し、それ以外のHeaderは表示する */}
+      <Header showBackLink={false} />
       <h1>Miru</h1>
       <h2>「やらない理由」を直していく</h2>
       <p>
