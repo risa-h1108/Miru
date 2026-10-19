@@ -1,7 +1,16 @@
 import { Icon } from "@iconify/react";
 import { Link } from "react-router-dom";
 
-export default function Header() {
+type HeaderProps = {
+  //　? ：「渡さなくてもよい」の意味
+  showBackLink?: boolean; //戻るリンクを表示するか
+  showLoginStatus?: boolean; //右上のログイン状態を表示するか
+};
+
+export default function Header({
+  showBackLink = true, //渡されなかった場合の初期値(=true)
+  showLoginStatus = true,
+}: HeaderProps) {
   return (
     <div>
       {/* 1段目：ロゴ(左)とお問い合わせ・ログイン状態(右) */}
@@ -24,16 +33,22 @@ export default function Header() {
               className="text-[22px] text-[#9B8FB5]"
             />
           </Link>
-          <div className="font-semibold text-[#9B8FB5]">ログイン</div>
+          {/* showLoginStatusが「true」のときだけ、「ログイン状態」を表示する */}
+          {showLoginStatus && (
+            <div className="font-semibold text-[#9B8FB5]">ログイン</div>
+          )}
         </div>
       </div>
 
       {/* 2段目：戻るリンク */}
 
-      {/* block：横幅いっぱいの行にする */}
-      <Link to="/" className="block mb-1 text-[13px] text-[#9B8FB5]">
-        ← ホームに戻る
-      </Link>
+      {/* showBackLinkが「true」のときだけ、「ホームに戻る」を表示する */}
+      {showBackLink && (
+        //block：横幅いっぱいの行にする
+        <Link to="/" className="block mb-1 text-[13px] text-[#9B8FB5]">
+          ← ホームに戻る
+        </Link>
+      )}
     </div>
   );
 }
