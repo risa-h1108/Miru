@@ -11,6 +11,7 @@ import LayoutWithTabBar from "./components/LayoutWithTabBar";
 import Login from "./auth/Login";
 import Signup from "./auth/Signup";
 import Contact from "./contact/Contact";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
   return (
@@ -20,13 +21,16 @@ export default function App() {
       <Route path="/signup" element={<Signup />} />
       <Route path="/contact" element={<Contact />} />
 
-      {/* 下記のページにて、タブバー付きの見た目にする */}
-      <Route element={<LayoutWithTabBar />}>
-        {/* 各ページ */}
-        <Route path="/action" element={<ActionChoice />} />
-        <Route path="reasons" element={<ReasonsChoice />} />
-        <Route path="reflection" element={<Reflection />} />
-        <Route path="analysis" element={<Analysis />} />
+      {/* ログイン済みかどうかを見張る */}
+      <Route element={<ProtectedRoute />}>
+        {/* 下記のページにて、タブバー付きの見た目にする */}
+        <Route element={<LayoutWithTabBar />}>
+          {/* 各ページ */}
+          <Route path="/action" element={<ActionChoice />} />
+          <Route path="reasons" element={<ReasonsChoice />} />
+          <Route path="reflection" element={<Reflection />} />
+          <Route path="analysis" element={<Analysis />} />
+        </Route>
       </Route>
     </Routes>
   );
