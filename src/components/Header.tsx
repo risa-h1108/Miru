@@ -1,6 +1,8 @@
 import { Icon } from "@iconify/react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { supabase } from "../lib/supabase";
+import { toast } from "react-toastify";
 
 type HeaderProps = {
   //　? ：「渡さなくてもよい」の意味
@@ -16,6 +18,26 @@ export default function Header({
   //  session：ログイン中のセッション情報(未ログインならnull)
   //  isLoading：判定中かどうか(true/false)
   const { session, isLoading } = useAuth();
+
+  const navigate = useNavigate();
+
+  //ログアウト処理
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+
+    //失敗の場合：画面遷移せず、toastでエラーを通知する
+    if (error) {
+      toast.error(
+        "ログアウトに失敗しました。時間をおいて、もう一度お試しください。",
+      );
+      return; // ここで終了(下の移動は実行しない)
+    }
+
+    //成功の場合：toastで成功の通知を表示し、「/」(=home)へ移動する
+    // ※ログイン状態は「useAuth」が自動で更新する
+    toast.success("ログアウトしました");
+    navigate("/");
+  };
 
   return (
     <div>
@@ -51,7 +73,11 @@ export default function Header({
             //[条件 ? A : B]：条件が成り立てば[A]、成り立たなければ[B]を表示する
             (session ? (
               //ログイン中の場合：「ログアウト」ボタンとして表示
-              <button type="button" className="font-semibold text-[#9B8FB5]">
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="font-semibold text-[#9B8FB5]"
+              >
                 ログアウト
               </button>
             ) : (
