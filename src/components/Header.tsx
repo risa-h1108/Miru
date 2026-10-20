@@ -1,5 +1,6 @@
 import { Icon } from "@iconify/react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 type HeaderProps = {
   //　? ：「渡さなくてもよい」の意味
@@ -11,6 +12,11 @@ export default function Header({
   showBackLink = true, //渡されなかった場合の初期値(=true)
   showLoginStatus = true,
 }: HeaderProps) {
+  //ログイン状態を取得する
+  //  session：ログイン中のセッション情報(未ログインならnull)
+  //  isLoading：判定中かどうか(true/false)
+  const { session, isLoading } = useAuth();
+
   return (
     <div>
       {/* 1段目：ロゴ(左)とお問い合わせ・ログイン状態(右) */}
@@ -33,10 +39,27 @@ export default function Header({
               className="text-[22px] text-[#9B8FB5]"
             />
           </Link>
-          {/* showLoginStatusが「true」のときだけ、「ログイン状態」を表示する */}
-          {showLoginStatus && (
-            <div className="font-semibold text-[#9B8FB5]">ログイン</div>
-          )}
+
+          {/* 次の2つの条件が「両方」とも成り立つときだけ、()内部に記載したログイン状態を表示する
+                ・showLoginStatusが「true(表示する設定)」
+                ・!isLoading(＝判定が終わっている)
+
+             判定中は何も表示しないことで「ログイン」から「ログアウト」への切り替わりが見えるのを防ぐ */}
+
+          {showLoginStatus &&
+            !isLoading &&
+            //[条件 ? A : B]：条件が成り立てば[A]、成り立たなければ[B]を表示する
+            (session ? (
+              //ログイン中の場合：「ログアウト」ボタンとして表示
+              <button type="button" className="font-semibold text-[#9B8FB5]">
+                ログアウト
+              </button>
+            ) : (
+              //未ログインの場合：「ログイン」ページへ移動するリンクとして表示
+              <Link to="/login" className="font-semibold text-[#9B8FB5]">
+                ログイン
+              </Link>
+            ))}
         </div>
       </div>
 
