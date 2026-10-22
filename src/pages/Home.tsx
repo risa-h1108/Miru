@@ -44,6 +44,13 @@ export default function Home() {
           </p>
         )}
       </div>
+
+      <p>
+        記録は1分で完了。
+        <br />
+        まずは「3日間から」試してみてください。
+      </p>
+      <Link to="/signup">無料で始める</Link>
     </div>
   );
 }
