@@ -8,20 +8,37 @@ import Reflection from "./pages/Reflection";
 import Analysis from "./pages/Analysis";
 import ReasonsChoice from "./pages/ReasonsChoice";
 import LayoutWithTabBar from "./components/LayoutWithTabBar";
+import Login from "./auth/Login";
+import Signup from "./auth/Signup";
+import Contact from "./contact/Contact";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { ToastContainer } from "react-toastify";
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
+    <>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/contact" element={<Contact />} />
 
-      {/* 下記のページにて、タブバー付きの見た目にする */}
-      <Route element={<LayoutWithTabBar />}>
-        {/* 各ページ */}
-        <Route path="/action" element={<ActionChoice />} />
-        <Route path="reasons" element={<ReasonsChoice />} />
-        <Route path="reflection" element={<Reflection />} />
-        <Route path="analysis" element={<Analysis />} />
-      </Route>
-    </Routes>
+        {/* ログイン済みかどうかを見張る */}
+        <Route element={<ProtectedRoute />}>
+          {/* 下記のページにて、タブバー付きの見た目にする */}
+          <Route element={<LayoutWithTabBar />}>
+            {/* 各ページ */}
+            <Route path="/action" element={<ActionChoice />} />
+            <Route path="reasons" element={<ReasonsChoice />} />
+            <Route path="reflection" element={<Reflection />} />
+            <Route path="analysis" element={<Analysis />} />
+          </Route>
+        </Route>
+      </Routes>
+
+      {/* トースト通知の表示場所：アプリ全体で1か所の為、App.tsxの「<Routes>の外」に記載。
+      　　　　　　　　　　　　　　ページを移動しても消えない位置に置く */}
+      <ToastContainer position="top-center" />
+    </>
   );
 }

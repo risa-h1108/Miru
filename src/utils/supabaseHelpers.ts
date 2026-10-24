@@ -157,7 +157,16 @@ export async function updateDecision(
 
     //"id"列がdecisionIdと[一致する行だけ(=.eq)]を更新する
     // ※これが無いとdecisionsテーブルの[全行のresult/memo]が書き換わってしまうので必須
-    .eq("id", decisionId);
+    .eq("id", decisionId)
+
+    //更新した行を返してもらう
+    // ※.selectを付けないと、.updateは行を返さないため
+    .select()
+
+    //返却されたデータが「1行」でなければエラーを出す(0行のときもエラーになる)
+    // ※RLSで拒否された更新(.update)は、エラーではなく「0行更新」になる。
+    //   .single()でそれをエラー扱いにして、「保存できたように見える」状態を防ぐ
+    .single();
 
   //update処理の結果(成功ならnull、失敗ならエラー内容)を呼び出し元に返す
   return { error };
