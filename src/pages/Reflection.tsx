@@ -84,11 +84,20 @@ export default function Reflection() {
         // (Reflection画面への遷移経路で自動的に決定)によって検索方法が自動的に切り替わる
         await getUnfinishedDecision(decisionId);
 
-      //getUnfinishedDecision検索でエラー(検索処理が失敗など)が発生した場合、「又は」
-      // unfinishedDataがnullだった場合(振り返るべき記録が見つからなかった場合など)、
-      // その場でfetchRecord関数(この非同期処理)を中断するガード処理
-      if (unfinishedError || !unfinishedData) {
+      //※ガード処理の基本の並び：「異常を先に、正常を後に」判定する。
+
+      //異常：getUnfinishedDecision検索で、本物のエラー(通信の失敗など)が発生した場合、
+      // ログを出して、その場でfetchRecord関数を中断するガード処理
+      if (unfinishedError) {
         console.error("未振り返りdecision取得エラー:", unfinishedError);
+        //[読み込み中]を表し、検索処理の成功/失敗に問わず処理が終わったことを示す
+        setIsLoading(false);
+        return;
+      }
+
+      //正常：エラーはないが、unfinishedDataがnullだった場合(=振り返るべき記録がない。正常な状態)、
+      // ログは出さずに、その場でfetchRecord関数を中断するガード処理
+      if (!unfinishedData) {
         //[読み込み中]を表し、検索処理の成功/失敗に問わず処理が終わったことを示す
         setIsLoading(false);
         return;
