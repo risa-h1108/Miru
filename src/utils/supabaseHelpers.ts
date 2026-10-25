@@ -84,19 +84,27 @@ export async function getUnfinishedDecision(decisionId?: number) {
 
   const { data, error } = decisionId
     ? //"id"列がdecisionIdと一致する行を追加して、1件だけ取得する
-      await query.eq("id", decisionId).single()
+      await query
+        .eq("id", decisionId)
+        // ※保存直後の記録のidなので、必ず1件ある(0行は異常なので.singleを使用)
+        .single()
     : await query
         //"result"列がnull(まだ振り返っていない)行に絞り込む
-        // ※複数件ヒットする可能性があり
         .is("result", null)
+
+        //※複数件ヒットする可能性があるため、[order]と[limit(1)]で、最新の1件に絞る
+
         //created_at列で並び替え、ascending(昇順): false(降順・新しい順)にする
         .order("created_at", { ascending: false })
+
         //orderで並び替えた結果の[先頭1件だけ(=limit(1))]に絞り込む
+        // 多くても1件(上限)に絞る
         .limit(1)
-        //1件のオブジェクトとして返す
-        // ※[.order()+.limit(1)]で明確に1件だけに絞り込まれているので、
-        // singleをエラーを出さずに使用可能
-        .single();
+
+        //.maybeSingle:[0件]or[1件]のオブジェクトとして返す
+        // もし0行(=未振り返りの記録がない)の場合、errorとdataはnullになる
+        // 1件の場合、.limitで絞り込まれた1件のerrorとdataをreturnする
+        .maybeSingle();
 
   //検索した結果(dataとerror)を呼び出し元(フロントエンド側)に返す処理
   return { data, error };
