@@ -1,6 +1,5 @@
 //トップページ画面（アプリ紹介やログイン・ゲストログイン機能）
 
-import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import Button from "../components/Button";
 import { useGuestLogin } from "../hooks/useGuestLogin";
@@ -15,7 +14,7 @@ export default function Home() {
       {/* showBackLink={false}：「← ホームに戻る」だけを隠し、それ以外のHeaderは表示する */}
       <Header showBackLink={false} />
 
-      <h2>「やらない理由」を直していく</h2>
+      <h1>「やらない理由」を直していく</h1>
       <p>
         やらなかった理由を記録し、後で振り返ることで、
         <br />
@@ -23,8 +22,18 @@ export default function Home() {
         <br />
         少しずつ改善していくための習慣化サポートアプリ
       </p>
-      <Link to="/login">ログイン</Link>
-      <Link to="/signup">新規登録</Link>
+
+      <div className="mt-3">
+        <Button variant="primary" to="/signup">
+          新規登録(無料)
+        </Button>
+      </div>
+
+      <div className="mt-3">
+        <Button variant="secondary" to="/login">
+          ログイン
+        </Button>
+      </div>
 
       {/* ゲストボタン：押すと匿名サインイン(=handleGuestが作動)して「/action」へ移動する */}
       <div className="mt-3">
@@ -50,7 +59,12 @@ export default function Home() {
         <br />
         まずは「3日間から」試してみてください。
       </p>
-      <Link to="/signup">無料で始める</Link>
+
+      <div className="mt-3">
+        <Button variant="primary" to="/signup">
+          無料で始める
+        </Button>
+      </div>
     </div>
   );
 }
