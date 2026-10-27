@@ -14,14 +14,20 @@ export default function Home() {
       {/* showBackLink={false}：「← ホームに戻る」だけを隠し、それ以外のHeaderは表示する */}
       <Header showBackLink={false} />
 
-      {/* 見出しの上の、小さなラベル */}
+      {/* ピル：見出しの上の、小さなラベル */}
       {/* inline-block:文字の幅だけ広がる
       rounded-full:4つの角すべてが、完全な丸 */}
       <p className="inline-block rounded-full bg-[#F0EBFF] mt-2 px-4 py-1.5 text-[12px] font-semibold text-[#799EFF]">
         行動改善アプリ
       </p>
 
-      <h1 className="mt-3">「やらない理由」を直していく</h1>
+      {/* 見出し */}
+      <h1 className="mt-3 text-[22px] font-bold">
+        <span className="text-[#3D3058]">「やらない理由」を</span>
+        <br />
+        <span className="text-[#799EFF]">直していく</span>
+      </h1>
+
       <p>
         やると決めたのに、またやらなかった。
         <br />
