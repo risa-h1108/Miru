@@ -10,17 +10,22 @@ export default function Home() {
   const { handleGuest, guestError } = useGuestLogin();
 
   return (
-    <div>
+    <div className="px-8">
       {/* showBackLink={false}：「← ホームに戻る」だけを隠し、それ以外のHeaderは表示する */}
       <Header showBackLink={false} />
 
-      <h1>「やらない理由」を直していく</h1>
+      {/* 見出しの上の、小さなラベル */}
+      {/* inline-block:文字の幅だけ広がる
+      rounded-full:4つの角すべてが、完全な丸 */}
+      <p className="inline-block rounded-full bg-[#F0EBFF] mt-2 px-4 py-1.5 text-[12px] font-semibold text-[#799EFF]">
+        行動改善アプリ
+      </p>
+
+      <h1 className="mt-3">「やらない理由」を直していく</h1>
       <p>
-        やらなかった理由を記録し、後で振り返ることで、
+        やると決めたのに、またやらなかった。
         <br />
-        後悔しやすいパターンに気づき、
-        <br />
-        少しずつ改善していくための習慣化サポートアプリ
+        その「なぜ」を記録して、次の自分を変えよう。
       </p>
 
       <div className="mt-3">
