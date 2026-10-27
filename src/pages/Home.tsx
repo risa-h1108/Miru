@@ -28,13 +28,13 @@ export default function Home() {
         <span className="text-[#799EFF]">直していく</span>
       </h1>
 
-      <p>
+      <p className="mt-3 text-[13px] text-[#9B8FB5]">
         やると決めたのに、またやらなかった。
         <br />
         その「なぜ」を記録して、次の自分を変えよう。
       </p>
 
-      <div className="mt-3">
+      <div className="mt-5">
         <Button variant="primary" to="/signup">
           新規登録(無料)
         </Button>
@@ -65,7 +65,7 @@ export default function Home() {
         )}
       </div>
 
-      <p>
+      <p className="mt-3">
         記録は1分で完了。
         <br />
         まずは「3日間から」試してみてください。
