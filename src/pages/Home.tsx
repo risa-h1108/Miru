@@ -5,13 +5,43 @@ import Button from "../components/Button";
 import { useGuestLogin } from "../hooks/useGuestLogin";
 import { Icon } from "@iconify/react";
 
+//「使い方」の1ステップ分のデータの型
+// ※番号(1,2,3,4)はデータに持たせず、配列の順番(index)から作る
+//   → 順番を入れ替えたとき、番号の直し忘れが起きない
+type Step = {
+  title: string; //ステップのタイトル(太字の1行目)
+  description: string; //ステップの説明(小さい灰色の2行目)
+};
+
+//「使い方」の4ステップ分のデータ
+// ※画面の中身が変わらない固定データなので、コンポーネントの「外」に書く
+//   中に書くと、画面が更新される度に、配列が毎回作り直されてしまうため
+const steps: Step[] = [
+  {
+    title: "行動を選ぶ",
+    description: "今日やろうとしていたことを選択しよう。",
+  },
+  {
+    title: "やらない理由を選ぶ",
+    description: "疲れ、不安、時間...正直に選ぼう。",
+  },
+  {
+    title: "後で振り返る",
+    description: "あのとき本当に後悔した？を記録しよう。",
+  },
+  {
+    title: "傾向を見る",
+    description: "後悔しやすいパターンが見えてくる。",
+  },
+];
+
 export default function Home() {
   //ゲストボタン、ゲストログインエラーを管理するフック
   const { handleGuest, guestError } = useGuestLogin();
 
   return (
     <div>
-      <div className="px-8">
+      <div className="px-10">
         {/* showBackLink={false}：「← ホームに戻る」だけを隠し、それ以外のHeaderは表示する */}
 
         <Header showBackLink={false} />
@@ -68,19 +98,79 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="px-8">
-        <p className="mt-3">
-          記録は1分で完了。
-          <br />
-          まずは「3日間から」試してみてください。
-        </p>
+      {/* 使い方の白い帯 */}
+      {/* <section>：「ひとまとまりの内容」を表すタグ
+          bg-white：背景は、画面の端から端まで白(外側の<div>にpxが無いので、端まで広がる)
+          px-8：中身の左右の余白は、この帯が自分で持つ
+          mt-10：上半分の最後のボタンとの間の余白
+          py-6：帯の中の、上下の余白 */}
+      <section className="mt-10 bg-white px-10 py-6">
+        <h2 className="text-center text-[14px] font-bold text-[#3D3058]">
+          使い方はシンプルです
+        </h2>
 
-        <div className="mt-3">
-          <Button variant="primary" to="/signup">
-            無料で始める
-          </Button>
+        {/* <ol>：番号つきの並び(順番に意味があるので、<ul>ではなく<ol>)
+            ※Tailwindの初期設定で、<ol>の「1. 2. 3.」の表示は消えている
+              (番号は、下で自分で作った四角に出す) */}
+
+        {/* mx-auto：余った左右の余白を自動で割り振り、中央に置く
+            ※max-wで上限を決めないと、mx-autoは余りが無く、中央にならない */}
+        <ol className="mx-auto mt-4 max-w-57.5">
+          {/* steps.map(...)：配列の1つ1つ(step)を、順番に<li>へ変換して、4つ並べる
+              index：その要素が何番目か(0から始まる)
+              key={step.title}：Reactが「どの<li>がどれか」を見分けるための目印
+                ※配列の中で重ならない値を使うため */}
+          {steps.map((step, index) => (
+            //flex items-center：番号の四角と、文字を、横並びにして、縦の中央をそろえる
+            //gap-3：四角と文字の間の余白
+            //border-b：下に細い線(行どうしの区切り)
+            //last:border-b-0：最後の1つだけ、線を消す(下の余白に、線が出ないように)
+            <li
+              key={step.title}
+              className="flex items-center gap-3 border-b border-[#F0EBFF] py-3 last:border-b-0"
+            >
+              {/* 番号の四角
+                  h-7 w-7：縦横28pxの正方形
+                  shrink-0：横幅が足りなくても、四角が縮まないようにする
+                  flex items-center justify-center：中の番号を、縦も横も中央に置く */}
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#F0EBFF] text-[12px] font-bold text-[#799EFF]">
+                {/* index + 1：indexは0から始まるので、+1して「1,2,3,4」にする */}
+                {index + 1}
+              </span>
+
+              {/* タイトルと説明を、縦に並べる(<div>で2つを1かたまりにする) */}
+              <div>
+                <p className="text-[13px] font-bold text-[#3D3058]">
+                  {step.title}
+                </p>
+                <p className="mt-0.5 text-[11px] text-[#9B8FB5]">
+                  {step.description}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      {/* 下のCTA:薄紫の帯 */}
+      {/* text-center：中の文を、中央に寄せる */}
+      <section className="bg-[#F0EBFF] px-8 py-6 text-center">
+        <div className="px-8">
+          <p className="mt-3">
+            記録は1分で完了。
+            <br />
+            まずは「1週間」、試してみてください。
+          </p>
+
+          {/* Buttonは「w-full(横幅いっぱい)」なので、そのままだと帯の端まで広がるため、
+            幅を決めた<div>で包んで、中央(mx-auto)に置く。 */}
+          <div className="mx-auto mt-4 w-60">
+            <Button variant="primary" to="/signup">
+              無料で始める
+            </Button>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }
