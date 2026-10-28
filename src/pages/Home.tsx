@@ -4,6 +4,7 @@ import Header from "../components/Header";
 import Button from "../components/Button";
 import { useGuestLogin } from "../hooks/useGuestLogin";
 import { Icon } from "@iconify/react";
+import Container from "../components/Container";
 
 //「使い方」の1ステップ分のデータの型
 // ※番号(1,2,3,4)はデータに持たせず、配列の順番(index)から作る
@@ -41,7 +42,7 @@ export default function Home() {
 
   return (
     <div>
-      <div className="px-10">
+      <Container>
         {/* showBackLink={false}：「← ホームに戻る」だけを隠し、それ以外のHeaderは表示する */}
 
         <Header showBackLink={false} />
@@ -96,66 +97,67 @@ export default function Home() {
             </p>
           )}
         </div>
-      </div>
+      </Container>
 
       {/* 使い方の白い帯 */}
       {/* <section>：「ひとまとまりの内容」を表すタグ
-          bg-white：背景は、画面の端から端まで白(外側の<div>にpxが無いので、端まで広がる)
-          px-8：中身の左右の余白は、この帯が自分で持つ
           mt-10：上半分の最後のボタンとの間の余白
+          bg-white：背景は、画面の端から端まで白(外側の<div>にpxが無いので、端まで広がる)
           py-6：帯の中の、上下の余白 */}
-      <section className="mt-10 bg-white px-10 py-6">
-        <h2 className="text-center text-[14px] font-bold text-[#3D3058]">
-          使い方はシンプルです
-        </h2>
+      <section className="mt-10 bg-white py-6">
+        <Container>
+          <h2 className="text-center text-[14px] font-bold text-[#3D3058]">
+            使い方はシンプルです
+          </h2>
 
-        {/* <ol>：番号つきの並び(順番に意味があるので、<ul>ではなく<ol>)
+          {/* <ol>：番号つきの並び(順番に意味があるので、<ul>ではなく<ol>)
             ※Tailwindの初期設定で、<ol>の「1. 2. 3.」の表示は消えている
               (番号は、下で自分で作った四角に出す) */}
 
-        {/* mx-auto：余った左右の余白を自動で割り振り、中央に置く
+          {/* mx-auto：余った左右の余白を自動で割り振り、中央に置く
             ※max-wで上限を決めないと、mx-autoは余りが無く、中央にならない */}
-        <ol className="mx-auto mt-4 max-w-57.5">
-          {/* steps.map(...)：配列の1つ1つ(step)を、順番に<li>へ変換して、4つ並べる
+          <ol className="mx-auto mt-4 max-w-57.5">
+            {/* steps.map(...)：配列の1つ1つ(step)を、順番に<li>へ変換して、4つ並べる
               index：その要素が何番目か(0から始まる)
               key={step.title}：Reactが「どの<li>がどれか」を見分けるための目印
                 ※配列の中で重ならない値を使うため */}
-          {steps.map((step, index) => (
-            //flex items-center：番号の四角と、文字を、横並びにして、縦の中央をそろえる
-            //gap-3：四角と文字の間の余白
-            //border-b：下に細い線(行どうしの区切り)
-            //last:border-b-0：最後の1つだけ、線を消す(下の余白に、線が出ないように)
-            <li
-              key={step.title}
-              className="flex items-center gap-3 border-b border-[#F0EBFF] py-3 last:border-b-0"
-            >
-              {/* 番号の四角
+            {steps.map((step, index) => (
+              //flex items-center：番号の四角と、文字を、横並びにして、縦の中央をそろえる
+              //gap-3：四角と文字の間の余白
+              //border-b：下に細い線(行どうしの区切り)
+              //last:border-b-0：最後の1つだけ、線を消す(下の余白に、線が出ないように)
+              <li
+                key={step.title}
+                className="flex items-center gap-3 border-b border-[#F0EBFF] py-3 last:border-b-0"
+              >
+                {/* 番号の四角
                   h-7 w-7：縦横28pxの正方形
                   shrink-0：横幅が足りなくても、四角が縮まないようにする
                   flex items-center justify-center：中の番号を、縦も横も中央に置く */}
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#F0EBFF] text-[12px] font-bold text-[#799EFF]">
-                {/* index + 1：indexは0から始まるので、+1して「1,2,3,4」にする */}
-                {index + 1}
-              </span>
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#F0EBFF] text-[12px] font-bold text-[#799EFF]">
+                  {/* index + 1：indexは0から始まるので、+1して「1,2,3,4」にする */}
+                  {index + 1}
+                </span>
 
-              {/* タイトルと説明を、縦に並べる(<div>で2つを1かたまりにする) */}
-              <div>
-                <p className="text-[13px] font-bold text-[#3D3058]">
-                  {step.title}
-                </p>
-                <p className="mt-0.5 text-[11px] text-[#9B8FB5]">
-                  {step.description}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ol>
+                {/* タイトルと説明を、縦に並べる(<div>で2つを1かたまりにする) */}
+                <div>
+                  <p className="text-[13px] font-bold text-[#3D3058]">
+                    {step.title}
+                  </p>
+                  <p className="mt-0.5 text-[11px] text-[#9B8FB5]">
+                    {step.description}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </Container>
       </section>
 
       {/* 下のCTA:薄紫の帯 */}
       {/* text-center：中の文を、中央に寄せる */}
-      <section className="bg-[#F0EBFF] px-8 py-6 text-center">
-        <div className="px-8">
+      <section className="bg-[#F0EBFF] py-6 text-center">
+        <Container>
           <p className="mt-3">
             記録は1分で完了。
             <br />
@@ -169,7 +171,7 @@ export default function Home() {
               無料で始める
             </Button>
           </div>
-        </div>
+        </Container>
       </section>
     </div>
   );
