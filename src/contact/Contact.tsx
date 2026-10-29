@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { ContactFormValues } from "../types";
+import Container from "../components/Container";
+import Header from "../components/Header";
 
 export default function Contact() {
   //処理のあとで移動するので、Link ではなくuseNavigateを使用
@@ -18,5 +20,15 @@ export default function Contact() {
   // 画面に出す値なので、送信の結果(成功or失敗)によって変化するstateで記載
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  return <div>お問い合わせ</div>;
+  return (
+    <Container>
+      <Header />
+      <h1 className="mb-2 text-center text-[22px] text-[#3D3058] font-semibold">
+        お問い合わせ
+      </h1>
+      <p className="mb-6 text-[13px] text-[#9B8FB5]">
+        ご質問・ご要望などお気軽にご連絡ください。
+      </p>
+    </Container>
+  );
 }
