@@ -29,6 +29,31 @@ export default function Contact() {
       <p className="mb-6 text-[13px] text-[#9B8FB5]">
         ご質問・ご要望などお気軽にご連絡ください。
       </p>
+
+      <label
+        htmlFor="name"
+        //block:入力欄の上に出す
+        //font-semibold:フォントの太さをセミボールド(やや太め)にする
+        className="block mb-2 text-xs font-semibold text-[#3D3058]"
+      >
+        お名前
+      </label>
+
+      <input
+        id="name"
+        type="name"
+        //border-[○○ px]:境界線の太さを○○ pxにする
+        //placeholder:text-[#○○]：プレースホルダー(入力前の薄い文字)の文字色をつける
+        className="w-full px-4 mb-3 text-sm h-12 rounded-xl text-[#3D3058] bg-white border-[1.5px] border-[#EDE6FA] placeholder:text-[#C5B8DC]"
+        value={form.name}
+        //placeholder:入力前の薄い文字
+        placeholder="山田 太郎"
+        //onChange：文字が打たれるたびに呼ばれる
+        //e.target.value：そのとき入力欄に入っている文字列
+        //...form：...で既存の中身を全部コピーし、他の値を残したまま、
+        // 　　　　nameだけをe.target.valueの文字列に更新する
+        onChange={(e) => setForm({ ...form, name: e.target.value })}
+      />
     </Container>
   );
 }
