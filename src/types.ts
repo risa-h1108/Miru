@@ -4,6 +4,14 @@ export type AuthFormValues = {
   password: string;
 };
 
+//お問い合わせフォームの入力フィールドの型定義
+export type ContactFormValues = {
+  name: string;
+  mail: string;
+  category: string;
+  contents: string;
+};
+
 //行動選択、理由選択画面にある選択肢カードの型
 export type Cards = { id: string; label: string; icon: string };
 
