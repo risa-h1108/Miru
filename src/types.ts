@@ -7,7 +7,7 @@ export type AuthFormValues = {
 //お問い合わせフォームの入力フィールドの型定義
 export type ContactFormValues = {
   name: string;
-  mail: string;
+  email: string;
   category: string;
   contents: string;
 };
