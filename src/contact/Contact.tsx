@@ -11,7 +11,7 @@ export default function Contact() {
   //名前、メールアドレス、種別、内容を1つのstateに纏める
   const [form, setForm] = useState<ContactFormValues>({
     name: "", // 名前欄の初期値(空文字)
-    mail: "", // メールアドレス欄の初期値(空文字)
+    email: "", // メールアドレス欄の初期値(空文字)
     category: "", // 種別欄の初期値(空文字)
     contents: "", // 問い合わせ内容欄の初期値(空文字)
   });
@@ -53,6 +53,42 @@ export default function Contact() {
         //...form：...で既存の中身を全部コピーし、他の値を残したまま、
         // 　　　　nameだけをe.target.valueの文字列に更新する
         onChange={(e) => setForm({ ...form, name: e.target.value })}
+      />
+
+      <label
+        htmlFor="email"
+        className="block mb-2 text-xs font-semibold text-[#3D3058]"
+      >
+        メールアドレス
+      </label>
+
+      <input
+        id="email"
+        type="email"
+        className="w-full px-4 mb-3 text-sm h-12 rounded-xl text-[#3D3058] bg-white border-[1.5px] border-[#EDE6FA] placeholder:text-[#C5B8DC]"
+        value={form.email}
+        //placeholder:入力前の薄い文字
+        placeholder="example@mail.com"
+        onChange={(e) => setForm({ ...form, email: e.target.value })}
+      />
+
+      <label
+        htmlFor="contents"
+        className="block mb-2 text-xs font-semibold text-[#3D3058]"
+      >
+        お問い合わせ内容
+      </label>
+
+      <textarea
+        id="contents"
+        name="contents"
+        //rows={6}：最初の高さを{}の行分確保する
+        rows={6}
+        //resize-y：縦方向に広げられるようにする
+        className="w-full px-4 py-3 mb-3 text-sm rounded-xl text-[#3D3058] bg-white border-[1.5px] border-[#EDE6FA] placeholder:text-[#C5B8DC] resize-y"
+        value={form.contents}
+        placeholder="ご質問内容をご記入ください。"
+        onChange={(e) => setForm({ ...form, contents: e.target.value })}
       />
     </Container>
   );
