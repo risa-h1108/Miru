@@ -6,6 +6,7 @@ import Header from "../components/Header";
 import { Icon } from "@iconify/react";
 import Button from "../components/Button";
 import { useGuestLogin } from "../hooks/useGuestLogin";
+import Container from "../components/Container";
 
 export default function Signup() {
   //処理のあとで移動するので、Link ではなくuseNavigateを使用
@@ -45,7 +46,7 @@ export default function Signup() {
   };
 
   return (
-    <div className="px-8">
+    <Container>
       <Header />
       <h1 className="mb-2 text-center text-[22px] text-[#3D3058] font-semibold">
         新規登録
@@ -166,6 +167,6 @@ export default function Signup() {
           ログイン
         </Link>
       </div>
-    </div>
+    </Container>
   );
 }

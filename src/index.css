@@ -1,1 +1,8 @@
 @import "tailwindcss";
+
+/* アプリ全体の背景色(全画面共通) */
+@layer base {
+  body {
+    background-color: #fbf8ff;
+  }
+}
