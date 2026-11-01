@@ -12,6 +12,11 @@ export type ContactFormValues = {
   contents: string;
 };
 
+//お問い合わせ種別の型定義
+// value：プログラムが使う名前(英語。メールの分類や、データの保存に使う)
+// label：画面に出す名前(日本語)
+export type Category = { value: string; label: string };
+
 //行動選択、理由選択画面にある選択肢カードの型
 export type Cards = { id: string; label: string; icon: string };
 
