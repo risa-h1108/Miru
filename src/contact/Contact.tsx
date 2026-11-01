@@ -1,12 +1,22 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import type { ContactFormValues } from "../types";
+//import { useNavigate } from "react-router-dom";
+import type { Category, ContactFormValues } from "../types";
 import Container from "../components/Container";
 import Header from "../components/Header";
 
+//コンポーネントの外に書く(固定データなので、毎回作り直さないため)
+const categories: Category[] = [
+  { value: "usage", label: "使い方について" },
+  { value: "bug", label: "不具合の報告" },
+  { value: "request", label: "機能のご要望" },
+  { value: "feedback", label: "ご感想" },
+  { value: "work", label: "お仕事のご相談" },
+  { value: "other", label: "その他" },
+];
+
 export default function Contact() {
   //処理のあとで移動するので、Link ではなくuseNavigateを使用
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
 
   //名前、メールアドレス、種別、内容を1つのstateに纏める
   const [form, setForm] = useState<ContactFormValues>({
@@ -18,7 +28,7 @@ export default function Contact() {
 
   //エラー文を管理するstate。nullなら「エラーなし」の意味。
   // 画面に出す値なので、送信の結果(成功or失敗)によって変化するstateで記載
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  //const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   return (
     <Container>
@@ -30,6 +40,7 @@ export default function Contact() {
         ご質問・ご要望などお気軽にご連絡ください。
       </p>
 
+      {/* お名前のlabel */}
       <label
         htmlFor="name"
         //block:入力欄の上に出す
@@ -39,9 +50,10 @@ export default function Contact() {
         お名前
       </label>
 
+      {/* お名前の入力欄 */}
       <input
         id="name"
-        type="name"
+        type="text"
         //border-[○○ px]:境界線の太さを○○ pxにする
         //placeholder:text-[#○○]：プレースホルダー(入力前の薄い文字)の文字色をつける
         className="w-full px-4 mb-3 text-sm h-12 rounded-xl text-[#3D3058] bg-white border-[1.5px] border-[#EDE6FA] placeholder:text-[#C5B8DC]"
@@ -55,6 +67,7 @@ export default function Contact() {
         onChange={(e) => setForm({ ...form, name: e.target.value })}
       />
 
+      {/* メールアドレスのlabel */}
       <label
         htmlFor="email"
         className="block mb-2 text-xs font-semibold text-[#3D3058]"
@@ -62,6 +75,7 @@ export default function Contact() {
         メールアドレス
       </label>
 
+      {/*メールアドレスの入力欄 */}
       <input
         id="email"
         type="email"
@@ -72,6 +86,42 @@ export default function Contact() {
         onChange={(e) => setForm({ ...form, email: e.target.value })}
       />
 
+      {/* お問い合わせ種別のlabel */}
+      <label
+        htmlFor="category"
+        className="block mb-2 text-xs font-semibold text-[#3D3058]"
+      >
+        お問い合わせ種別
+      </label>
+
+      {/* お問い合わせ種別の入力欄 （<select>でプルダウンにする ）*/}
+      <select
+        id="category"
+        className="w-full px-4 mb-3 text-sm h-12 rounded-xl text-[#3D3058] bg-white border-[1.5px] border-[#EDE6FA]"
+        //form.categoryが未選択の場合、下の「選択してください」が表示される
+        value={form.category}
+        //categoryだけ更新する
+        onChange={(e) => setForm({ ...form, category: e.target.value })}
+      >
+        {/* 未選択時の初期表示用。
+        　　disabled：この項目は選択できない(案内用) */}
+        <option value="" disabled>
+          選択してください
+        </option>
+
+        {/* .map()で[配列の1件ごとに<option>を1つ付ける]処理を実施 */}
+        {/* (opt) =>: 取り出した1件の呼び名。{ value: "bug", label: "不具合の報告" } のようなものが入る。*/}
+        {categories.map((opt) => (
+          //key={opt.value}: Reactが「どれがどれか」を見分けるための目印
+          //value={opt.value}: プログラム用の値(="bug")
+          <option key={opt.value} value={opt.value}>
+            {/* 画面に見せる文字(="不具合の報告") */}
+            {opt.label}
+          </option>
+        ))}
+      </select>
+
+      {/* お問い合わせ内容のlabel */}
       <label
         htmlFor="contents"
         className="block mb-2 text-xs font-semibold text-[#3D3058]"
@@ -79,6 +129,7 @@ export default function Contact() {
         お問い合わせ内容
       </label>
 
+      {/* お問い合わせ内容の入力欄 */}
       <textarea
         id="contents"
         name="contents"
