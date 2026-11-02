@@ -13,6 +13,7 @@ type ButtonProps = {
   children: ReactNode; //<Button>ここに書いた中身</Button> が入る(ボタンの文字)
   onClick?: () => void; //押されたときの処理。? は「渡さなくてもよい」の意味
   to?: string; //移動先のURL。渡さなくてもよい
+  type?: "button" | "submit"; //ボタンの種類。"submit"=フォームを送信/"button"=送信しない
 };
 
 //色・文字の大きさ・太さを[種類(variant)ごと]に1か所でまとめる
@@ -36,6 +37,7 @@ export default function Button({
   children,
   onClick,
   to,
+  type,
 }: ButtonProps) {
   //共通の形+種類ごとの色を、1つの文字列にまとめる
   // ※Linkとbuttonのどちらにも使うので、1か所だけに書く
@@ -61,9 +63,10 @@ export default function Button({
     );
   }
 
-  //渡されなければ、今までどおりのbuttonを返す
+  //toを渡されなければ、今までどおりのbuttonを返す
   return (
-    <button onClick={onClick} className={buttonClassName}>
+    //type={type}：受け取ったtype("button" | "submit")を、buttonにそのまま渡す
+    <button type={type} onClick={onClick} className={buttonClassName}>
       {/* children：<Button>ここ</Button> に書いた中身(ボタンの文字)が入る */}
       {children}
     </button>
