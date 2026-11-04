@@ -37,7 +37,7 @@ export default function TabBar() {
     isActive(url) ? "text-gray-600" : "text-gray-400";
 
   return (
-    <div className="fixed bottom-0 w-full bg-white">
+    <div className="fixed bottom-0 w-full bg-[#FBF8FF]">
       {/*タブの中身を表示*/}
       <div className={TabGridBase}>
         {/*map処理で3つのタブ選択肢を生成*/}

@@ -6,6 +6,7 @@ import Button from "../components/Button";
 import Header from "../components/Header";
 import { Icon } from "@iconify/react";
 import { useGuestLogin } from "../hooks/useGuestLogin";
+import Container from "../components/Container";
 
 export default function Login() {
   //処理のあとで移動するので、Link ではなくuseNavigateを使用
@@ -44,7 +45,7 @@ export default function Login() {
   };
 
   return (
-    <div className="px-8">
+    <Container>
       {/* showLoginStatus={false}：右上の「ログイン」表示だけを隠し、それ以外のHeaderは表示する */}
       <Header showLoginStatus={false} />
       <h1 className="mb-2 text-center text-[22px] text-[#3D3058] font-semibold">
@@ -152,6 +153,6 @@ export default function Login() {
           新規登録
         </Link>
       </div>
-    </div>
+    </Container>
   );
 }
