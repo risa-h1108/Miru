@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { AuthFormValues } from "../types";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
@@ -7,6 +7,7 @@ import Header from "../components/Header";
 import { Icon } from "@iconify/react";
 import { useGuestLogin } from "../hooks/useGuestLogin";
 import Container from "../components/Container";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 
 export default function Login() {
   //処理のあとで移動するので、Link ではなくuseNavigateを使用
@@ -25,13 +26,34 @@ export default function Login() {
   //ゲストボタン、ゲストログインエラーを管理するフック
   const { handleGuest, guestError } = useGuestLogin();
 
-  //ログインボタンが押された時、入力されていたemail,passwordが
-  // supabaseにある新規登録の際に登録したemail,passwordと相違がないか認証確認をする処理
+  //Turnstile(人間か確認する認証サービス)を通ったときに受け取る「合格証(トークン)」を管理するstate
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+
+  //Turnstileの部品を、あとから操作(リセット)するための「リモコン」
+  const turnstileRef = useRef<TurnstileInstance>(null);
+
+  //ログインボタンが押された時、まず合格証(トークン)があるか確認し、
+  // 入力されていたemail,passwordがsupabaseにある新規登録の際に登録したemail,passwordと
+  // 相違がないか認証確認をする処理
   const handleLogin = async () => {
+    //トークンがまだないときは、送らずに終わる(ウィジェットの確認待ち)
+    if (!captchaToken) {
+      setErrorMessage("確認が完了するまで、少しお待ちください");
+      return;
+    }
+
     const { error } = await supabase.auth.signInWithPassword({
       email: form.email,
       password: form.password,
+      //トークンをログインの呼び出し時に添える
+      // { captchaToken }：{ captchaToken: captchaToken } を短く書いたもの。名前が同じなので、省略可能。
+      options: { captchaToken },
     });
+
+    //トークンは使い捨てのため、成功でも失敗でも新しいトークンに取り替える
+    setCaptchaToken(null); //stateに入っている古い合格証を空にする
+    //リモコン(turnstileRef)で、ウィジェットに「新しい合格証を取り直して(reset)」と指示する
+    turnstileRef.current?.reset();
 
     //失敗(エラーあり)の場合：画面遷移せず、エラー文を管理するstateにエラーメッセージを入れて、画面に表示させる
     if (error) {
@@ -100,9 +122,26 @@ export default function Login() {
         // 　　　　passwordだけをe.target.valueの文字列に更新する
         onChange={(e) => setForm({ ...form, password: e.target.value })}
       />
+
+      {/* Turnstile:「ロボットではない」ことを確認するウィジェット。
+   　　　　　　　　　 チェックが通ると合格証(トークン)が発行され、onSuccessで受け取れる */}
+      <div className="mt-3">
+        <Turnstile
+          //Turnstileの操作ボタンを、turnstileRefという入れ物に入れておく
+          ref={turnstileRef}
+          //import.meta.env.VITE_○○：Viteで.env(Vercelでは環境変数)の値を読み込む
+          siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+          //新しい合格証がTurnstileから届いたら、stateに保存
+          // {setCaptchaToken}は、(token) => setCaptchaToken(token) を短く書いたもの
+          onSuccess={setCaptchaToken}
+          onExpire={() => setCaptchaToken(null)} //期限切れなら、空に戻す
+          onError={() => setCaptchaToken(null)} //失敗(エラー)でも、空に戻す
+        />
+      </div>
+
       {/* エラーメッセージがあるなら(=エラーなら)、赤字でエラーメッセージを表示する */}
       {/* &&：「左が成り立つなら、右を表示する」の意味 */}
-      {/* mt-2：入力欄のすぐ下に出す。エラーがないときは、この要素ごと存在しない */}
+      {/* mt-2：エラーがないときは、この要素ごと存在しない */}
       {/* flex items-center：アイコンと文字を横に並べて、縦の位置をそろえる */}
       {errorMessage && (
         <p
