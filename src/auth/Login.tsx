@@ -135,7 +135,14 @@ export default function Login() {
           // {setCaptchaToken}は、(token) => setCaptchaToken(token) を短く書いたもの
           onSuccess={setCaptchaToken}
           onExpire={() => setCaptchaToken(null)} //期限切れなら、空に戻す
-          onError={() => setCaptchaToken(null)} //失敗(エラー)でも、空に戻す
+          //onError:チェックに失敗したら、合格証を空にして、画面にも案内を出す
+          onError={() => {
+            setCaptchaToken(null); //合格証を空にする
+            //エラーメッセージを画面に表示
+            setErrorMessage(
+              "確認に失敗しました。ページを再読み込みしてください",
+            );
+          }}
         />
       </div>
 
