@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import type { AuthFormValues } from "../types";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
@@ -7,7 +7,8 @@ import Header from "../components/Header";
 import { Icon } from "@iconify/react";
 import { useGuestLogin } from "../hooks/useGuestLogin";
 import Container from "../components/Container";
-import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
+import { Turnstile } from "@marsidev/react-turnstile";
+import { useCaptcha } from "../hooks/useCaptcha";
 
 export default function Login() {
   //処理のあとで移動するので、Link ではなくuseNavigateを使用
@@ -26,11 +27,9 @@ export default function Login() {
   //ゲストボタン、ゲストログインエラーを管理するフック
   const { handleGuest, guestError } = useGuestLogin();
 
-  //Turnstile(人間か確認する認証サービス)を通ったときに受け取る「合格証(トークン)」を管理するstate
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-
-  //Turnstileの部品を、あとから操作(リセット)するための「リモコン」
-  const turnstileRef = useRef<TurnstileInstance>(null);
+  //Turnstile(人間か確認する認証サービス)の合格証(トークン)と、リモコン、取り替え処理をまとめたフック
+  const { captchaToken, setCaptchaToken, turnstileRef, resetCaptcha } =
+    useCaptcha();
 
   //ログインボタンが押された時、まず合格証(トークン)があるか確認し、
   // 入力されていたemail,passwordがsupabaseにある新規登録の際に登録したemail,passwordと
@@ -51,9 +50,8 @@ export default function Login() {
     });
 
     //トークンは使い捨てのため、成功でも失敗でも新しいトークンに取り替える
-    setCaptchaToken(null); //stateに入っている古い合格証を空にする
-    //リモコン(turnstileRef)で、ウィジェットに「新しい合格証を取り直して(reset)」と指示する
-    turnstileRef.current?.reset();
+    // ※useCaptcha.tsに記載のコードを呼ぶために()が必要
+    resetCaptcha();
 
     //失敗(エラーあり)の場合：画面遷移せず、エラー文を管理するstateにエラーメッセージを入れて、画面に表示させる
     if (error) {
