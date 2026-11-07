@@ -24,12 +24,13 @@ export default function Login() {
   // 画面に出す値なので、ログインの結果(成功or失敗)によって変化するstateで記載
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  //ゲストボタン、ゲストログインエラーを管理するフック
-  const { handleGuest, guestError } = useGuestLogin();
-
-  //Turnstile(人間か確認する認証サービス)の合格証(トークン)と、リモコン、取り替え処理をまとめたフック
+  //Turnstile(人間か確認する認証サービス)の合格証(トークン)と、保存用の関数、リモコン、取り替え処理をまとめたフック
   const { captchaToken, setCaptchaToken, turnstileRef, resetCaptcha } =
     useCaptcha();
+
+  //ゲストボタン、ゲストログインエラーを管理するフック(合格証と取り替え処理を引数として渡す)
+  // ※captchaTokenを使うので、useCaptcha()より後ろに書く
+  const { handleGuest, guestError } = useGuestLogin(captchaToken, resetCaptcha);
 
   //ログインボタンが押された時、まず合格証(トークン)があるか確認し、
   // 入力されていたemail,passwordがsupabaseにある新規登録の際に登録したemail,passwordと
