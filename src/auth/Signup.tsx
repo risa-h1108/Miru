@@ -7,6 +7,8 @@ import { Icon } from "@iconify/react";
 import Button from "../components/Button";
 import { useGuestLogin } from "../hooks/useGuestLogin";
 import Container from "../components/Container";
+import { useCaptcha } from "../hooks/useCaptcha";
+import { Turnstile } from "@marsidev/react-turnstile";
 
 export default function Signup() {
   //処理のあとで移動するので、Link ではなくuseNavigateを使用
@@ -22,15 +24,34 @@ export default function Signup() {
   // 画面に出す値なので、新規登録の結果(成功or失敗)によって変化するstateで記載
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  //ゲストボタン、ゲストログインエラーを管理するフック
-  const { handleGuest, guestError } = useGuestLogin();
+  //Turnstile(人間か確認する認証サービス)の合格証(トークン)と、保存用の関数、リモコン、取り替え処理をまとめたフック
+  const { captchaToken, setCaptchaToken, turnstileRef, resetCaptcha } =
+    useCaptcha();
 
-  //新規登録ボタンが押された時、入力されていたemail,passwordをsupabaseに保存する処理
+  //ゲストボタン、ゲストログインエラーを管理するフック(合格証と取り替え処理を引数として渡す)
+  // ※captchaTokenを使うので、useCaptcha()より後ろに書く
+  const { handleGuest, guestError } = useGuestLogin(captchaToken, resetCaptcha);
+
+  //新規登録ボタンが押された時、まず合格証(トークン)があるか確認し、
+  // 入力されていたemail,passwordをsupabaseに保存する処理
   const handleSignup = async () => {
+    //トークンがまだないときは、送らずに終わる(ウィジェットの確認待ち)
+    if (!captchaToken) {
+      setErrorMessage("確認が完了するまで、少しお待ちください");
+      return;
+    }
+
     const { error } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
+      //トークンを新規登録の呼び出し時に添える
+      // { captchaToken }：{ captchaToken: captchaToken } を短く書いたもの。名前が同じなので、省略可能。
+      options: { captchaToken },
     });
+
+    //トークンは使い捨てのため、成功でも失敗でも新しいトークンに取り替える
+    // ※関数は、()を付けて初めて実行される(関数はuseCaptcha.tsに記載)
+    resetCaptcha();
 
     //失敗(エラーあり)の場合：画面遷移せず、エラー文を管理するstateにエラーメッセージを入れて、画面に表示させる
     if (error) {
@@ -109,13 +130,36 @@ export default function Signup() {
       {/* ルールは Supabase の設定(英数字を含む8文字以上)と合わせる */}
       <p className="mt-2 text-[11px] text-[#9B8FB5]">英数字を含む8文字以上</p>
 
+      {/* Turnstile:「ロボットではない」ことを確認するウィジェット。
+   　　　　　　　　　 チェックが通ると合格証(トークン)が発行され、onSuccessで受け取れる */}
+      <div className="mt-3">
+        <Turnstile
+          //Turnstileの操作ボタンを、turnstileRefという入れ物に入れておく
+          ref={turnstileRef}
+          //import.meta.env.VITE_○○：Viteで.env(Vercelでは環境変数)の値を読み込む
+          siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+          //新しい合格証がTurnstileから届いたら、stateに保存
+          // {setCaptchaToken}は、(token) => setCaptchaToken(token) を短く書いたもの
+          onSuccess={setCaptchaToken}
+          onExpire={() => setCaptchaToken(null)} //期限切れなら、空に戻す
+          //onError:チェックに失敗したら、合格証を空にして、画面にも案内を出す
+          onError={() => {
+            setCaptchaToken(null); //合格証を空にする
+            //エラーメッセージを画面に表示
+            setErrorMessage(
+              "確認に失敗しました。ページを再読み込みしてください",
+            );
+          }}
+        />
+      </div>
+
       {/* エラーメッセージがあるなら(=エラーなら)、赤字でエラーメッセージを表示する */}
       {/* &&：「左が成り立つなら、右を表示する」の意味 */}
       {errorMessage && (
         <p
           role="alert" //role:あとから出るエラー文を出た瞬間に読み上げさせる合図
           //whitespace-pre-line：文字の中の \n を改行として表示する
-          //mt-2：パスワードの要件文の下に出す。エラーがないときは、この要素ごと存在しない
+          //mt-2：エラーがないときは、この要素ごと存在しない
           //flex items-start：アイコンと文字を横に並べて、2行になっても1行目の高さにアイコンをそろえる
           className="mt-2 text-[11px] flex items-start gap-0.5 whitespace-pre-line text-[#FF7B7B]"
         >
