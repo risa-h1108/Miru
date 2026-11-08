@@ -23,7 +23,7 @@ export function useGuestLogin(
   const handleGuest = async () => {
     //トークンがまだないときは、送らずに終わる(ウィジェットの確認待ち)
     if (!captchaToken) {
-      setGuestError("確認が完了するまで、少しお待ちください");
+      setGuestError("確認中です。1～2秒後に、もう一度押してください。");
       return;
     }
 

@@ -37,7 +37,7 @@ export default function Signup() {
   const handleSignup = async () => {
     //トークンがまだないときは、送らずに終わる(ウィジェットの確認待ち)
     if (!captchaToken) {
-      setErrorMessage("確認が完了するまで、少しお待ちください");
+      setErrorMessage("確認が完了してから、もう一度押してください");
       return;
     }
 
