@@ -94,8 +94,10 @@ export default function Home() {
           <Button variant="guest" onClick={handleGuest}>
             ゲストとして試す
           </Button>
+
           {/* Turnstile:裏で確認し、怪しいときだけ画面に確認の枠が出る(interaction-only) */}
           <Turnstile
+            className="mt-3 pl-3"
             //Turnstileの操作ボタンを、turnstileRefという入れ物に入れておく
             ref={turnstileRef}
             //import.meta.env.VITE_○○：Viteで.env(Vercelでは環境変数)の値を読み込む
@@ -119,6 +121,7 @@ export default function Home() {
               );
             }}
           />
+
           {/* Turnstileのエラーまたは、ゲストのエラーをボタンの下に出す。
    　　　　　　 ??：左が空(null)なら、右を使う(仮に両方出すタイミングがあれば、Turnstileの失敗を出す) */}
           {(errorMessage ?? guestError) && (
