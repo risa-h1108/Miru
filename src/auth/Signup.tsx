@@ -75,9 +75,11 @@ export default function Signup() {
   return (
     <Container>
       <Header />
+
       <h1 className="mb-2 text-center text-[22px] text-[#3D3058] font-semibold">
         新規登録
       </h1>
+
       <p className="mb-6 text-[13px] text-[#9B8FB5]">
         アカウントを作って、自分の傾向を記録しよう！
       </p>
@@ -199,7 +201,7 @@ export default function Signup() {
       {/* または */}
       <p className="mt-3 text-center text-xs text-[#9B8FB5]">または</p>
 
-      {/* ゲストボタン：押すと匿名サインイン(=handleGuestが作動)して「/action」へ移動する  
+      {/* ゲストボタン：押すと匿名サインイン(=handleGuestが作動)して「/action」へ移動する
             ※<form>の外に置く。中に置くと、typeを書かないボタンは送信ボタンになり、
               ゲストを押しただけで新規登録のフォームが送信されてしまうため */}
       <div className="mt-3">
@@ -223,6 +225,7 @@ export default function Signup() {
       {/* ログインへの案内 */}
       <div className="mt-3 text-center text-xs text-[#9B8FB5]">
         <p>すでにアカウントをお持ちの方は</p>
+
         {/* block：Linkは横並びの部品で、上下の余白(mt-/mb-)が効かないため、
         　　　　　　横幅いっぱいの行(block)にしてmt-1を効かせる */}
         <Link to="/login" className="block mt-1 text-[#799EFF] font-semibold">
