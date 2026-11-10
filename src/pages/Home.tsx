@@ -5,6 +5,9 @@ import Button from "../components/Button";
 import { useGuestLogin } from "../hooks/useGuestLogin";
 import { Icon } from "@iconify/react";
 import Container from "../components/Container";
+import { useCaptcha } from "../hooks/useCaptcha";
+import { Turnstile } from "@marsidev/react-turnstile";
+import { useState } from "react";
 
 //「使い方」の1ステップ分のデータの型
 // ※番号(1,2,3,4)はデータに持たせず、配列の順番(index)から作る
@@ -37,8 +40,15 @@ const steps: Step[] = [
 ];
 
 export default function Home() {
-  //ゲストボタン、ゲストログインエラーを管理するフック
-  const { handleGuest, guestError } = useGuestLogin();
+  //Turnstileの確認に失敗したときのエラー文を管理するstate。nullなら「エラーなし」の意味。
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  //Turnstile(人間か確認する認証サービス)の合格証(トークン)、保存用の関数、リモコン、取り替え処理をまとめたフック
+  const { captchaToken, setCaptchaToken, turnstileRef, resetCaptcha } =
+    useCaptcha();
+
+  //ゲストボタン、ゲストログインエラーを管理するフック(合格証と取り替え処理を引数として渡す)
+  const { handleGuest, guestError } = useGuestLogin(captchaToken, resetCaptcha);
 
   return (
     <div>
@@ -85,15 +95,43 @@ export default function Home() {
             ゲストとして試す
           </Button>
 
-          {/* ゲストエラーは、ゲストボタンの下に出す */}
-          {guestError && (
+          {/* Turnstile:裏で確認し、怪しいときだけ画面に確認の枠が出る(interaction-only) */}
+          <Turnstile
+            className="mt-3 pl-3"
+            //Turnstileの操作ボタンを、turnstileRefという入れ物に入れておく
+            ref={turnstileRef}
+            //import.meta.env.VITE_○○：Viteで.env(Vercelでは環境変数)の値を読み込む
+            siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+            //{{ appearance: "interaction-only" }}：確認の操作が必要なときだけ、ウィジェットを表示する
+            options={{ appearance: "interaction-only" }}
+            //チェックに成功したら、合格証をstateに渡して、前回の失敗のエラー文も消す
+            onSuccess={(token) => {
+              //新しい合格証がTurnstileから届いたら、stateに保存
+              // {setCaptchaToken}は、(token) => setCaptchaToken(token) を短く書いたもの
+              setCaptchaToken(token);
+              setErrorMessage(null); // 確認が成功したので、前回の失敗のエラー文も消す
+            }}
+            onExpire={() => setCaptchaToken(null)} //期限切れなら、空に戻す
+            //onError:チェックに失敗したら、合格証を空にして、画面にも案内を出す
+            onError={() => {
+              setCaptchaToken(null); //合格証を空にする
+              //エラーメッセージを画面に表示
+              setErrorMessage(
+                "確認に失敗しました。ページを再読み込みしてください",
+              );
+            }}
+          />
+
+          {/* Turnstileのエラーまたは、ゲストのエラーをボタンの下に出す。
+   　　　　　　 ??：左が空(null)なら、右を使う(仮に両方出すタイミングがあれば、Turnstileの失敗を出す) */}
+          {(errorMessage ?? guestError) && (
             <p
               role="alert"
               className="mt-2 text-[11px] flex items-center gap-0.5 text-[#FF7B7B]"
             >
               {/* 色はつけず、親の<p>の文字色(#FF7B7B)を引き継ぐ */}
               <Icon icon="fluent:warning-16-filled" />
-              {guestError}
+              {errorMessage ?? guestError}
             </p>
           )}
         </div>
