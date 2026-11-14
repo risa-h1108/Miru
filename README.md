@@ -1,105 +1,67 @@
-# React + TypeScript + Vite
+# Miru
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+やるべきことを先延ばしにして後悔しがちな人向けに、迷いを記録して後悔パターンを可視化し、意思決定の改善をサポートするアプリ
 
-Currently, two official plugins are available:
+**デモ(ゲストで登録なしで試せます)**： https://miru-jet.vercel.app/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 作成理由
 
-## React Compiler
+やるべきことがあるのにやる気が出ず、後回しにしてしまう。そのまま一日が終わると、後悔とタスクだけが残り、自己肯定感が下がっていく。すると、さらにやりたくない気持ちが大きくなる。
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+既存のToDoアプリや日記は、朝や夜など決まったタイミングで使うものが多く、習慣になるまでは書き出しや記録すること自体が負担になる。また、ToDoアプリなどは書き出しただけで達成感を得て、実行する前に終わってしまうこともある。そのため、一つひとつの物事を「なぜやれないのか」は分からないままになる。
 
-## Expanding the ESLint configuration
+Miruは、やるべきことを「やった/やっていない」で記録し、やれなかったときは理由を選んで残す。理由を振り返ることで、後回しにしやすい理由や、自分が後悔しやすい理由が見えてくる。次に迷ったときは、最も後悔しやすい理由に合わせた助言を表示し、行動を後押しすることで、意思決定の改善をサポートする。
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 使い方(ゲストでの使用)
 
-```js
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
+1. [アプリ](https://miru-jet.vercel.app/)を開く
+2. 「ゲストとして試す」を押す
+3. やりたい行動を入力し、今「やる」か「やらない」かを選ぶ
+4. 「やらない」を選んだら、やらない理由(複数選択可)を選択し、「次へ」を押す
+5. 振り返り画面の「結果はどうでしたか?」で、「やってよかった」「どちらでもない」「やらなくて後悔」のどれかを選び、「保存する」を押す
+6. 画面下のタブの右端にある「分析」から、後悔しやすい傾向を確認する
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### 補足
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
-```
+- ゲストログインの前に、人間かどうかの確認(Cloudflare Turnstile)があります。そのため、数秒待つことがあります。
+- 「やる」を選んだ場合は、理由の記録は不要です。そのまま分析画面で、過去の傾向を確認できます。
+- 振り返りで「やってよかった」「どちらでもない」を選んだ記録は、後悔していないと判断され、分析には反映されません。
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 技術スタック
 
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
-
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs["recommended-typescript"],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
-```
+- フロントエンド: React 19 / TypeScript / Vite
+- ルーティング: React Router
+- スタイリング: Tailwind CSS
+- UI部品: React Toastify(通知)/ Iconify(アイコン)
+- グラフ: Recharts
+- バックエンド・認証・DB: Supabase(Auth / PostgreSQL / Row Level Security)
+- ボット対策: Cloudflare Turnstile
+- ホスティング: Vercel
 
 ## Supabase の設定
 
-コードの履歴(Git)には残らない、ダッシュボードの設定です。
-別の環境で作り直す場合は、同じ設定にしてください。
+コードの履歴(Git)には残らない、ダッシュボードの設定です。別の環境で作り直す場合は、同じ設定にしてください。
 
-| 項目                             | 設定                                |
-| -------------------------------- | ----------------------------------- |
-| Email / Password でのログイン    | 有効                                |
-| 匿名サインイン(ゲストログイン用) | ON                                  |
-| Confirm email(メール確認)        | OFF(開発効率を優先。公開前に見直す) |
-| 最小パスワード長                 | 8文字                               |
-| パスワード要件                   | 文字と数字                          |
+| 項目                             | 設定                       |
+| -------------------------------- | -------------------------- |
+| Email / Password でのログイン    | 有効                       |
+| 匿名サインイン(ゲストログイン用) | ON                         |
+| Confirm email(メール確認)        | OFF(登録のしやすさを優先)  |
+| 最小パスワード長                 | 8文字                      |
+| パスワード要件                   | 文字と数字                 |
+| CAPTCHA(Attack Protection)       | 有効(Cloudflare Turnstile) |
 
 パスワード関連の2つは、Authentication の Email プロバイダーの設定にあります。
 
 ## セキュリティ(RLS)
 
-Supabase の Row Level Security(行レベルセキュリティ)で、
-ユーザーごとにデータを分離しています。
+Supabase の Row Level Security(行レベルセキュリティ)で、ユーザーごとにデータを分離しています。
 
 ### 方針
 
-- ブラウザから直接 Supabase を呼ぶ構成のため、フロントのコードだけでは
-  他人のデータを守れません。そのため DB 側で、「自分の行だけ」読み書き
-  できるように制限しています。
-- ゲストログイン(匿名サインイン)も、通常ユーザーと同じ `authenticated`
-  として扱い、同じルールで分離しています。
-- ログインしていない(`anon`)アクセスは、全テーブルで許可していません。
+- ブラウザから直接 Supabase を呼ぶ構成のため、フロントのコードだけでは他人のデータを守れません。そのため DB 側で、「自分の行だけ」読み書きできるように制限しています。
+- ゲストログイン(匿名サインイン)も、通常ユーザーと同じ `authenticated`として扱い、同じルールで分離しています。
+- ログインしていない(`anon`)アクセスは、お問い合わせ(`contacts`)の insert 以外、許可していません。
 
 ### テーブルごとの扱い
 
@@ -108,21 +70,20 @@ Supabase の Row Level Security(行レベルセキュリティ)で、
 | decisions                       | 自分の行だけ                        | 自分の行だけ(insert / update) |
 | decision_reasons                | 親の decisions が自分の行のものだけ | 同左(insert)                  |
 | action_masters / reason_masters | ログイン済みなら全員                | なし(読み取り専用)            |
+| contacts                        | 誰も読めない(select のポリシーなし) | 誰でも insert のみ            |
 
 ### 設計の判断
 
-- `decisions.user_id` は `default auth.uid()` にして、アプリ側が入れ忘れても、
-  DB がログイン中のユーザーの ID を自動(`default`)で入れます。
-  `not null` も付けているので、`user_id` が空の行は保存できません。
-- `user_id` に他人の ID を送って保存しようとしても、insert のポリシー
-  (`with check`)で拒否され、偽装を防ぎます。
-- `decision_reasons` には `user_id` を持たせず、親の `decisions` の持ち主で
-  判定します。持ち主の情報が1か所だけなので、親と子で食い違いが起きません。
+- `decisions.user_id` は `default auth.uid()` にして、アプリ側が入れ忘れても、DB がログイン中のユーザーの ID を自動(`default`)で入れます。`not null` も付けているので、`user_id` が空の行は保存できません。
+- `user_id` に他人の ID を送って保存しようとしても、insert のポリシー(`with check`)で拒否され、偽装を防ぎます。
+- `decision_reasons` には `user_id` を持たせず、親の `decisions` の持ち主で判定します。持ち主の情報が1か所だけなので、親と子で食い違いが起きません。
 
 ### 注意点
 
-- RLS で拒否された select は、エラーではなく「空っぽ」で返ります。
-- 管理画面の Table Editor は RLS を無視するので、全ユーザーの行が見えます。
-  動作確認は、アプリの画面で実施します。
+- RLS(Row Level Security)で拒否された select は、エラーではなく「空っぽ」で返ります。
+- 管理画面の Table Editor は RLS を無視するので、全ユーザーの行が見えます。動作確認は、アプリの画面で実施します。
 
-設定の SQL は [`supabase/rls.sql`](supabase/rls.sql) に記録しています。
+### 設定SQL
+
+- RLSの設定SQL: [`supabase/rls.sql`](supabase/rls.sql)
+- お問い合わせの設定SQL: [`supabase/contacts.sql`](supabase/contacts.sql)
