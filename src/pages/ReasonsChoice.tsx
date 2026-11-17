@@ -28,8 +28,10 @@ const tipBoxBase =
   "w-full max-w-sm mx-auto min-h-40 mt-6 pb-2 rounded-lg border border-amber-300 bg-amber-100";
 
 //次へ(確定)ボタンのCSS
+// disabled:opacity-50:押せないとき薄くなる(=透明度50%にする)
+// disabled:cursor-not-allowed:押せないとき、マウスが🚫のマークにする
 const submitButtonBase =
-  "border bg-blue-400 text-white rounded-lg mt-6 w-full max-w-sm mx-auto h-12 flex items-center justify-center text-2xl";
+  "border bg-blue-400 text-white rounded-lg mt-6 w-full max-w-sm mx-auto h-12 flex items-center justify-center text-2xl disabled:opacity-50 disabled:cursor-not-allowed";
 
 //理由カードの選択肢一覧
 export const reasonsList: Cards[] = [
@@ -272,7 +274,11 @@ export default function ReasonsChoice() {
       </div>
 
       {/*次へ行くボタン*/}
-      <button onClick={handleSubmit} className={submitButtonBase}>
+      <button
+        onClick={handleSubmit}
+        disabled={selectedReasons.length === 0} //理由が未選択時(0個)、ボタンを押せなくする
+        className={submitButtonBase}
+      >
         次へ
       </button>
     </div>
