@@ -109,10 +109,15 @@ export default function ActionChoice() {
         {/* 「やる」ボタンの表示 */}
         <button
           onClick={() => handleDecision(true)}
-          className={`${cardBase} ${
+          //行動が未選択時(=null)、ボタンを押せなくする
+          disabled={selectedAction === null}
+          //disabled:opacity-50:押せないとき薄くなる(=透明度50%にする)
+          //disabled:cursor-not-allowed:押せないとき、マウスが🚫のマークにする
+          className={`${cardBase} disabled:opacity-50 disabled:cursor-not-allowed ${
             selectedDecision === true
               ? "bg-[#b1ff7e] " //一致(選択済み)の場合
-              : "bg-[#CBFFA9] hover:bg-[#b1ff7e]" //不一致（未選択）の場合
+              : //enabled:ボタンを押せるときだけ反応する
+                "bg-[#CBFFA9] enabled:hover:bg-[#b1ff7e]" //不一致（未選択）の場合
           }`}
         >
           <Icon icon="lucide:check" width={70} height={70}></Icon>
@@ -122,10 +127,15 @@ export default function ActionChoice() {
         {/* 「やらない」ボタンの表示 */}
         <button
           onClick={() => handleDecision(false)}
-          className={`${cardBase} ${
+          //行動が未選択時(=null)、ボタンを押せなくする
+          disabled={selectedAction === null}
+          //disabled:opacity-50:押せないとき薄くなる(=透明度50%にする)
+          //disabled:cursor-not-allowed:押せないとき、マウスが🚫のマークにする
+          className={`${cardBase} disabled:opacity-50 disabled:cursor-not-allowed ${
             selectedDecision === false
               ? "bg-[#fe7575]" //一致(選択済み)の場合
-              : "bg-[#FF9B9B] hover:bg-[#fe7575]" //不一致（未選択）の場合
+              : //enabled:ボタンを押せるときだけ反応する
+                "bg-[#FF9B9B] enabled:hover:bg-[#fe7575]" //不一致（未選択）の場合
           }`}
         >
           <Icon icon="lucide:x" width={70} height={70}></Icon>
