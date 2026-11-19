@@ -58,8 +58,10 @@ const memoBase =
   " block w-full max-w-sm mx-auto h-36 rounded-lg border border-gray-300 ";
 
 //保存ボタンのCSS
+// disabled:opacity-50:押せないとき薄くなる(=透明度50%にする)
+// disabled:cursor-not-allowed:押せないとき、マウスが🚫のマークにする
 const saveButtonBase =
-  "border bg-blue-400 text-white rounded-lg mt-6 w-full max-w-sm mx-auto h-12 flex items-center justify-center text-2xl";
+  "border bg-blue-400 text-white rounded-lg mt-6 w-full max-w-sm mx-auto h-12 flex items-center justify-center text-2xl disabled:opacity-50 disabled:cursor-not-allowed";
 
 export default function Reflection() {
   //以下のlocation.state?.~は各データを前ページから取得する機能
@@ -322,7 +324,12 @@ export default function Reflection() {
       </div>
 
       {/*保存ボタン*/}
-      <button onClick={saveDecision} className={saveButtonBase}>
+      <button
+        onClick={saveDecision}
+        //結果が未選択時(=null)、ボタンを押せなくする
+        disabled={selectedResult === null}
+        className={saveButtonBase}
+      >
         保存する
       </button>
     </div>
