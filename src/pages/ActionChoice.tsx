@@ -10,7 +10,7 @@ const gridBase = "grid grid-cols-2 gap-4 px-6 mb-4 mt-3 max-w-sm mx-auto";
 
 //共通のCSS（カードの形やサイズ、カード内の位置）
 const cardBase =
-  "border border-gray-500 rounded-lg w-40 h-31.5 flex flex-col items-center justify-center text-lg";
+  "border border-[#D9CCF5] rounded-lg w-40 h-31.5 flex flex-col items-center justify-center text-lg";
 
 // 行動カードのデータ一覧(オブジェクトの配列にすることで、カードの追加・削除が配列の編集だけで済む)
 // 毎回レンダリングされても変わらないデータのため、コンポーネントの外に置く
@@ -60,8 +60,8 @@ export default function ActionChoice() {
   //「このカードが選ばれているか」の判定式：「selectedActionに保存された”選択中のラベル”」と、「今mapが処理しているカードのラベル」が同じか確認。
   const getCardBg = (label: string) =>
     selectedAction === label
-      ? "bg-gray-300" //一致(選択済み)の場合
-      : "bg-gray-100 hover:bg-gray-200"; //不一致（未選択）の場合
+      ? "bg-[#E7DEFF] border-[#799EFF]" //一致(選択済み)の場合
+      : "bg-[#FFFFFF] hover:bg-[#F8F5FF]"; //不一致（未選択）の場合
 
   return (
     <div>
@@ -109,10 +109,15 @@ export default function ActionChoice() {
         {/* 「やる」ボタンの表示 */}
         <button
           onClick={() => handleDecision(true)}
-          className={`${cardBase} ${
+          //行動が未選択時(=null)、ボタンを押せなくする
+          disabled={selectedAction === null}
+          //disabled:opacity-50:押せないとき薄くなる(=透明度50%にする)
+          //disabled:cursor-not-allowed:押せないとき、マウスが🚫のマークにする
+          className={`${cardBase} disabled:opacity-50 disabled:cursor-not-allowed ${
             selectedDecision === true
               ? "bg-[#b1ff7e] " //一致(選択済み)の場合
-              : "bg-[#CBFFA9] hover:bg-[#b1ff7e]" //不一致（未選択）の場合
+              : //enabled:ボタンを押せるときだけ反応する
+                "bg-[#CBFFA9] enabled:hover:bg-[#b1ff7e]" //不一致（未選択）の場合
           }`}
         >
           <Icon icon="lucide:check" width={70} height={70}></Icon>
@@ -122,10 +127,15 @@ export default function ActionChoice() {
         {/* 「やらない」ボタンの表示 */}
         <button
           onClick={() => handleDecision(false)}
-          className={`${cardBase} ${
+          //行動が未選択時(=null)、ボタンを押せなくする
+          disabled={selectedAction === null}
+          //disabled:opacity-50:押せないとき薄くなる(=透明度50%にする)
+          //disabled:cursor-not-allowed:押せないとき、マウスが🚫のマークにする
+          className={`${cardBase} disabled:opacity-50 disabled:cursor-not-allowed ${
             selectedDecision === false
               ? "bg-[#fe7575]" //一致(選択済み)の場合
-              : "bg-[#FF9B9B] hover:bg-[#fe7575]" //不一致（未選択）の場合
+              : //enabled:ボタンを押せるときだけ反応する
+                "bg-[#FF9B9B] enabled:hover:bg-[#fe7575]" //不一致（未選択）の場合
           }`}
         >
           <Icon icon="lucide:x" width={70} height={70}></Icon>
