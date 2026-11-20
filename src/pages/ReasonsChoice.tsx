@@ -15,7 +15,7 @@ import {
 import { supabase } from "../lib/supabase";
 
 //画面上のカードの位置調整CSS
-const reasonsGridBase = "grid gap-4  mb-4 mt-3 max-w-sm mx-auto";
+const reasonsGridBase = "grid gap-4 mb-4 mt-3 max-w-sm mx-auto";
 
 //共通のCSS（カードの形やサイズ、カード内の位置）
 //pl:padding-leftの略（内側の余白-左、アイコンの左余白）
