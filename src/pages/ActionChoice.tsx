@@ -10,7 +10,7 @@ const gridBase = "grid grid-cols-2 gap-4 px-6 mb-4 mt-3 max-w-sm mx-auto";
 
 //共通のCSS（カードの形やサイズ、カード内の位置）
 const cardBase =
-  "border border-[#D9CCF5] rounded-lg w-40 h-31.5 flex flex-col items-center justify-center text-lg";
+  "border border-[#D9CCF5] rounded-lg w-40 h-26 flex flex-col items-center justify-center text-lg";
 
 // 行動カードのデータ一覧(オブジェクトの配列にすることで、カードの追加・削除が配列の編集だけで済む)
 // 毎回レンダリングされても変わらないデータのため、コンポーネントの外に置く
@@ -81,7 +81,7 @@ export default function ActionChoice() {
             className={`${cardBase} ${getCardBg(item.label)}`}
           >
             {/* アイコンの表示 */}
-            <Icon icon={item.icon} width={70} height={70} />
+            <Icon icon={item.icon} width={60} height={60} />
 
             {/* ラベル（「勉強する」など）の表示 */}
             {/* 「ラベルの部分」と明確にしておくため、spanタグを記載 */}
@@ -95,7 +95,7 @@ export default function ActionChoice() {
         onClick={() => handleCardClick("その他")}
         className={`${cardBase} mx-auto ${getCardBg("その他")}`}
       >
-        <Icon icon="lucide:ellipsis" width={70} height={70} />
+        <Icon icon="lucide:ellipsis" width={60} height={60} />
         その他
       </button>
 
@@ -120,7 +120,7 @@ export default function ActionChoice() {
                 "bg-[#CBFFA9] enabled:hover:bg-[#b1ff7e]" //不一致（未選択）の場合
           }`}
         >
-          <Icon icon="lucide:check" width={70} height={70}></Icon>
+          <Icon icon="lucide:check" width={60} height={60}></Icon>
           やる
         </button>
 
@@ -138,7 +138,7 @@ export default function ActionChoice() {
                 "bg-[#FF9B9B] enabled:hover:bg-[#fe7575]" //不一致（未選択）の場合
           }`}
         >
-          <Icon icon="lucide:x" width={70} height={70}></Icon>
+          <Icon icon="lucide:x" width={60} height={60}></Icon>
           やらない
         </button>
       </div>
