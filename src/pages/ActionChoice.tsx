@@ -6,11 +6,11 @@ import { useNavigate } from "react-router-dom";
 import type { Cards } from "../types";
 
 //画面上のカードの位置調整CSS
-const gridBase = "grid grid-cols-2 gap-4 px-6 mb-4 mt-3 max-w-sm mx-auto";
+const gridBase = "grid grid-cols-2 gap-3 px-2 mb-4 mt-3 max-w-sm mx-auto";
 
 //共通のCSS（カードの形やサイズ、カード内の位置）
 const cardBase =
-  "border border-[#D9CCF5] rounded-lg w-40 h-26 flex flex-col items-center justify-center text-lg";
+  "border border-[#D9CCF5] rounded-lg w-full h-26 flex flex-col items-center justify-center text-lg";
 
 // 行動カードのデータ一覧(オブジェクトの配列にすることで、カードの追加・削除が配列の編集だけで済む)
 // 毎回レンダリングされても変わらないデータのため、コンポーネントの外に置く
@@ -93,7 +93,7 @@ export default function ActionChoice() {
       {/* その他カード：1枚だけ中央に表示 */}
       <button
         onClick={() => handleCardClick("その他")}
-        className={`${cardBase} mx-auto ${getCardBg("その他")}`}
+        className={`${cardBase} mx-auto max-w-39 ${getCardBg("その他")}`}
       >
         <Icon icon="lucide:ellipsis" width={60} height={60} />
         その他
