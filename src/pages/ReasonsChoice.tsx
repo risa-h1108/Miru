@@ -15,23 +15,21 @@ import {
 import { supabase } from "../lib/supabase";
 
 //画面上のカードの位置調整CSS
-const reasonsGridBase = "grid gap-4 mb-4 mt-3 max-w-sm mx-auto";
+const reasonsGridBase = "grid gap-3 mb-3 mt-3 max-w-sm mx-auto";
 
 //共通のCSS（カードの形やサイズ、カード内の位置）
-//pl:padding-leftの略（内側の余白-左、アイコンの左余白）
-//gap:子要素全部の間に隙間を作る(今回はアイコンとラベルしか子要素ないから、その間に隙間ができる)
 const reasonsCardsBase =
-  "border border-gray-500 rounded-lg w-full h-12 flex items-center pl-18 gap-8  text-xl";
+  "border border-gray-500 rounded-lg w-full h-10 flex pl-18 items-center text-xl";
 
 //気づきボックスのCSS
 const tipBoxBase =
-  "w-full max-w-sm mx-auto min-h-40 mt-6 pb-2 rounded-lg border border-amber-300 bg-amber-100";
+  "w-full max-w-sm mx-auto min-h-40 mt-3 pb-2 rounded-lg border border-amber-300 bg-amber-100";
 
 //次へ(確定)ボタンのCSS
 // disabled:opacity-50:押せないとき薄くなる(=透明度50%にする)
 // disabled:cursor-not-allowed:押せないとき、マウスが🚫のマークにする
 const submitButtonBase =
-  "border bg-blue-400 text-white rounded-lg mt-6 w-full max-w-sm mx-auto h-12 flex items-center justify-center text-2xl disabled:opacity-50 disabled:cursor-not-allowed";
+  "border bg-blue-400 text-white rounded-lg mt-4 w-full max-w-sm mx-auto h-12 flex items-center justify-center text-2xl disabled:opacity-50 disabled:cursor-not-allowed";
 
 //理由カードの選択肢一覧
 export const reasonsList: Cards[] = [
@@ -222,21 +220,24 @@ export default function ReasonsChoice() {
         </h2>
       </div>
 
-      {/*理由選択カードの表示*/}
+      {/* 理由選択カードの表示 */}
       <div className={reasonsGridBase}>
-        {/*map処理で7つのカードを生成*/}
+        {/* map処理で7つのカードを生成 */}
         {reasonsList.map((item) => (
           <button
             key={item.id}
             onClick={() => handleCardsClick(item.label)} //カードと関数を繋げる
-            className={`${reasonsCardsBase} ${getReasonsCardsBg(item.label)}`}
+            className={`${reasonsCardsBase} ${getReasonsCardsBg(item.label)}`} //カードの見た目のみ
           >
-            {/*アイコンの表示*/}
-            <Icon icon={item.icon} width={40} height={40} />
+            {/* 箱の役割：アイコンや文字などの中身をまとめて、中央に置く */}
+            <div className="flex items-center gap-4">
+              {/*アイコンの表示*/}
+              <Icon icon={item.icon} width={32} height={32} />
 
-            {/*ラベル（「疲れている」など）の表示*/}
-            {/*「ラベルの部分」と明確にしておくため、spanタグを記載*/}
-            <span>{item.label}</span>
+              {/*ラベル（「疲れている」など）の表示*/}
+              {/*「ラベルの部分」と明確にしておくため、spanタグを記載*/}
+              <span>{item.label}</span>
+            </div>
           </button>
         ))}
       </div>
@@ -251,7 +252,7 @@ export default function ReasonsChoice() {
           ちょっとした気づき
         </h3>
 
-        <p className="text-[16px] text-center px-5 ">
+        <p className="text-[16px] text-center px-2">
           {/*今選択されている中で一番後悔率が高い理由の表示*/}
           {topSelectedReason && (
             <>
