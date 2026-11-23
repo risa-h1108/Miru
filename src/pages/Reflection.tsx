@@ -12,14 +12,14 @@ import {
 
 //記録内容ボックスのCSS
 const recordBase =
-  "w-full max-w-sm mx-auto border border-gray-400 rounded-lg mt-6 p-4 text-xl space-y-1";
+  "w-full max-w-sm mx-auto border border-gray-400 rounded-lg mt-4 p-4 text-xl space-y-1";
 
 //画面上の3ボタンの位置調整CSS
-const gridBase = "max-w-sm mx-auto grid grid-cols-3 gap-5 px-2 mb-4 mt-4 ";
+const gridBase = "max-w-sm mx-auto grid grid-cols-3 gap-2 mb-4 mt-3 ";
 
 //共通のCSS（カード型ボタンの形やサイズ、カード型ボタン内の配置）
 const buttonCardsBase =
-  "border rounded-lg w-28 h-36 flex flex-col items-center justify-center text-lg";
+  "border rounded-lg w-full h-36 flex flex-col items-center justify-center text-base";
 
 //結果の「良かった/普通/後悔」の3択ボタンのデータ一覧
 const resultList: ResultButton[] = [
@@ -61,7 +61,7 @@ const memoBase =
 // disabled:opacity-50:押せないとき薄くなる(=透明度50%にする)
 // disabled:cursor-not-allowed:押せないとき、マウスが🚫のマークにする
 const saveButtonBase =
-  "border bg-blue-400 text-white rounded-lg mt-6 w-full max-w-sm mx-auto h-12 flex items-center justify-center text-2xl disabled:opacity-50 disabled:cursor-not-allowed";
+  "border bg-blue-400 text-white rounded-lg mt-4 w-full max-w-sm mx-auto h-12 flex items-center justify-center text-2xl disabled:opacity-50 disabled:cursor-not-allowed";
 
 export default function Reflection() {
   //以下のlocation.state?.~は各データを前ページから取得する機能
@@ -276,7 +276,7 @@ export default function Reflection() {
 
       {/*記録した内容を評価する部分*/}
       <div>
-        <div className="max-w-sm mx-auto mt-8">
+        <div className="max-w-sm mx-auto mt-6">
           <p className="text-[20px] pl-1">結果はどうでしたか？</p>
         </div>
 
@@ -304,9 +304,7 @@ export default function Reflection() {
         </div>
 
         {/*メモ欄*/}
-        <h3 className="text-[16px] mb-3 px-2  max-w-sm mx-auto">
-          メモ（任意）
-        </h3>
+        <h3 className="text-[16px] mb-2 px-2 max-w-sm mx-auto">メモ（任意）</h3>
 
         {/*メモ欄のテキストエリア*/}
         <textarea
