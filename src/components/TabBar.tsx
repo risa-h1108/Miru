@@ -5,7 +5,7 @@ import type { TabCards } from "../types";
 import { useLocation, useNavigate } from "react-router-dom";
 
 //タブの枠内での位置調整CSS
-const TabGridBase = "grid grid-cols-3 gap-4 px-6 mb-4 mt-8 max-w-sm mx-auto";
+const TabGridBase = "grid grid-cols-3 gap-4 px-6 mb-4 mt-4 max-w-sm mx-auto";
 
 //タブの選択肢リスト
 const TabList: TabCards[] = [

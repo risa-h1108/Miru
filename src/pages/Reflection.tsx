@@ -12,10 +12,10 @@ import {
 
 //記録内容ボックスのCSS
 const recordBase =
-  "w-full max-w-sm mx-auto border border-gray-400 rounded-lg mt-4 p-4 text-xl space-y-1";
+  "w-full max-w-sm mx-auto border border-gray-400 rounded-lg mt-2 p-4 text-xl space-y-1";
 
 //画面上の3ボタンの位置調整CSS
-const gridBase = "max-w-sm mx-auto grid grid-cols-3 gap-2 mb-4 mt-3 ";
+const gridBase = "max-w-sm mx-auto grid grid-cols-3 gap-2 mb-4 mt-2";
 
 //共通のCSS（カード型ボタンの形やサイズ、カード型ボタン内の配置）
 const buttonCardsBase =
@@ -55,7 +55,7 @@ const resultList: ResultButton[] = [
 
 //メモのCSS
 const memoBase =
-  " block w-full max-w-sm mx-auto h-36 rounded-lg border border-gray-300 ";
+  "block w-full max-w-sm mx-auto h-30 rounded-lg border border-gray-300";
 
 //保存ボタンのCSS
 // disabled:opacity-50:押せないとき薄くなる(=透明度50%にする)
@@ -276,7 +276,7 @@ export default function Reflection() {
 
       {/*記録した内容を評価する部分*/}
       <div>
-        <div className="max-w-sm mx-auto mt-6">
+        <div className="max-w-sm mx-auto mt-4">
           <p className="text-[20px] pl-1">結果はどうでしたか？</p>
         </div>
 
