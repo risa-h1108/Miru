@@ -12,26 +12,33 @@ import Signup from "./auth/Signup";
 import Contact from "./contact/Contact";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { ToastContainer } from "react-toastify";
-import AppLayout from "./components/AppLayout";
+import AppLayout from "./layout/AppLayout";
+import ContainerLayout from "./layout/ContainerLayout";
 
 export default function App() {
   return (
     <>
       <Routes>
+        {/* Home：帯が端まで広がるので、自分でContainerを持つ */}
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/contact" element={<Contact />} />
 
-        {/* ログイン済みかどうかを見張る */}
-        <Route element={<ProtectedRoute />}>
-          {/* 下記のページにて、ヘッダーとタブバー付きの見た目にする */}
-          <Route element={<AppLayout />}>
-            {/* 各ページ */}
-            <Route path="/action" element={<ActionChoice />} />
-            <Route path="reasons" element={<ReasonsChoice />} />
-            <Route path="reflection" element={<Reflection />} />
-            <Route path="analysis" element={<Analysis />} />
+        {/* それ以外：ContainerLayoutで包み、同一の幅や余白にする */}
+        <Route element={<ContainerLayout />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/contact" element={<Contact />} />
+
+          {/* ログイン済みかどうかを見張る */}
+          <Route element={<ProtectedRoute />}>
+            {/* 下記のページにて、ヘッダーとタブバー付きの見た目にする */}
+
+            <Route element={<AppLayout />}>
+              {/* 各ページ */}
+              <Route path="/action" element={<ActionChoice />} />
+              <Route path="reasons" element={<ReasonsChoice />} />
+              <Route path="reflection" element={<Reflection />} />
+              <Route path="analysis" element={<Analysis />} />
+            </Route>
           </Route>
         </Route>
       </Routes>

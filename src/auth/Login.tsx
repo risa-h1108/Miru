@@ -6,7 +6,6 @@ import Button from "../components/Button";
 import Header from "../components/Header";
 import { Icon } from "@iconify/react";
 import { useGuestLogin } from "../hooks/useGuestLogin";
-import Container from "../components/Container";
 import { Turnstile } from "@marsidev/react-turnstile";
 import { useCaptcha } from "../hooks/useCaptcha";
 
@@ -72,7 +71,7 @@ export default function Login() {
   };
 
   return (
-    <Container>
+    <>
       {/* showLoginStatus={false}：右上の「ログイン」表示だけを隠し、それ以外のHeaderは表示する */}
       <Header showLoginStatus={false} />
 
@@ -85,7 +84,7 @@ export default function Login() {
       </p>
 
       {/* form:入力欄と送信ボタンを「1枚の提出用紙」としてまとめる
-   　　　　onSubmit:type="submit"があるログインボタン、またはEnterキーで送信され、
+          onSubmit:type="submit"があるログインボタン、またはEnterキーで送信され、
                    requiredなどのブラウザのチェックを通ったときに呼ばれる(チェックNGのときは呼ばれない) */}
       <form onSubmit={handleLogin}>
         <label
@@ -111,7 +110,7 @@ export default function Login() {
           //onChange：文字が打たれるたびに呼ばれる
           //e.target.value：そのとき入力欄に入っている文字列
           //...form：...で既存の中身を全部コピーし、パスワードなど他の値を残したまま、
-          // 　　　　emailだけをe.target.valueの文字列に更新する
+          //         emailだけをe.target.valueの文字列に更新する
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
 
@@ -138,12 +137,12 @@ export default function Login() {
           //onChange：文字が打たれるたびに呼ばれる
           //e.target.value：そのとき入力欄に入っている文字列
           //...form：...で既存の中身を全部コピーし、emailなど他の値を残したまま、
-          // 　　　　passwordだけをe.target.valueの文字列に更新する
+          //         passwordだけをe.target.valueの文字列に更新する
           onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
 
         {/* Turnstile:「ロボットではない」ことを確認するウィジェット。
-   　　　　　　　　　 チェックが通ると合格証(トークン)が発行され、onSuccessで受け取れる */}
+                      チェックが通ると合格証(トークン)が発行され、onSuccessで受け取れる */}
         <div className="mt-3">
           <Turnstile
             //Turnstileの操作ボタンを、turnstileRefという入れ物に入れておく
@@ -184,7 +183,7 @@ export default function Login() {
         {/* mt-5：エラーの有無で間隔を変えない為、ボタンの上の余白を下記のdivタグで保持。 */}
         <div className="mt-5">
           {/* ログインボタンの色・文字の大きさ・太さはvariantの"primary"で決めている 
-      　　　ボタンの形は、Buttonコンポーネントで決めている */}
+              ボタンの形は、Buttonコンポーネントで決めている */}
 
           {/* type="submit"：押すと<form>が送信され、onSubmit(=handleLogin)が動いて、
                              supabaseへemail,passwordを確認する */}
@@ -228,6 +227,6 @@ export default function Login() {
           新規登録
         </Link>
       </div>
-    </Container>
+    </>
   );
 }

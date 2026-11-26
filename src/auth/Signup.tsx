@@ -6,7 +6,6 @@ import Header from "../components/Header";
 import { Icon } from "@iconify/react";
 import Button from "../components/Button";
 import { useGuestLogin } from "../hooks/useGuestLogin";
-import Container from "../components/Container";
 import { useCaptcha } from "../hooks/useCaptcha";
 import { Turnstile } from "@marsidev/react-turnstile";
 
@@ -73,7 +72,7 @@ export default function Signup() {
   };
 
   return (
-    <Container>
+    <>
       <Header />
 
       <h1 className="mb-2 text-center text-[22px] text-[#3D3058] font-semibold">
@@ -85,7 +84,7 @@ export default function Signup() {
       </p>
 
       {/* form:入力欄と送信ボタンを「1枚の提出用紙」としてまとめる
-   　　　　onSubmit:type="submit"がある新規登録ボタン、またはEnterキーで送信され、
+          onSubmit:type="submit"がある新規登録ボタン、またはEnterキーで送信され、
                    requiredなどのブラウザのチェックを通ったときに呼ばれる(チェックNGのときは呼ばれない) */}
       <form onSubmit={handleSignup}>
         <label
@@ -111,7 +110,7 @@ export default function Signup() {
           //onChange：文字が打たれるたびに呼ばれる
           //e.target.value：そのとき入力欄に入っている文字列
           //...form：...で既存の中身を全部コピーし、パスワードなど他の値を残したまま、
-          // 　　　　emailだけをe.target.valueの文字列に更新する
+          //         emailだけをe.target.valueの文字列に更新する
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
 
@@ -138,7 +137,7 @@ export default function Signup() {
           //onChange：文字が打たれるたびに呼ばれる
           //e.target.value：そのとき入力欄に入っている文字列
           //...form：...で既存の中身を全部コピーし、emailなど他の値を残したまま、
-          // 　　　　passwordだけをe.target.valueの文字列に更新する
+          //         passwordだけをe.target.valueの文字列に更新する
           onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
 
@@ -147,7 +146,7 @@ export default function Signup() {
         <p className="mt-2 text-[11px] text-[#9B8FB5]">英数字を含む8文字以上</p>
 
         {/* Turnstile:「ロボットではない」ことを確認するウィジェット。
-   　　　　　　　　　 チェックが通ると合格証(トークン)が発行され、onSuccessで受け取れる */}
+                      チェックが通ると合格証(トークン)が発行され、onSuccessで受け取れる */}
         <div className="mt-3">
           <Turnstile
             //Turnstileの操作ボタンを、turnstileRefという入れ物に入れておく
@@ -232,6 +231,6 @@ export default function Signup() {
           ログイン
         </Link>
       </div>
-    </Container>
+    </>
   );
 }
