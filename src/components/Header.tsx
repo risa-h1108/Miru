@@ -46,11 +46,15 @@ export default function Header({
       {/* justify-between:最初を左端、最後を右端に離す。 */}
       <div className="mt-4 mb-4 flex justify-between items-center">
         {/* ロゴ */}
-        {/* ロゴのタグは<div>や<p>にして、各ページの見出しを<h1>になるようにする */}
-        <p className="text-[22px] font-bold">
+        {/* ロゴのタグは<Link>にして、ロゴを押したら遷移できるようにする */}
+        <Link
+          to="/" //ホームに遷移させる
+          aria-label="ホームに戻る" //「名前(これは何か)」を伝える
+          className="text-[22px] font-bold"
+        >
           <span className="text-[#3D3058]">Mi</span>
           <span className="text-[#799EFF]">ru</span>
-        </p>
+        </Link>
 
         {/* 右側：問い合わせ、ログイン状態 */}
         <div className="flex items-center gap-3">

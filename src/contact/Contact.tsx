@@ -1,6 +1,5 @@
 import { useState, type ComponentProps } from "react";
 import type { Category, ContactFormValues } from "../types";
-import Container from "../components/Container";
 import Header from "../components/Header";
 import Button from "../components/Button";
 import { supabase } from "../lib/supabase";
@@ -75,7 +74,7 @@ export default function Contact() {
   };
 
   return (
-    <Container>
+    <>
       <Header />
       <h1 className="mb-2 text-center text-[22px] text-[#3D3058] font-semibold">
         お問い合わせ
@@ -85,8 +84,8 @@ export default function Contact() {
       </p>
 
       {/* form:入力欄と送信ボタンを「1枚の提出用紙」としてまとめる
-    onSubmit:type="submit" のボタンが押され、required などのブラウザのチェックを
-    通ったときに呼ばれる(チェックNGのときは呼ばれない) */}
+         onSubmit:type="submit" のボタンが押され、required などのブラウザのチェックを
+                  通ったときに呼ばれる(チェックNGのときは呼ばれない) */}
       <form onSubmit={handleSubmit}>
         {/* お名前のlabel */}
         <label
@@ -114,7 +113,7 @@ export default function Contact() {
           //onChange：文字が打たれるたびに呼ばれる
           //e.target.value：そのとき入力欄に入っている文字列
           //...form：...で既存の中身を全部コピーし、他の値を残したまま、
-          // 　　　　nameだけをe.target.valueの文字列に更新する
+          //         nameだけをe.target.valueの文字列に更新する
           onChange={(e) => setForm({ ...form, name: e.target.value })}
         />
 
@@ -211,12 +210,12 @@ export default function Contact() {
 
           {/* 送信ボタン */}
           {/* ボタンの色・文字の大きさ・太さはvariantの"primary"で決めている 
-      　　　ボタンの形は、Buttonコンポーネントで決めている */}
+              ボタンの形は、Buttonコンポーネントで決めている */}
           <Button variant="primary" type="submit">
             送信する
           </Button>
         </div>
       </form>
-    </Container>
+    </>
   );
 }

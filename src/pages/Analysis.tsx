@@ -15,7 +15,7 @@ const regretBarRowBase =
 
 //アドバイスボックスのCSS
 const adviceBoxBase =
-  "w-full max-w-sm mx-auto min-h-40 mt-16 pb-2 rounded-lg border border-amber-300 bg-amber-100";
+  "w-full max-w-sm mx-auto min-h-40 mt-8 pb-2 rounded-lg border border-amber-300 bg-amber-100";
 
 export default function Analysis() {
   //選択後の記録データを複数管理する
@@ -161,7 +161,7 @@ export default function Analysis() {
           {/* <>...</>：複数行のJSXを、余計なdivタグを増やさずに1つにまとめるためのフラグメント */}
           {topReason && (
             <>
-              「{topReason}」を理由にやらなかったときは、
+              「{topReason}」からやらなかったときは、
               <br />
               後悔しやすい傾向はがあります。
             </>

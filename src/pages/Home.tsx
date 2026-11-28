@@ -4,7 +4,7 @@ import Header from "../components/Header";
 import Button from "../components/Button";
 import { useGuestLogin } from "../hooks/useGuestLogin";
 import { Icon } from "@iconify/react";
-import Container from "../components/Container";
+import Container from "../layout/Container";
 import { useCaptcha } from "../hooks/useCaptcha";
 import { Turnstile } from "@marsidev/react-turnstile";
 import { useState } from "react";
@@ -54,7 +54,6 @@ export default function Home() {
     <div>
       <Container>
         {/* showBackLink={false}：「← ホームに戻る」だけを隠し、それ以外のHeaderは表示する */}
-
         <Header showBackLink={false} />
 
         {/* ピル：見出しの上の、小さなラベル */}

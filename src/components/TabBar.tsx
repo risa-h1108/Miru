@@ -5,7 +5,7 @@ import type { TabCards } from "../types";
 import { useLocation, useNavigate } from "react-router-dom";
 
 //タブの枠内での位置調整CSS
-const TabGridBase = "grid grid-cols-3 gap-4 px-6 mb-4 mt-8 max-w-sm mx-auto";
+const TabGridBase = "grid grid-cols-3 gap-4 px-6 mb-4 mt-4 max-w-sm mx-auto";
 
 //タブの選択肢リスト
 const TabList: TabCards[] = [
@@ -37,7 +37,10 @@ export default function TabBar() {
     isActive(url) ? "text-gray-600" : "text-gray-400";
 
   return (
-    <div className="fixed bottom-0 w-full bg-[#FBF8FF]">
+    //fixed：スクロールしても動かないように、画面に固定する
+    //inset-x-0：左右を画面の両端に固定する(未指定だと親の余白の位置から始まって右にずれるので、防止目的で記載)
+    //bottom-0：tabの下端を画面の下の端に合わせる(距離0)
+    <div className="fixed inset-x-0 bottom-0 bg-[#FBF8FF]">
       {/*タブの中身を表示*/}
       <div className={TabGridBase}>
         {/*map処理で3つのタブ選択肢を生成*/}
