@@ -252,11 +252,11 @@ export default function ReasonsChoice() {
           ちょっとした気づき
         </h3>
 
-        <p className="text-[16px] text-center px-2">
+        <p className="text-[16px] text-center px-1">
           {/*今選択されている中で一番後悔率が高い理由の表示*/}
           {topSelectedReason && (
             <>
-              「{topSelectedReason.reason}」を理由にやらなかったときは、
+              「{topSelectedReason.reason}」からやらなかったときは、
               <br />
               後悔しやすい傾向があります。
             </>

@@ -161,7 +161,7 @@ export default function Analysis() {
           {/* <>...</>：複数行のJSXを、余計なdivタグを増やさずに1つにまとめるためのフラグメント */}
           {topReason && (
             <>
-              「{topReason}」を理由にやらなかったときは、
+              「{topReason}」からやらなかったときは、
               <br />
               後悔しやすい傾向はがあります。
             </>
